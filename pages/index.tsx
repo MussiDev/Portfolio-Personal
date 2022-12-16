@@ -1,9 +1,9 @@
 import Head from "next/head";
-import Navbar from "../components/Navbar/Navbar";
+import Home from "../components/Home/Home";
 
 const Index = () => {
 	return (
-		<div>
+		<>
 			<Head>
 				<title>Joaquín Mussi - Dev</title>
 				<meta name='description' content='' />
@@ -11,9 +11,9 @@ const Index = () => {
 			</Head>
 
 			<main>
-				<Navbar />
+				<Home />
 			</main>
-		</div>
+		</>
 	);
 };
 
