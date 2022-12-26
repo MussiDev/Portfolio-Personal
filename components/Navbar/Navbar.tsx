@@ -10,7 +10,7 @@ const Navbar = () => {
 			<Link
 				href='/'
 				className='flex items-center gap-2 text-lg font-semibold tracking-tighter'>
-				<FaDev className='' />
+				<FaDev className='cursor-pointer' />
 				Joaquín Mussi
 			</Link>
 			<ul className='items-center hidden gap-6 p-2 mx-auto lg:flex'>
@@ -19,9 +19,13 @@ const Navbar = () => {
 						<NavbarItem key={k} link={item.link} text={item.text} />
 					))}
 			</ul>
-			<div className='flex gap-2 lg:hidden'>
-				<FaGithub />
-				<FaLinkedin />
+			<div className='flex gap-2 cursor-pointer lg:hidden'>
+				<Link href='https://github.com/MussiDev' target='_blank'>
+					<FaGithub />
+				</Link>
+				<Link href='https://www.linkedin.com/in/joaquinmussi/' target='_blank'>
+					<FaLinkedin />
+				</Link>
 			</div>
 		</header>
 	);
