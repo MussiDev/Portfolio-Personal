@@ -2,28 +2,28 @@ import React, { useState } from "react";
 import navbarItem from "../../common/navbarItem";
 import NavbarItem from "./NavbarItem";
 import items from "../../api/navbarItems.json";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FaDev } from "react-icons/fa";
+import Link from "next/link";
 const Navbar = () => {
-	const [open, setOpen] = useState(false);
-
-	const viewIcon = () => setOpen(!open);
 	return (
-		<nav className='flex  h-screen w-6/6 gap-2 cursor-pointer text-white transition-transform'>
-			<FontAwesomeIcon
-				icon={!open ? faBars : faXmark}
-				onClick={viewIcon}
-				className={`m-4 ${open ? "text-2xl" : "text-xl"} `}
-			/>
-			{open && (
-				<ul className=' list-none gap-8  flex flex-col items-center w-screen  justify-center'>
-					{items &&
-						items.map((item: navbarItem, k: number) => (
-							<NavbarItem key={k} link={item.link} text={item.text} />
-						))}
-				</ul>
-			)}
-		</nav>
+		<header className='fixed z-20 w-full p-2 text-lg backdrop-blur-md'>
+			<div className='max-w-3xl mx-auto'>
+				<nav className='flex items-center gap-3'>
+					<Link
+						href='/'
+						className='flex items-center gap-2 p-2 text-lg font-semibold tracking-tighter'>
+						<FaDev className='' />
+						Joaquín Mussi
+					</Link>
+					<ul className='items-center hidden gap-6 lg:flex'>
+						{items &&
+							items.map((item: navbarItem, k: number) => (
+								<NavbarItem key={k} link={item.link} text={item.text} />
+							))}
+					</ul>
+				</nav>
+			</div>
+		</header>
 	);
 };
 
