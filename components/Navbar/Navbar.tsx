@@ -6,7 +6,7 @@ import { FaDev, FaGithub, FaLinkedin } from "react-icons/fa";
 import Link from "next/link";
 const Navbar = () => {
 	return (
-		<header className='fixed z-20 flex items-center justify-between w-full gap-10 p-2 text-lg'>
+		<header className='fixed z-20 flex items-center justify-between w-full gap-10 p-2 text-lg backdrop-blur-md bg-slate-800'>
 			<Link
 				href='/'
 				className='flex items-center gap-2 text-lg font-semibold tracking-tighter'>
