@@ -3,6 +3,7 @@ import navbarItem from "../../common/navbarItem";
 import NavbarItem from "./NavbarItem";
 import items from "../../api/navbarItems.json";
 import { FaDev, FaGithub, FaLinkedin } from "react-icons/fa";
+import { motion } from "framer-motion";
 import Link from "next/link";
 const Navbar = () => {
 	return (
@@ -20,12 +21,28 @@ const Navbar = () => {
 					))}
 			</ul>
 			<div className='flex gap-2 cursor-pointer lg:hidden'>
-				<Link href='https://github.com/MussiDev' target='_blank'>
-					<FaGithub />
-				</Link>
-				<Link href='https://www.linkedin.com/in/joaquinmussi/' target='_blank'>
-					<FaLinkedin />
-				</Link>
+				<motion.span
+					whileHover={{
+						scale: 1.1,
+						transition: { duration: 0.4 },
+						color: "#c2410c",
+					}}>
+					<Link href='https://github.com/MussiDev' target='_blank'>
+						<FaGithub />
+					</Link>
+				</motion.span>
+				<motion.span
+					whileHover={{
+						scale: 1.1,
+						transition: { duration: 0.4 },
+						color: "#c2410c",
+					}}>
+					<Link
+						href='https://www.linkedin.com/in/joaquinmussi/'
+						target='_blank'>
+						<FaLinkedin />
+					</Link>
+				</motion.span>
 			</div>
 		</header>
 	);

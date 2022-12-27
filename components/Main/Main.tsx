@@ -17,14 +17,16 @@ const Main = () => {
 				Computer Security Student at
 				<span className='text-orange-700 '> @EducacionIT</span>
 			</h3>
-			<button className='flex items-center gap-2 p-2 bg-orange-700 rounded-full text-md w-max'>
+			<motion.button
+				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}
+				className='flex items-center gap-2 p-2 bg-orange-700 rounded-full text-md w-max hover:bg-white hover:text-orange-700'>
 				More Information
 				<motion.span
-					animate={{ y: ["5px", "-5px", "5px"] }}
-					transition={{ duration: 2, repeat: Infinity }}>
+					animate={{ y: ["2px", "-2px", "2px"] }}
+					transition={{ duration: 1, repeat: Infinity }}>
 					<FaArrowDown />
 				</motion.span>
-			</button>
+			</motion.button>
 		</section>
 	);
 };
