@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import navbarItem from "../../common/navbarItem";
-import NavbarItem from "./NavbarItem";
+import NavbarItem from "../../common/NavbarItem";
 import items from "../../api/navbarItems.json";
 import { FaDev, FaGithub, FaLinkedin } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import IconLink from "../../common/IconLink";
+import navbarItem from "../../interface/navbarItem";
 const Navbar = () => {
 	return (
 		<header className='fixed z-20 flex items-center justify-between w-full gap-10 p-2 px-10 text-lg backdrop-blur-md bg-slate-800'>
@@ -21,28 +22,11 @@ const Navbar = () => {
 					))}
 			</ul>
 			<div className='flex gap-2 cursor-pointer lg:hidden'>
-				<motion.span
-					whileHover={{
-						scale: 1.1,
-						transition: { duration: 0.4 },
-						color: "#c2410c",
-					}}>
-					<Link href='https://github.com/MussiDev' target='_blank'>
-						<FaGithub />
-					</Link>
-				</motion.span>
-				<motion.span
-					whileHover={{
-						scale: 1.1,
-						transition: { duration: 0.4 },
-						color: "#c2410c",
-					}}>
-					<Link
-						href='https://www.linkedin.com/in/joaquinmussi/'
-						target='_blank'>
-						<FaLinkedin />
-					</Link>
-				</motion.span>
+				<IconLink to='https://github.com/MussiDev' icon='github' />
+				<IconLink
+					to='https://www.linkedin.com/in/joaquinmussi/'
+					icon='linkedin'
+				/>
 			</div>
 		</header>
 	);
