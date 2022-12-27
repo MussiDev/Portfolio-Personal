@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import NavbarItem from "../../common/NavbarItem";
 import items from "../../api/navbarItems.json";
-import { FaDev, FaGithub, FaLinkedin } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { FaDev } from "react-icons/fa";
 import Link from "next/link";
 import IconLink from "../../common/IconLink";
 import navbarItem from "../../interface/navbarItem";
+
 const Navbar = () => {
 	return (
 		<header className='fixed z-20 flex items-center justify-between w-full gap-10 p-2 px-10 text-lg backdrop-blur-md bg-slate-800'>

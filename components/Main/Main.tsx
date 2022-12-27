@@ -1,6 +1,8 @@
 import React from "react";
 import { FaArrowDown } from "react-icons/fa";
 import { motion } from "framer-motion";
+import Title from "../../common/Title";
+import Button from "../../common/Button";
 
 const Main = () => {
 	return (
@@ -9,24 +11,12 @@ const Main = () => {
 				Hi, I'm
 				<h3 className='text-5xl font-normal text-orange-700'>Joaquín Mussi</h3>
 			</div>
-			<h3 className='text-2xl'>
-				FullStack Developer at
-				<span className='text-orange-700 '> @La Mutual De Socios de AMR</span>
-			</h3>
-			<h3 className='text-2xl'>
-				Computer Security Student at
-				<span className='text-orange-700 '> @EducacionIT</span>
-			</h3>
-			<motion.button
-				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}
-				className='flex items-center gap-2 p-2 bg-orange-700 rounded-full text-md w-max hover:bg-white hover:text-orange-700'>
-				More Information
-				<motion.span
-					animate={{ y: ["2px", "-2px", "2px"] }}
-					transition={{ duration: 1, repeat: Infinity }}>
-					<FaArrowDown />
-				</motion.span>
-			</motion.button>
+			<Title
+				title='FullStack Developer at'
+				text='@La Mutual De Socios de AMR'
+			/>
+			<Title title='Computer Security Student at' text='@EducacionIT' />
+			<Button title='More Information' icon='arrowDown' />
 		</section>
 	);
 };
