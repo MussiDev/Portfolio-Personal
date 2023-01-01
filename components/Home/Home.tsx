@@ -5,11 +5,11 @@ import Navbar from "../Navbar/Navbar";
 
 const Home = () => {
 	return (
-		<>
+		<div className='text-white bg-slate-800'>
 			<Navbar />
 			<Main />
 			<About />
-		</>
+		</div>
 	);
 };
 

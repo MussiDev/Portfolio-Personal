@@ -16,7 +16,7 @@ const Index = () => {
 				/>
 			</Head>
 
-			<main className='text-white bg-slate-800'>
+			<main>
 				<Home />
 			</main>
 		</>

@@ -1,4 +1,5 @@
 import React, { use, useEffect, useState } from "react";
+import Button from "../../common/Button";
 
 const About = () => {
 	const [ageToday, setAgeToday] = useState(0);
@@ -22,18 +23,26 @@ const About = () => {
 	}, []);
 
 	return (
-		<section className='px-10 '>
-			<h1 className='text-3xl'>About Me</h1>
-			<div className='h-1 bg-orange-800 w-36'></div>
+		<section
+			id='about'
+			className='flex flex-col justify-center h-screen gap-4 px-10 pb-10'>
+			<div>
+				<h1 className='text-3xl'>About Me</h1>
+				<p className='h-2 bg-orange-800 rounded-full w-36' />
+			</div>
 			<p>
-				I'm {ageToday} years old and I'm FullStack Developer self-taught. I am a
-				person that if there is something that he does not know, he learns it.
-				My passion by the technology, It took me to be Computer Technician and I
-				study web development self-taught, I studied Systems Engineering( from
-				2020 to 2021) but I decided don´t follow the carrer for to study on my
-				own. Football lover and the programming. I stand out for being a
-				proactive person.
+				I'm {ageToday} years old, I'm FullStack Developer and I'm Computer
+				Security Student. I am a person that if there is something that he does
+				not know, he learns it. My passion by the technology, It took me to be
+				Computer Technician and I study web development self-taught, I studied
+				Systems Engineering( from 2020 to 2021) but I decided don´t follow the
+				carrer for to study on my own. Football lover and the programming. I
+				stand out for being a proactive person.
 			</p>
+			<div className='flex justify-center gap-2'>
+				<Button title='Ir a Linkedin' href='' />
+				<Button title='Ver CV' href='' />
+			</div>
 		</section>
 	);
 };

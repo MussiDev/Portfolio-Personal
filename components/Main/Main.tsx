@@ -16,7 +16,7 @@ const Main = () => {
 				text='@La Mutual De Socios de AMR'
 			/>
 			<Title title='Computer Security Student at' text='@EducacionIT' />
-			<Button title='More Information' icon='arrowDown' />
+			<Button title='More Information' icon='arrowDown' href='#about' />
 		</section>
 	);
 };
