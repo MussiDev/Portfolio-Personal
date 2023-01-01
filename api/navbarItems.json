@@ -1,6 +1,10 @@
 [
 	{
 		"link": "/",
+		"text": "Home"
+	},
+	{
+		"link": "/",
 		"text": "About Me"
 	},
 	{
