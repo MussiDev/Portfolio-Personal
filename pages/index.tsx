@@ -1,5 +1,7 @@
 import Head from "next/head";
-import Home from "../components/Home/Home";
+import About from "../components/About/About";
+import Main from "../components/Main/Main";
+import Navbar from "../components/Navbar/Navbar";
 
 const Index = () => {
 	return (
@@ -10,8 +12,12 @@ const Index = () => {
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
 
-			<main>
-				<Home />
+			<main className='text-white bg-slate-800 '>
+				<Navbar />
+				<section className='px-10 flex flex-col gap-32'>
+					<Main />
+					<About />
+				</section>
 			</main>
 		</>
 	);

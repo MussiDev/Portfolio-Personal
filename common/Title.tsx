@@ -6,7 +6,7 @@ const Title = (props: title) => {
 	return (
 		<h3 className='text-2xl'>
 			{title}
-			<span className='text-orange-700 '> {text}</span>
+			<span className='text-orange-700 font-bold'> {text}</span>
 		</h3>
 	);
 };
