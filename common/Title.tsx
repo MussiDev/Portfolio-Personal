@@ -1,5 +1,5 @@
 import React from "react";
-import title from "../interface/title";
+import title from "../entities/title";
 
 const Title = (props: title) => {
 	const { title, text } = props;

@@ -4,7 +4,7 @@ import items from "../../api/navbarItems.json";
 import { FaDev } from "react-icons/fa";
 import Link from "next/link";
 import IconLink from "../../common/IconLink";
-import navbarItem from "../../interface/navbarItem";
+import navbarItem from "../../entities/navbarItem";
 
 const Navbar = () => {
 	return (

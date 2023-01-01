@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
-import iconLink from "../interface/iconLink";
+import iconLink from "../entities/iconLink";
 const IconLink = (props: iconLink) => {
 	const { to, icon } = props;
 	return (

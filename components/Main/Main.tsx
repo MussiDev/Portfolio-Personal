@@ -1,5 +1,4 @@
 import React from "react";
-import { FaArrowDown } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Title from "../../common/Title";
 import Button from "../../common/Button";

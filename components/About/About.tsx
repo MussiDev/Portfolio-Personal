@@ -40,7 +40,11 @@ const About = () => {
 				stand out for being a proactive person.
 			</p>
 			<div className='flex justify-center gap-2'>
-				<Button title='Ir a Linkedin' href='' />
+				<Button
+					title='Ir a Linkedin'
+					href='https://www.linkedin.com/in/joaquinmussi/'
+					blank={true}
+				/>
 				<Button title='Ver CV' href='' />
 			</div>
 		</section>

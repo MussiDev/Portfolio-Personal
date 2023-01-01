@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import navbarItem from "../interface/navbarItem";
+import navbarItem from "../entities/navbarItem";
 
 const NavbarItem = (props: navbarItem) => {
 	const { link, text } = props;
