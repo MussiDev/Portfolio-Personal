@@ -2,6 +2,7 @@ import Head from "next/head";
 import About from "../components/About/About";
 import Main from "../components/Main/Main";
 import Navbar from "../components/Navbar/Navbar";
+import Projects from "../components/Projects/Projects";
 
 const Index = () => {
 	return (
@@ -17,6 +18,7 @@ const Index = () => {
 				<section className='px-10 flex flex-col gap-32'>
 					<Main />
 					<About />
+					<Projects />
 				</section>
 			</main>
 		</>
