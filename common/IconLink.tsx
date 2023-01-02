@@ -9,7 +9,7 @@ const IconLink = (props: iconLink) => {
 		<motion.span
 			whileHover={{
 				scale: 1.1,
-				transition: { duration: 0.4 },
+				transition: { duration: 0.2 },
 				color: "#c2410c",
 			}}>
 			<Link href={to} target='_blank'>

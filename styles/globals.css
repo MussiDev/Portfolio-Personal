@@ -16,9 +16,6 @@
 	h1 {
 		@apply text-4xl sm:text-5xl md:text-6xl;
 	}
-	li {
-		@apply hover:text-orange-700;
-	}
 }
 *::-webkit-scrollbar {
 	width: 12px;

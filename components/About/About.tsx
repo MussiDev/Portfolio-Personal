@@ -26,23 +26,23 @@ const About = () => {
 
 	return (
 		<section
-			className='w-full md:h-screen px-4 flex items-center py-16'
+			className='flex items-center w-full px-4 py-16 md:h-screen'
 			id='about'>
 			<div className='max-w-[1240px] m-auto md:flex flex-col gap-4'>
 				<Title title='About Me' color='orange-700' />
-				<p className=' md:text-2xl'>
+				<p className='text-lg md:text-2xl'>
 					I'm {ageToday} years old, I'm FullStack Developer at &nbsp;
 					<Link
 						href='https://www.mutualamr.org.ar/'
 						target='_blank'
-						className='underline text-orange-700'>
+						className='text-orange-700 underline'>
 						La Mutual De Socios de AMR
 					</Link>
 					&nbsp; and I'm Computer Security Student at &nbsp;
 					<Link
 						href='https://www.educacionit.com/'
 						target='_blank'
-						className='underline text-orange-700'>
+						className='text-orange-700 underline'>
 						Educacion IT
 					</Link>
 					&nbsp;. I am a person that if there is something that he does not
@@ -54,7 +54,7 @@ const About = () => {
 					of writing code on a daily basis.
 				</p>
 
-				<div className='flex justify-center gap-2 w-max py-4'>
+				<div className='flex justify-center gap-2 py-4 w-max'>
 					<Button
 						title='Ir a Linkedin'
 						href='https://www.linkedin.com/in/joaquinmussi/'

@@ -11,7 +11,7 @@ const Button = (props: button) => {
 			<motion.button
 				className='flex items-center gap-2 text-md '
 				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}>
-				{title}
+				<p className='text-md md:text-2xl'>{title}</p>
 				{icon === "arrowDown" && (
 					<motion.span
 						animate={{ y: ["2px", "-2px", "2px"] }}
@@ -26,7 +26,7 @@ const Button = (props: button) => {
 			<motion.button
 				className='flex items-center gap-2 text-md'
 				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}>
-				{title}
+				<p className='text-md md:text-2xl'>{title}</p>
 				{icon === "arrowDown" && (
 					<motion.span
 						animate={{ y: ["2px", "-2px", "2px"] }}
