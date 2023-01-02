@@ -6,27 +6,18 @@ import Link from "next/link";
 
 const Button = (props: button) => {
 	const { title, icon, href, blank } = props;
-	return blank ? (
-		<Link href={`${href}`} target='_blank'>
-			<motion.button
-				className='flex items-center gap-2 text-md '
-				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}>
-				<p className='text-md md:text-2xl'>{title}</p>
-				{icon === "arrowDown" && (
-					<motion.span
-						animate={{ y: ["2px", "-2px", "2px"] }}
-						transition={{ duration: 1, repeat: Infinity }}>
-						<FaArrowDown />
-					</motion.span>
-				)}
-			</motion.button>
-		</Link>
-	) : (
-		<Link href={`${href}`}>
+	return (
+		<Link href={`${href}`} target={`${blank ? "_blank" : ""}`}>
 			<motion.button
 				className='flex items-center gap-2 text-md'
-				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}>
-				<p className='text-md md:text-2xl'>{title}</p>
+				whileHover={{
+					scale: 1.1,
+					transition: { duration: 0.4 },
+					color: "#c2410c",
+					backgroundColor: "#fff",
+				}}
+				whileTap={{ scale: 0.9, x: "-5px", y: "5px" }}>
+				<p className='text-md md:text-xl lg:text-2xl'>{title}</p>
 				{icon === "arrowDown" && (
 					<motion.span
 						animate={{ y: ["2px", "-2px", "2px"] }}

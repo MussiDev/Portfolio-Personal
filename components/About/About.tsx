@@ -30,7 +30,7 @@ const About = () => {
 			id='about'>
 			<div className='max-w-[1240px] m-auto md:flex flex-col gap-4'>
 				<Title title='About Me' color='orange-700' />
-				<p className='text-lg md:text-2xl'>
+				<p className='text-lg md:text-xl lg:text-2xl'>
 					I'm {ageToday} years old, I'm FullStack Developer at &nbsp;
 					<Link
 						href='https://www.mutualamr.org.ar/'

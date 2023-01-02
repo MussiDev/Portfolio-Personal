@@ -4,7 +4,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 @layer base {
 	button {
-		@apply px-8 py-2 bg-orange-700 rounded-full hover:bg-white hover:text-orange-700;
+		@apply px-8 py-2 bg-orange-700 rounded-full;
 	}
 	h1,
 	h2,
@@ -14,7 +14,7 @@
 		@apply font-bold;
 	}
 	h1 {
-		@apply text-4xl sm:text-5xl md:text-6xl;
+		@apply text-4xl md:text-5xl lg:text-6xl;
 	}
 }
 *::-webkit-scrollbar {
@@ -32,5 +32,4 @@
 }
 html {
 	font-family: "Poppins", sans-serif;
-	scroll-behavior: smooth;
 }
