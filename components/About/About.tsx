@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../../common/Button";
 import Title from "../../common/Title";
 
@@ -60,7 +60,7 @@ const About = () => {
 						href='https://www.linkedin.com/in/joaquinmussi/'
 						blank={true}
 					/>
-					<Button title='Ver CV' href='' />
+					<Button title='Ver CV' href='/resume' blank={true} />
 				</div>
 			</div>
 		</section>

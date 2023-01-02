@@ -17,7 +17,7 @@ const Button = (props: button) => {
 					backgroundColor: "#fff",
 				}}
 				whileTap={{ scale: 0.9, x: "-5px", y: "5px" }}>
-				<p className='text-md md:text-xl lg:text-2xl'>{title}</p>
+				<p className='text-md md:text-xl '>{title}</p>
 				{icon === "arrowDown" && (
 					<motion.span
 						animate={{ y: ["2px", "-2px", "2px"] }}

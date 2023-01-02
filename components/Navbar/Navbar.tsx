@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavbarItem from "../../common/NavbarItem";
 import items from "../../api/navbarItems.json";
 import { FaDev } from "react-icons/fa";
@@ -7,8 +7,24 @@ import IconLink from "../../common/IconLink";
 import navbarItem from "../../entities/navbarItem";
 
 const Navbar = () => {
+	const [shadow, setShadow] = useState(false);
+	useEffect(() => {
+		const handleShadow = () => {
+			if (window.scrollY) {
+				setShadow(true);
+			} else {
+				setShadow(false);
+			}
+		};
+		window.addEventListener("scroll", handleShadow);
+	}, []);
 	return (
-		<header className='fixed z-[100] shadow-xl flex justify-between w-full h-16 px-10 text-lg backdrop-blur-md bg-slate-800'>
+		<header
+			className={
+				shadow
+					? "fixed w-full shadow-xl z-[100] ease-in-out duration-300 flex justify-between h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
+					: "fixed w-full z-[100] flex justify-between  h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
+			}>
 			<Link href='/' className='flex items-center gap-2 font-semibold'>
 				<FaDev className='cursor-pointer' />
 				Joaquín Mussi
