@@ -1,5 +1,5 @@
 interface title {
 	title: string;
-	text: string;
+	color?: string;
 }
 export default title;

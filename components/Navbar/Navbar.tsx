@@ -13,13 +13,13 @@ const Navbar = () => {
 				<FaDev className='cursor-pointer' />
 				Joaquín Mussi
 			</Link>
-			<ul className='hidden gap-6 lg:flex items-center'>
+			<ul className='hidden gap-6 md:flex items-center'>
 				{items &&
 					items.map((item: navbarItem, k: number) => (
 						<NavbarItem key={k} link={item.link} text={item.text} />
 					))}
 			</ul>
-			<div className='flex gap-2 cursor-pointer lg:hidden items-center'>
+			<div className='flex gap-2 cursor-pointer md:hidden items-center'>
 				<IconLink to='https://github.com/MussiDev' icon='github' />
 				<IconLink
 					to='https://www.linkedin.com/in/joaquinmussi/'

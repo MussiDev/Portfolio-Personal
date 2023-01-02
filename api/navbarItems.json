@@ -4,19 +4,19 @@
 		"text": "Home"
 	},
 	{
-		"link": "/",
+		"link": "/#about",
 		"text": "About Me"
 	},
 	{
-		"link": "/",
+		"link": "/#projects",
 		"text": "Projects"
 	},
 	{
-		"link": "/",
+		"link": "/#skills",
 		"text": "Skills"
 	},
 	{
-		"link": "/",
+		"link": "/#contactme",
 		"text": "Contact me"
 	}
 ]

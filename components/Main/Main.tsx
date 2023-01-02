@@ -1,21 +1,24 @@
 import React from "react";
-import { motion } from "framer-motion";
 import Title from "../../common/Title";
 import Button from "../../common/Button";
 
 const Main = () => {
 	return (
-		<section className='flex flex-col justify-center gap-8 pt-48'>
-			<div className='flex flex-col gap-2 text-3xl font-light text-white '>
-				Hi, I'm
-				<h3 className='text-5xl font-normal text-orange-700 '>Joaquín Mussi</h3>
+		<section className='w-full h-screen text-center' id='home'>
+			<div className='max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center'>
+				<div className='flex flex-col items-center'>
+					<p className='uppercase text-lg tracking-widest text-gray-300'>
+						Hi, I'm
+					</p>
+					<Title title='Joaquín Mussi' color='orange-700' />
+					<Title title='FullStack Web Developer' />
+					<p className='py-4 text-gray-300 sm:max-w-[70%] m-auto text-xl'>
+						I’m dedicated on building responsive applications focusing in the
+						<b> scalability, clean architecture and good practises. </b>
+					</p>
+					<Button title='More Information' icon='arrowDown' href='#about' />
+				</div>
 			</div>
-			<Title
-				title='FullStack Developer at'
-				text='@La Mutual De Socios de AMR'
-			/>
-			<Title title='Computer Security Student at' text='@EducacionIT' />
-			<Button title='More Information' icon='arrowDown' href='#about' />
 		</section>
 	);
 };

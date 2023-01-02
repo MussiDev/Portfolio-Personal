@@ -1,7 +1,23 @@
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 @layer base {
 	button {
 		@apply px-8 py-2 bg-orange-700 rounded-full hover:bg-white hover:text-orange-700;
+	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5 {
+		@apply font-bold;
+	}
+	h1 {
+		@apply text-4xl sm:text-5xl md:text-6xl;
+	}
+	li {
+		@apply hover:text-orange-700;
 	}
 }
 *::-webkit-scrollbar {
@@ -17,9 +33,7 @@
 	border-radius: 14px;
 	border: 3px solid rgb(30 41 59);
 }
-@tailwind components;
-@tailwind utilities;
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
-body {
+html {
 	font-family: "Poppins", sans-serif;
+	scroll-behavior: smooth;
 }

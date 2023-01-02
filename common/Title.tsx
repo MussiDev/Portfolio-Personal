@@ -2,13 +2,8 @@ import React from "react";
 import title from "../entities/title";
 
 const Title = (props: title) => {
-	const { title, text } = props;
-	return (
-		<h3 className='text-2xl'>
-			{title}
-			<span className='text-orange-700 font-bold'> {text}</span>
-		</h3>
-	);
+	const { title, color} = props;
+	return <h1 className={`py-4 ${color && `text-${color}`}`}>{title}</h1>;
 };
 
 export default Title;

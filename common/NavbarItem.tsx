@@ -5,7 +5,7 @@ import navbarItem from "../entities/navbarItem";
 const NavbarItem = (props: navbarItem) => {
 	const { link, text } = props;
 	return (
-		<li className='hover:text-orange-600'>
+		<li>
 			<Link href={link}>{text}</Link>
 		</li>
 	);

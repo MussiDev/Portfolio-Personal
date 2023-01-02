@@ -15,11 +15,9 @@ const Index = () => {
 
 			<main className='text-white bg-slate-800 '>
 				<Navbar />
-				<section className='px-10 flex flex-col gap-32'>
-					<Main />
-					<About />
-					<Projects />
-				</section>
+				<Main />
+				<About />
+				<Projects />
 			</main>
 		</>
 	);

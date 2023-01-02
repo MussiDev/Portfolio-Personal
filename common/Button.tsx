@@ -10,8 +10,7 @@ const Button = (props: button) => {
 		<Link href={`${href}`} target='_blank'>
 			<motion.button
 				className='flex items-center gap-2 text-md '
-				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}
-				>
+				whileHover={{ scale: 1.1, transition: { duration: 0.4 } }}>
 				{title}
 				{icon === "arrowDown" && (
 					<motion.span

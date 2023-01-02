@@ -1,5 +1,7 @@
+import Link from "next/link";
 import React, { use, useEffect, useState } from "react";
 import Button from "../../common/Button";
+import Title from "../../common/Title";
 
 const About = () => {
 	const [ageToday, setAgeToday] = useState(0);
@@ -23,27 +25,43 @@ const About = () => {
 	}, []);
 
 	return (
-		<section id='about' className='flex flex-col justify-center  gap-4 '>
-			<div>
-				<h1 className='text-3xl'>About Me</h1>
-				<p className='h-2 bg-orange-800 rounded-full w-36' />
-			</div>
-			<p>
-				I'm {ageToday} years old, I'm FullStack Developer and I'm Computer
-				Security Student. I am a person that if there is something that he does
-				not know, he learns it. My passion by the technology, It took me to be
-				Computer Technician and I study web development self-taught, I studied
-				Systems Engineering( from 2020 to 2021) but I decided don´t follow the
-				carrer for to study on my own. Football lover and the programming. I
-				stand out for being a proactive person.
-			</p>
-			<div className='flex justify-center gap-2'>
-				<Button
-					title='Ir a Linkedin'
-					href='https://www.linkedin.com/in/joaquinmussi/'
-					blank={true}
-				/>
-				<Button title='Ver CV' href='' />
+		<section
+			className='w-full md:h-screen px-4 flex items-center py-16'
+			id='about'>
+			<div className='max-w-[1240px] m-auto md:flex flex-col gap-4'>
+				<Title title='About Me' color='orange-700' />
+				<p className=' md:text-2xl'>
+					I'm {ageToday} years old, I'm FullStack Developer at &nbsp;
+					<Link
+						href='https://www.mutualamr.org.ar/'
+						target='_blank'
+						className='underline text-orange-700'>
+						La Mutual De Socios de AMR
+					</Link>
+					&nbsp; and I'm Computer Security Student at &nbsp;
+					<Link
+						href='https://www.educacionit.com/'
+						target='_blank'
+						className='underline text-orange-700'>
+						Educacion IT
+					</Link>
+					&nbsp;. I am a person that if there is something that he does not
+					know, he learns it. My passion by the technology, It took me to be
+					Computer Technician and I study web development self-taught, I studied
+					Systems Engineering( from 2020 to 2021 ) but I decided don´t follow
+					the carrer for to study on my own. Football lover and the programming.
+					I stand out for being a proactive person who tries to improve his way
+					of writing code on a daily basis.
+				</p>
+
+				<div className='flex justify-center gap-2 w-max py-4'>
+					<Button
+						title='Ir a Linkedin'
+						href='https://www.linkedin.com/in/joaquinmussi/'
+						blank={true}
+					/>
+					<Button title='Ver CV' href='' />
+				</div>
 			</div>
 		</section>
 	);
