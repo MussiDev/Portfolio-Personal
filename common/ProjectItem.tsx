@@ -6,11 +6,11 @@ import projectItem from "../entities/projectItem";
 const ProjectItem = (props: projectItem) => {
 	const { title, backgroundImg, tech, projectUrl } = props;
 	return (
-		<div className='flex flex-col items-center gap-2 w-80 h-80 overflow-hidden'>
+		<div className='flex flex-col items-center gap-2 relative overflow-hidden'>
 			<Image
 				src={backgroundImg}
-				alt=''
-				className='h-[100%] w-[100%] object-cover object-top'
+				alt='Picture of the author'
+				className='hover:object-bottom cursor-pointer'
 			/>
 			<h3>{title}</h3>
 			<p>{tech}</p>

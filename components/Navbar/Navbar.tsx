@@ -19,10 +19,10 @@ const Navbar = () => {
 		window.addEventListener("scroll", handleShadow);
 	}, []);
 	return (
-		<header
+		<Header
 			className={
 				shadow
-					? "fixed w-full shadow-xl z-[100] ease-in-out duration-300 flex justify-between h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
+					? ""
 					: "fixed w-full z-[100] flex justify-between  h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
 			}>
 			<Link href='/' className='flex items-center gap-2 font-semibold'>
@@ -42,7 +42,7 @@ const Navbar = () => {
 					icon='linkedin'
 				/>
 			</div>
-		</header>
+		</Header>
 	);
 };
 

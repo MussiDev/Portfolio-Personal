@@ -9,7 +9,7 @@ const Projects = () => {
 	return (
 		<section className='max-w-[1240px] mx-auto py-16 h-screen' id='projects'>
 			<Title title='Projects' color='orange-700' />
-			<div className='grid gap-8 md:grid-cols-2'>
+			<div className='grid gap-8 md:grid-cols-3 h-[60vh]'>
 				<ProjectItem
 					title='Property Finder'
 					backgroundImg={monolandia}
