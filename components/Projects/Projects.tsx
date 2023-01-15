@@ -1,9 +1,7 @@
 import React from "react";
 import ProjectItem from "../../common/ProjectItem";
 import Title from "../../common/Title";
-import monolandia from "../../image/monolandia.png";
-import petinder from "../../image/petinder.png";
-import weather from "../../image/weather.png";
+import foto from "./foto.jpg";
 
 const Projects = () => {
 	return (
@@ -29,7 +27,7 @@ const Projects = () => {
 					tech='React JS'
 				/>
 			</div>
-		</section>
+		</div>
 	);
 };
 
