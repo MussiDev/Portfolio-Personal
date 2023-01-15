@@ -14,9 +14,6 @@
 	h1 {
 		@apply text-4xl md:text-5xl lg:text-6xl;
 	}
-	img {
-		@apply hover:object-bottom cursor-pointer h-["25vh"] object-cover object-top;
-	}
 }
 *::-webkit-scrollbar {
 	width: 12px;
