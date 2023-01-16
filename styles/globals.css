@@ -4,6 +4,9 @@
 	button {
 		@apply px-8 py-2 bg-orange-700 rounded-full;
 	}
+	h4 {
+		@apply text-3xl;
+	}
 	h1,
 	h2,
 	h3,
