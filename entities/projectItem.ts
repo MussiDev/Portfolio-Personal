@@ -1,9 +1,10 @@
 import { StaticImageData } from "next/image";
 
 interface projectItem {
-	title: string;
-	backgroundImg: StaticImageData;
-	tech: string;
-	projectUrl: string;
+	src: StaticImageData;
+	paragraph?: string;
+	github: string;
+	page: string;
+	icon: React.ReactNode;
 }
 export default projectItem;
