@@ -25,9 +25,7 @@ const About = () => {
 	}, []);
 
 	return (
-		<section
-			className='flex items-center w-full px-4 py-16 md:h-screen'
-			id='about'>
+		<section className='flex items-center w-full px-4 md:h-screen' id='about'>
 			<div className='max-w-[1240px] m-auto md:flex flex-col gap-4'>
 				<Title title='About Me' color='orange-700' />
 				<p className='text-lg md:text-xl lg:text-2xl'>

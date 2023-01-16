@@ -3,6 +3,7 @@ import About from "../components/About/About";
 import Main from "../components/Main/Main";
 import Navbar from "../components/Navbar/Navbar";
 import Projects from "../components/Projects/Projects";
+import Skills from "../components/Skills/Skills";
 
 const Index = () => {
 	return (
@@ -18,6 +19,7 @@ const Index = () => {
 				<Main />
 				<About />
 				<Projects />
+				<Skills />
 			</main>
 		</>
 	);

@@ -10,9 +10,7 @@ import { DiMaterializecss } from "react-icons/di";
 
 const Projects = () => {
 	return (
-		<section
-			className='max-w-[1240px] m-auto py-16 px-4 md:h-screen'
-			id='projects'>
+		<section className='max-w-[1240px] m-auto  px-4 md:h-screen' id='projects'>
 			<Title title='Projects' color='orange-700' />
 			<div className='grid md:grid-cols-2 gap-8 py-4'>
 				<ProjectItem

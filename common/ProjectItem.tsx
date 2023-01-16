@@ -6,7 +6,7 @@ import Button from "./Button";
 const ProjectItem = (props: projectItem) => {
 	const { src, github, page, paragraph, icon } = props;
 	return (
-		<section>
+		<section className='shadow-sky-900 p-4 shadow-xl'>
 			<div className='overflow-hidden h-40'>
 				<Image
 					src={src}
@@ -15,9 +15,7 @@ const ProjectItem = (props: projectItem) => {
 				/>
 			</div>
 			<p className='py-4 h-24 max-h-24 text-justify text-lg'>{paragraph}</p>
-			<span className='flex justify-center gap-4 shadow-sky-900 p-4 shadow-xl'>
-				{icon}
-			</span>
+			<span className='flex justify-center gap-4'>{icon}</span>
 			<div className='flex items-center justify-center gap-4 py-6'>
 				<Button title='Demo' href={page} />
 				<Button title='Code' href={github} />
