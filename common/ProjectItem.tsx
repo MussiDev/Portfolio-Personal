@@ -1,30 +1,26 @@
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import projectItem from "../entities/projectItem";
+import Button from "./Button";
 
 const ProjectItem = (props: projectItem) => {
-	const { title, backgroundImg, tech, projectUrl } = props;
+	const { src, github, page, paragraph, icon } = props;
 	return (
-		<div className='flex flex-col items-center gap-2 w-80 h-80 overflow-hidden'>
-			<Image
-				className='rounded-xl group-hover:opacity-10'
-				src={backgroundImg}
-				alt=''
-				className='h-[100%] w-[100%] object-cover object-top'
-			/>
-			<div className='hidden hover:block absolute top-[20%] left-[20%] translate-x-[-20%] translate-y-[-20%]'>
-				<h3 className='text-2xl tracking-wider text-center text-white'>
-					{title}
-				</h3>
-				<p className='pt-2 pb-4 text-center text-white'>{tech}</p>
-				<Link href={projectUrl}>
-					<p className='py-3 text-lg font-bold text-center text-gray-700 bg-white rounded-lg cursor-pointer'>
-						More Info
-					</p>
-				</Link>
+		<section>
+			<div className='overflow-hidden h-40'>
+				<Image
+					src={src}
+					alt=''
+					className='rounded-md hover:object-bottom h-full w-full object-cover object-top transition-all ease-in-out duration-[1400ms]'
+				/>
 			</div>
-		</div>
+			<p className='py-4'>{paragraph}</p>
+			<span>{icon}</span>
+			<div className='flex items-center justify-center gap-4 py-6'>
+				<Button title='Demo' href={page} />
+				<Button title='Code' href={github} />
+			</div>
+		</section>
 	);
 };
 
