@@ -22,10 +22,12 @@ const Projects = () => {
 					paragraph='Weather Web App consuming the Open Weather App API.'
 					icon={[
 						<FaReact
+							key='key'
 							size={50}
 							className='text-cyan-500 hover:scale-125 duration-700'
 						/>,
 						<DiMaterializecss
+							key='key2'
 							size={50}
 							className='text-fuchsia-300 hover:scale-125 duration-700'
 						/>,
@@ -38,18 +40,22 @@ const Projects = () => {
 					paragraph='Website created in order to inform about the life and history of the Monkeys.'
 					icon={[
 						<FaHtml5
+							key='key'
 							size={50}
 							className='text-red-500 hover:scale-125 duration-700'
 						/>,
 						<FaCss3
+							key='key2'
 							size={50}
 							className='text-blue-500 hover:scale-125 duration-700'
 						/>,
 						<FaJs
+							key='key3'
 							size={50}
 							className='text-yellow-500 hover:scale-125 duration-700'
 						/>,
 						<FaBootstrap
+							key='key4'
 							size={50}
 							className='text-purple-500 hover:scale-125 duration-700'
 						/>,
@@ -62,10 +68,12 @@ const Projects = () => {
 					paragraph='Web application to manage shifts with LocalStorage.'
 					icon={[
 						<FaReact
+							key='key1'
 							size={50}
 							className='text-cyan-500 hover:scale-125 duration-700'
 						/>,
 						<SiChakraui
+							key='key2'
 							size={50}
 							className='text-cyan-300 hover:scale-125 duration-700'
 						/>,

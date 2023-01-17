@@ -17,6 +17,26 @@
 	h1 {
 		@apply text-4xl md:text-5xl lg:text-6xl;
 	}
+	div {
+		padding: 0;
+	}
+}
+.div-project {
+	overflow: hidden;
+	height: 10rem;
+	position: relative;
+	width: 100%;
+}
+.img-project {
+	object-position: top;
+	object-fit: cover;
+	height: 100%;
+	width: 100%;
+	transition: all ease-in-out 1400ms;
+	border-radius: 0.375rem;
+}
+.img-project:hover {
+	object-position: bottom;
 }
 *::-webkit-scrollbar {
 	width: 12px;
