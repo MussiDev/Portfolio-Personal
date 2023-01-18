@@ -5,6 +5,7 @@ import { FaDev } from "react-icons/fa";
 import Link from "next/link";
 import IconLink from "../../common/IconLink";
 import navbarItem from "../../entities/navbarItem";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
 	const [shadow, setShadow] = useState(false);
@@ -25,23 +26,49 @@ const Navbar = () => {
 					? "fixed w-full shadow-xl z-[100] ease-in-out duration-300 flex justify-between h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
 					: "fixed w-full z-[100] flex justify-between  h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
 			}>
-			<Link href='/' className='flex items-center gap-2 font-semibold'>
-				<FaDev className='cursor-pointer' />
-				Joaquín Mussi
-			</Link>
-			<ul className='items-center hidden gap-6 md:flex'>
+			<motion.div
+				className='flex'
+				initial={{ x: -2500, opacity: 0, scale: 0.5 }}
+				animate={{
+					x: 0,
+					opacity: 1,
+					scale: 1,
+				}}
+				transition={{ duration: 0.8 }}>
+				<Link href='/' className='flex items-center gap-2 font-semibold'>
+					<FaDev className='cursor-pointer' />
+					Joaquín Mussi
+				</Link>
+			</motion.div>
+			<motion.ul
+				className='items-center hidden gap-6 md:flex'
+				initial={{ x: 2500, opacity: 0, scale: 0.5 }}
+				animate={{
+					x: 0,
+					opacity: 1,
+					scale: 1,
+				}}
+				transition={{ duration: 0.8 }}>
 				{items &&
 					items.map((item: navbarItem, k: number) => (
 						<NavbarItem key={k} link={item.link} text={item.text} />
 					))}
-			</ul>
-			<div className='flex items-center gap-2 md:hidden'>
+			</motion.ul>
+			<motion.div
+				className='flex items-center gap-2 md:hidden'
+				initial={{ x: 3500, opacity: 0, scale: 0.5 }}
+				animate={{
+					x: 0,
+					opacity: 1,
+					scale: 1,
+				}}
+				transition={{ duration: 0.8 }}>
 				<IconLink to='https://github.com/MussiDev' icon='github' />
 				<IconLink
 					to='https://www.linkedin.com/in/joaquinmussi/'
 					icon='linkedin'
 				/>
-			</div>
+			</motion.div>
 		</header>
 	);
 };
