@@ -1,7 +1,5 @@
-import { StaticImageData } from "next/image";
-
 interface projectItem {
-	src: StaticImageData;
+	src: string;
 	paragraph?: string;
 	github: string;
 	page: string;
