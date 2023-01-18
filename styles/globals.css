@@ -50,4 +50,7 @@ html {
 	.div {
 		@apply overflow-hidden h-40 w-full relative;
 	}
+	#top {
+		@apply fixed bottom-10 right-6 z-20 bg-orange-700 p-2 rounded-full cursor-pointer;
+	}
 }

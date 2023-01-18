@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar/Navbar";
 import Projects from "../components/Projects/Projects";
 import Experience from "../components/Experience/Experience";
 import Contact from "../components/Contact/Contact";
+import Arrow from "../common/Arrow";
 
 const Index = () => {
 	return (
@@ -22,6 +23,7 @@ const Index = () => {
 				<Projects />
 				<Experience />
 				<Contact />
+				<Arrow />
 			</main>
 		</>
 	);
