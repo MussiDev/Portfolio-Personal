@@ -3,7 +3,6 @@ import Title from "../../common/Title";
 import ProjectItem from "../../common/ProjectItem";
 import { FaBootstrap, FaCss3, FaHtml5, FaJs, FaReact } from "react-icons/fa";
 import { SiChakraui } from "react-icons/si";
-import { DiMaterializecss } from "react-icons/di";
 
 const Projects = () => {
 	return (

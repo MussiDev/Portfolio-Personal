@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Title from "../../common/Title";
 import emailjs from "@emailjs/browser";
-
+import Swal from "sweetalert2";
 const Contact = () => {
 	const form = useRef<HTMLFormElement | null>(null);
 	const sendEmail = (e: React.MouseEvent<HTMLFormElement>) => {
@@ -21,11 +21,30 @@ const Contact = () => {
 					process.env.NEXT_PUBLIC_PUBLIC_KEY
 				)
 				.then(
-					(result) => {
-						console.log(result.text);
+					() => {
+						Swal.fire({
+							position: "center",
+							background: "rgb(30 41 59)",
+							icon: "success",
+							text: "Thanks! I will contact you as soon as possible! ;)",
+							showConfirmButton: false,
+							timer: 4000,
+							color: "rgb(194 65 12)",
+							timerProgressBar: true,
+						});
 					},
-					(error) => {
-						console.log(error.text);
+					() => {
+						Swal.fire({
+							position: "center",
+							background: "rgb(30 41 59)",
+							icon: "error",
+							title: "Oops...",
+							text: "Something went wrong!",
+							showConfirmButton: false,
+							timer: 4000,
+							color: "rgb(194 65 12)",
+							timerProgressBar: true,
+						});
 					}
 				);
 		}

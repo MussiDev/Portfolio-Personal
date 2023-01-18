@@ -24,7 +24,10 @@
 *::-webkit-scrollbar {
 	width: 12px;
 }
-
+* {
+	scrollbar-width: thin;
+	scrollbar-color: rgb(194 65 12) rgb(30 41 59);
+}
 *::-webkit-scrollbar-track {
 	background: rgb(30 41 59);
 }
@@ -42,7 +45,7 @@ html {
 
 @layer components {
 	#img {
-		@apply object-cover rounded-lg object-top h-full w-full duration-[1400ms] transition-all;
+		@apply object-cover rounded-lg h-full w-full duration-[1400ms] transition-all;
 	}
 	.div {
 		@apply overflow-hidden h-40 w-full relative;

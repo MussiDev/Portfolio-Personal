@@ -12,6 +12,7 @@ const ProjectItem = (props: projectItem) => {
 					src={src}
 					id='img'
 					alt='project'
+					initial={{ objectPosition: "top" }}
 					whileHover={{
 						objectPosition: "bottom",
 					}}
