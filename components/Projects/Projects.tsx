@@ -23,10 +23,10 @@ const Projects = () => {
 							size={50}
 							className='text-cyan-500 hover:scale-125 duration-700'
 						/>,
-						<DiMaterializecss
-							key='key2'
-							size={50}
-							className='text-fuchsia-300 hover:scale-125 duration-700'
+						<img
+							key='key3'
+							src='image/materialize.png'
+							className=' w-16 h-8 hover:scale-125 duration-700'
 						/>,
 					]}
 				/>
@@ -72,7 +72,7 @@ const Projects = () => {
 						<SiChakraui
 							key='key2'
 							size={50}
-							className='text-cyan-300 hover:scale-125 duration-700'
+							className='text-cyan-500 bg-white rounded-full hover:scale-125 duration-700'
 						/>,
 					]}
 				/>

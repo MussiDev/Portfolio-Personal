@@ -18,7 +18,7 @@ const ProjectItem = (props: projectItem) => {
 				/>
 			</div>
 			<p className='py-4 h-24 max-h-24 text-justify text-lg'>{paragraph}</p>
-			<span className='flex justify-center gap-4'>{icon}</span>
+			<span className='flex justify-center items-center gap-4'>{icon}</span>
 			<div className='flex items-center justify-center gap-4 py-4'>
 				<Button title='Demo' href={page} />
 				<Button title='Code' href={github} />
