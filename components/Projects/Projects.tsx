@@ -1,8 +1,5 @@
 import React from "react";
 import Title from "../../common/Title";
-import weather from "../../image/weather.png";
-import monolandia from "../../image/monolandia.png";
-import petinder from "../../image/petinder.png";
 import ProjectItem from "../../common/ProjectItem";
 import { FaBootstrap, FaCss3, FaHtml5, FaJs, FaReact } from "react-icons/fa";
 import { SiChakraui } from "react-icons/si";
@@ -16,7 +13,7 @@ const Projects = () => {
 			<Title title='Projects' color='orange-700' />
 			<div className='grid md:grid-cols-2 gap-8 py-4'>
 				<ProjectItem
-					src={weather}
+					src='image/weather.png'
 					github='https://github.com/MussiDev/ClimaReactAPI'
 					page='https://reactappweather-7c1cb.web.app/'
 					paragraph='Weather Web App consuming the Open Weather App API.'
@@ -26,15 +23,15 @@ const Projects = () => {
 							size={50}
 							className='text-cyan-500 hover:scale-125 duration-700'
 						/>,
-						<DiMaterializecss
-							key='key2'
-							size={50}
-							className='text-fuchsia-300 hover:scale-125 duration-700'
+						<img
+							key='key3'
+							src='image/materialize.png'
+							className=' w-16 h-8 hover:scale-125 duration-700'
 						/>,
 					]}
 				/>
 				<ProjectItem
-					src={monolandia}
+					src='image/monolandia.png'
 					github='https://github.com/MussiDev/MonoLandia'
 					page='https://monolandia-7816e.web.app/'
 					paragraph='Website created in order to inform about the life and history of the Monkeys.'
@@ -62,7 +59,7 @@ const Projects = () => {
 					]}
 				/>
 				<ProjectItem
-					src={petinder}
+					src='image/petinder.png'
 					github='https://github.com/joakom24/Petinder'
 					page='https://petinder-75b0e.web.app/'
 					paragraph='Web application to manage shifts with LocalStorage.'
@@ -75,7 +72,7 @@ const Projects = () => {
 						<SiChakraui
 							key='key2'
 							size={50}
-							className='text-cyan-300 hover:scale-125 duration-700'
+							className='text-cyan-500 bg-white rounded-full hover:scale-125 duration-700'
 						/>,
 					]}
 				/>
