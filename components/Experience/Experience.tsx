@@ -5,7 +5,7 @@ import Title from "../../common/Title";
 const Experience = () => {
 	return (
 		<section
-			className='max-w-[1240px] m-auto pt-36 px-4 md:h-screen'
+			className='max-w-[1240px] m-auto px-4 md:h-screen py-16'
 			id='experience'>
 			<Title title='Experience' color='orange-700' />
 			<div className='flex flex-col gap-6 pt-6'>
