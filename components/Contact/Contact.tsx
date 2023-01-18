@@ -2,26 +2,30 @@ import React, { useRef, useState } from "react";
 import Title from "../../common/Title";
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
+import ReCAPTCHA from "react-google-recaptcha";
+
 const Contact = () => {
+	const [messageErrorCaptcha, setMessageErrorCaptcha] = useState(false);
 	const form = useRef<HTMLFormElement | null>(null);
+	const captchaRef = useRef<ReCAPTCHA | null>(null);
+
 	const sendEmail = (e: React.MouseEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
-		if (
-			form.current &&
-			process.env.NEXT_PUBLIC_SERVICE_ID &&
-			process.env.NEXT_PUBLIC_TEMPLATE_ID &&
-			process.env.NEXT_PUBLIC_PUBLIC_KEY
-		) {
-			emailjs
-				.sendForm(
-					process.env.NEXT_PUBLIC_SERVICE_ID,
-					process.env.NEXT_PUBLIC_TEMPLATE_ID,
-					form.current,
-					process.env.NEXT_PUBLIC_PUBLIC_KEY
-				)
-				.then(
-					() => {
+		if (captchaRef.current?.getValue()) {
+			if (
+				form.current &&
+				process.env.NEXT_PUBLIC_SERVICE_ID &&
+				process.env.NEXT_PUBLIC_TEMPLATE_ID &&
+				process.env.NEXT_PUBLIC_PUBLIC_KEY
+			) {
+				emailjs
+					.sendForm(
+						process.env.NEXT_PUBLIC_SERVICE_ID,
+						process.env.NEXT_PUBLIC_TEMPLATE_ID,
+						form.current,
+						process.env.NEXT_PUBLIC_PUBLIC_KEY
+					)
+					.then(() => {
 						Swal.fire({
 							position: "center",
 							background: "rgb(30 41 59)",
@@ -32,8 +36,8 @@ const Contact = () => {
 							color: "rgb(194 65 12)",
 							timerProgressBar: true,
 						});
-					},
-					() => {
+					})
+					.catch(() => {
 						Swal.fire({
 							position: "center",
 							background: "rgb(30 41 59)",
@@ -45,9 +49,17 @@ const Contact = () => {
 							color: "rgb(194 65 12)",
 							timerProgressBar: true,
 						});
-					}
-				);
+					});
+			}
+			captchaRef.current.reset();
+		} else {
+			setMessageErrorCaptcha(true);
+			setTimeout(() => {
+				setMessageErrorCaptcha(false);
+			}, 3000);
+			return;
 		}
+
 		e.currentTarget.reset();
 	};
 	return (
@@ -87,6 +99,18 @@ const Contact = () => {
 							className=' min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:shadow-outline'
 						/>
 					</div>
+					<div className='py-4 '>
+						{process.env.NEXT_PUBLIC_FIRSTCAPTCHA && (
+							<ReCAPTCHA
+								ref={captchaRef}
+								sitekey={process.env.NEXT_PUBLIC_FIRSTCAPTCHA}
+								className='g-recaptcha'
+							/>
+						)}
+					</div>
+					{messageErrorCaptcha && (
+						<h3 className='py-4 text-center'>Please, accept catcha</h3>
+					)}
 					<div className='flex items-center justify-center'>
 						<input
 							type='submit'
