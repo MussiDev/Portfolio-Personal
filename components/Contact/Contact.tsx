@@ -122,7 +122,7 @@ const Contact = () => {
 								type='submit'
 								value='Send'
 								disabled
-								className='text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full'
+								className='disabled:opacity-50 text-xl flex items-center gap-2 text-md text-white bg-orange-700 px-12 py-2 rounded-full'
 							/>
 						)}
 					</div>
