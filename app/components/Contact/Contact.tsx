@@ -103,6 +103,7 @@ const Contact = () => {
 							Mensaje
 						</label>
 						<textarea
+							id='message'
 							name='message'
 							required
 							className=' min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black'
