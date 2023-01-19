@@ -10,12 +10,16 @@ import {
 } from "react-icons/si";
 import Jobs from "../../common/Jobs";
 import Title from "../../common/Title";
+import { motion } from "framer-motion";
 
 const Experience = () => {
 	return (
-		<section
+		<motion.section
 			className='max-w-[1240px] m-auto px-4 md:h-screen py-16 mt-20'
-			id='experience'>
+			id='experience'
+			initial={{ opacity: 0 }}
+			whileInView={{ opacity: 1 }}
+			transition={{ duration: 2 }}>
 			<Title title='Experience' color='orange-700' />
 			<div className='flex flex-col gap-6 pt-6'>
 				<Jobs
@@ -94,7 +98,7 @@ const Experience = () => {
 					description='My job was to participate in the development of an application. Tasks performed: simple login, store in a dictionary 2 previously registered users, creation of two modules that can be accessed depending on the type of privilege either manager or reception.'
 				/>
 			</div>
-		</section>
+		</motion.section>
 	);
 };
 

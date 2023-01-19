@@ -3,12 +3,16 @@ import Title from "../../common/Title";
 import ProjectItem from "../../common/ProjectItem";
 import { FaBootstrap, FaCss3, FaHtml5, FaJs, FaReact } from "react-icons/fa";
 import { SiChakraui } from "react-icons/si";
+import { motion } from "framer-motion";
 
 const Projects = () => {
 	return (
-		<section
+		<motion.section
 			className='max-w-[1240px] m-auto  px-4 md:h-screen py-16'
-			id='projects'>
+			id='projects'
+			initial={{ opacity: 0 }}
+			whileInView={{ opacity: 1 }}
+			transition={{ duration: 2 }}>
 			<Title title='Projects' color='orange-700' />
 			<div className='grid md:grid-cols-2 gap-8 py-4'>
 				<ProjectItem
@@ -76,7 +80,7 @@ const Projects = () => {
 					]}
 				/>
 			</div>
-		</section>
+		</motion.section>
 	);
 };
 

@@ -2,6 +2,7 @@ import React from "react";
 import Title from "../../common/Title";
 import Button from "../../common/Button";
 import { useTypewriter } from "react-simple-typewriter";
+import { motion } from "framer-motion";
 
 const Main = () => {
 	const [text, count] = useTypewriter({
@@ -10,7 +11,16 @@ const Main = () => {
 		delaySpeed: 2000,
 	});
 	return (
-		<section className='w-full h-screen text-center py-16' id='home'>
+		<motion.section
+			className='w-full h-screen text-center py-16'
+			id='home'
+			initial={{ x: -2500, opacity: 0, scale: 0.5 }}
+			animate={{
+				x: 0,
+				opacity: 1,
+				scale: 1,
+			}}
+			transition={{ duration: 0.8 }}>
 			<div className='max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center'>
 				<div className='flex flex-col items-center'>
 					<p className='uppercase text-lg tracking-widest text-gray-300'>
@@ -30,7 +40,7 @@ const Main = () => {
 					/>
 				</div>
 			</div>
-		</section>
+		</motion.section>
 	);
 };
 

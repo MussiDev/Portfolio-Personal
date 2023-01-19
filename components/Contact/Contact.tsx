@@ -3,6 +3,7 @@ import Title from "../../common/Title";
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
 import ReCAPTCHA from "react-google-recaptcha";
+import { motion } from "framer-motion";
 
 const Contact = () => {
 	const [messageErrorCaptcha, setMessageErrorCaptcha] = useState(false);
@@ -63,11 +64,18 @@ const Contact = () => {
 		e.currentTarget.reset();
 	};
 	return (
-		<section
+		<motion.section
+			initial={{ opacity: 0 }}
+			whileInView={{ opacity: 1 }}
+			transition={{ duration: 2 }}
 			className='max-w-[1240px] m-auto px-4 py-16 flex flex-col items-center justify-center'
 			id='contactme'>
 			<Title title='Do you like contact me?' color='orange-700' />
-			<div className='w-full max-w-xs '>
+			<motion.div
+				className='w-full max-w-xs '
+				initial={{ opacity: 0, y: 200 }}
+				whileInView={{ opacity: 1, y: 0 }}
+				transition={{ duration: 1 }}>
 				<form className='py-6' ref={form} onSubmit={sendEmail}>
 					<div className='mb-4 flex flex-col gap-4'>
 						<label className='text-lg font-bold'>Name</label>
@@ -119,8 +127,8 @@ const Contact = () => {
 						/>
 					</div>
 				</form>
-			</div>
-		</section>
+			</motion.div>
+		</motion.section>
 	);
 };
 

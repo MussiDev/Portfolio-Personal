@@ -2,7 +2,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Button from "../../common/Button";
 import Title from "../../common/Title";
-
+import { motion } from "framer-motion";
 const About = () => {
 	const [ageToday, setAgeToday] = useState(0);
 
@@ -25,12 +25,20 @@ const About = () => {
 	}, []);
 
 	return (
-		<section
+		<motion.section
 			className='flex items-center w-full px-4 h-screen py-16'
-			id='about'>
+			id='about'
+			initial={{ opacity: 0 }}
+			whileInView={{ opacity: 1 }}
+			transition={{ duration: 2 }}>
 			<div className='max-w-[1240px] m-auto md:flex flex-col gap-4'>
 				<Title title='About Me' color='orange-700' />
-				<p className='text-lg md:text-xl lg:text-2xl'>
+				<motion.p
+					className='text-lg md:text-xl lg:text-2xl'
+					initial={{ x: -200, opacity: 0 }}
+					whileInView={{ opacity: 1, x: 0 }}
+					transition={{ duration: 1.2 }}
+					viewport={{ once: true }}>
 					I'm {ageToday} years old, I'm FullStack Developer at &nbsp;
 					<Link
 						href='https://www.mutualamr.org.ar/'
@@ -52,7 +60,7 @@ const About = () => {
 					the carrer for to study on my own. Football lover and the programming.
 					I stand out for being a proactive person who tries to improve his way
 					of writing code on a daily basis.
-				</p>
+				</motion.p>
 
 				<div className='flex justify-center gap-2 py-4 w-max'>
 					<Button
@@ -67,7 +75,7 @@ const About = () => {
 					/>
 				</div>
 			</div>
-		</section>
+		</motion.section>
 	);
 };
 
