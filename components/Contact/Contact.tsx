@@ -111,10 +111,17 @@ const Contact = () => {
 						</div>
 					)}
 					<div className='flex items-center justify-center'>
-						{verifyCaptcha && (
+						{verifyCaptcha ? (
 							<input
 								type='submit'
 								value='Send'
+								className='text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full'
+							/>
+						) : (
+							<input
+								type='submit'
+								value='Send'
+								disabled
 								className='text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full'
 							/>
 						)}
