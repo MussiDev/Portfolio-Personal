@@ -1,3 +1,4 @@
+"use client"; // this is a client component
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Button from "../../common/Button";
@@ -68,11 +69,7 @@ const About = () => {
 						href='https://www.linkedin.com/in/joaquinmussi/'
 						blank={true}
 					/>
-					<Button
-						title='Ver CV'
-						href='https://www.linkedin.com/in/joaquinmussi/overlay/1635496971541/single-media-viewer/?profileId=ACoAAC02pwQBbNVRGKzh4Vf6UOcbHMXkNtJkn8U'
-						blank={true}
-					/>
+					<Button title='Ver CV' href='/CV' />
 				</div>
 			</div>
 		</motion.section>

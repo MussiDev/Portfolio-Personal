@@ -1,3 +1,4 @@
+"use client"; // this is a client component
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AiOutlineArrowUp } from "react-icons/ai";

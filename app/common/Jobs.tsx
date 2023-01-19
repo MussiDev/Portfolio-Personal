@@ -1,5 +1,6 @@
+"use client"; // this is a client component
 import React from "react";
-import jobsItem from "../entities/jobsItem";
+import jobsItem from "../../entities/jobsItem";
 import { motion } from "framer-motion";
 
 const Jobs = (props: jobsItem) => {

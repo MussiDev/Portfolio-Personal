@@ -1,6 +1,7 @@
+"use client"; // this is a client component
 import Link from "next/link";
 import React from "react";
-import button from "../entities/button";
+import button from "../../entities/button";
 import { motion } from "framer-motion";
 import { FaArrowDown } from "react-icons/fa";
 

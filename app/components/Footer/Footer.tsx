@@ -1,3 +1,4 @@
+"use client"; // this is a client component
 import React from "react";
 import IconLink from "../../common/IconLink";
 

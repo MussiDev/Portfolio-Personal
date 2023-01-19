@@ -1,3 +1,4 @@
+"use client"; // this is a client component
 import React, { useRef, useState } from "react";
 import Title from "../../common/Title";
 import emailjs from "@emailjs/browser";

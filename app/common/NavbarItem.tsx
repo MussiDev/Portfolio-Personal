@@ -1,6 +1,7 @@
+"use client"; // this is a client component
 import { Link } from "react-scroll";
 import React from "react";
-import navbarItem from "../entities/navbarItem";
+import navbarItem from "../../entities/navbarItem";
 import { motion } from "framer-motion";
 const NavbarItem = (props: navbarItem) => {
 	const { link, text } = props;

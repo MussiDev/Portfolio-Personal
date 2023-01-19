@@ -1,5 +1,6 @@
+"use client"; // this is a client component
 import React from "react";
-import projectItem from "../entities/projectItem";
+import projectItem from "../../entities/projectItem";
 import Button from "./Button";
 import { motion } from "framer-motion";
 

@@ -40,6 +40,9 @@
 html {
 	font-family: "Poppins", sans-serif;
 }
+li {
+	color: #fff;
+}
 @tailwind components;
 @tailwind utilities;
 

@@ -1,5 +1,6 @@
+"use client"; // this is a client component
 import React from "react";
-import button from "../entities/button";
+import button from "../../entities/button";
 import { Link } from "react-scroll";
 import LinkItem from "./LinkItem";
 import { motion } from "framer-motion";

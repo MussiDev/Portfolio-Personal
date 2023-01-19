@@ -1,10 +1,11 @@
+"use client"; // this is a client component
 import React, { useState, useEffect } from "react";
 import NavbarItem from "../../common/NavbarItem";
-import items from "../../api/navbarItems.json";
+import items from "../../../api/navbarItems.json";
 import { FaDev } from "react-icons/fa";
 import Link from "next/link";
 import IconLink from "../../common/IconLink";
-import navbarItem from "../../entities/navbarItem";
+import navbarItem from "../../../entities/navbarItem";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
