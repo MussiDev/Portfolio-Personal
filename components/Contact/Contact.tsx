@@ -74,7 +74,7 @@ const Contact = () => {
 					<div className='mb-4 flex flex-col gap-4'>
 						<label className='text-lg font-bold'>Name</label>
 						<input
-							className=' appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:shadow-outline'
+							className=' appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline'
 							id='name'
 							type='text'
 							name='user_name'
@@ -85,7 +85,7 @@ const Contact = () => {
 					<div className='mb-4 flex flex-col gap-4'>
 						<label className='text-lg font-bold'>Email</label>
 						<input
-							className=' appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:shadow-outline'
+							className=' appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline'
 							id='email'
 							type='email'
 							name='user_email'
@@ -98,7 +98,7 @@ const Contact = () => {
 						<textarea
 							name='message'
 							required
-							className=' min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:shadow-outline'
+							className=' min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline'
 						/>
 					</div>
 					{token && (
