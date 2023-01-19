@@ -73,7 +73,7 @@ const Experience = () => {
 							alt='styled'
 							key='key3'
 							src='image/styled.png'
-							className='h-16 w-16 hover:scale-125 duration-700'
+							className='h-16 w-20 hover:scale-125 duration-700'
 						/>,
 						<SiFramer
 							key='key4'
