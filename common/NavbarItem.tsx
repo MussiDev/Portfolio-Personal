@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "react-scroll";
 import React from "react";
 import navbarItem from "../entities/navbarItem";
 import { motion } from "framer-motion";
@@ -11,7 +11,15 @@ const NavbarItem = (props: navbarItem) => {
 				transition: { duration: 0.2 },
 				color: "#c2410c",
 			}}>
-			<Link href={link}>{text}</Link>
+			<Link
+				to={link}
+				spy={true}
+				smooth={true}
+				offset={-70}
+				duration={1000}
+				className='cursor-pointer'>
+				{text}
+			</Link>
 		</motion.li>
 	);
 };

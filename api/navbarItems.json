@@ -1,22 +1,22 @@
 [
 	{
-		"link": "/",
+		"link": "home",
 		"text": "Home"
 	},
 	{
-		"link": "/#about",
+		"link": "about",
 		"text": "About Me"
 	},
 	{
-		"link": "/#projects",
+		"link": "projects",
 		"text": "Projects"
 	},
 	{
-		"link": "/#experience",
+		"link": "experience",
 		"text": "Experience"
 	},
 	{
-		"link": "/#contactme",
+		"link": "contactme",
 		"text": "Contact me"
 	}
 ]
