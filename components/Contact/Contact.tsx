@@ -10,6 +10,8 @@ const Contact = () => {
 	const form = useRef<HTMLFormElement | null>(null);
 	const captchaRef = useRef<ReCAPTCHA | null>(null);
 
+	const token = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
+
 	const sendEmail = (e: React.MouseEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (captchaRef.current?.getValue()) {
@@ -107,15 +109,15 @@ const Contact = () => {
 							className=' min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:shadow-outline'
 						/>
 					</div>
-					<div className='py-4 '>
-						{process.env.NEXT_PUBLIC_FIRSTCAPTCHA && (
+					{token && (
+						<div className='py-4 '>
 							<ReCAPTCHA
 								ref={captchaRef}
-								sitekey={process.env.NEXT_PUBLIC_FIRSTCAPTCHA}
+								sitekey={token}
 								className='g-recaptcha'
 							/>
-						)}
-					</div>
+						</div>
+					)}
 					{messageErrorCaptcha && (
 						<h3 className='py-4 text-center'>Please, accept catcha</h3>
 					)}
