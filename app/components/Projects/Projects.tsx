@@ -28,6 +28,7 @@ const Projects = () => {
 							className='text-cyan-500 hover:scale-125 duration-700'
 						/>,
 						<img
+							alt='materialize'
 							key='key3'
 							src='image/materialize.png'
 							className=' w-16 h-8 hover:scale-125 duration-700'

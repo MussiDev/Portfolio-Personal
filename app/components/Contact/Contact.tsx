@@ -73,7 +73,9 @@ const Contact = () => {
 				transition={{ duration: 1 }}>
 				<form className='py-6' ref={form} onSubmit={sendEmail}>
 					<div className='mb-4 flex flex-col gap-4'>
-						<label className='text-lg font-bold'>Name</label>
+						<label className='text-lg font-bold' htmlFor='name'>
+							Name
+						</label>
 						<input
 							className=' appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black'
 							id='name'
@@ -84,7 +86,9 @@ const Contact = () => {
 						/>
 					</div>
 					<div className='mb-4 flex flex-col gap-4'>
-						<label className='text-lg font-bold'>Email</label>
+						<label className='text-lg font-bold' htmlFor='email'>
+							Email
+						</label>
 						<input
 							className=' appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black'
 							id='email'
@@ -95,7 +99,9 @@ const Contact = () => {
 						/>
 					</div>
 					<div className='mb-4 flex flex-col gap-4'>
-						<label className='text-lg font-bold'>Mensaje</label>
+						<label className='text-lg font-bold' htmlFor='mensaje'>
+							Mensaje
+						</label>
 						<textarea
 							name='message'
 							required

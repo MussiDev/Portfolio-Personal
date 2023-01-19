@@ -70,9 +70,10 @@ const Experience = () => {
 							className='text-cyan-500 hover:scale-125 duration-700'
 						/>,
 						<img
+							alt='styled'
 							key='key3'
 							src='image/styled.png'
-							className=' w-16 hover:scale-125 duration-700'
+							className='h-16 w-16 hover:scale-125 duration-700'
 						/>,
 						<SiFramer
 							key='key4'
@@ -88,9 +89,10 @@ const Experience = () => {
 					position='Python Developer'
 					icons={[
 						<img
+							alt='python'
 							key='key'
 							src='image/python.png'
-							className=' w-12 hover:scale-125 duration-700'
+							className='h-12 w-12 hover:scale-125 duration-700'
 						/>,
 					]}
 					company='Hotel Costa Azul'

@@ -37,7 +37,7 @@ const Navbar = () => {
 				}}
 				transition={{ duration: 0.8 }}>
 				<Link href='/' className='flex items-center gap-2 font-semibold'>
-					<FaDev className='cursor-pointer' />
+					<FaDev className='cursor-pointer' size={25} />
 					Joaquín Mussi
 				</Link>
 			</motion.div>
