@@ -24,12 +24,12 @@ const Experience = () => {
 						<SiNextdotjs
 							key='key'
 							size={50}
-							className='text-black bg-white rounded-full  hover:scale-125 duration-700 '
+							className='text-black rounded-full  hover:scale-125 duration-700 bg-white'
 						/>,
 						<SiChakraui
 							key='key2'
 							size={50}
-							className='text-cyan-500 bg-white rounded-full hover:scale-125 duration-700'
+							className='text-cyan-500  rounded-full hover:scale-125 duration-700 bg-white'
 						/>,
 						<FaSass
 							key='key3'

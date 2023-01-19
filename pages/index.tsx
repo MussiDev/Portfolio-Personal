@@ -6,6 +6,7 @@ import Projects from "../components/Projects/Projects";
 import Experience from "../components/Experience/Experience";
 import Contact from "../components/Contact/Contact";
 import Arrow from "../common/Arrow";
+import Footer from "../components/Footer/Footer";
 
 const Index = () => {
 	return (
@@ -24,6 +25,7 @@ const Index = () => {
 				<Experience />
 				<Contact />
 				<Arrow />
+				<Footer />
 			</main>
 		</>
 	);
