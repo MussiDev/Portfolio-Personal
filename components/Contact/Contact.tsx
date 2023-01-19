@@ -64,7 +64,7 @@ const Contact = () => {
 	};
 	return (
 		<section
-			className='max-w-[1240px] m-auto px-4   flex flex-col items-center justify-center'
+			className='max-w-[1240px] m-auto px-4 py-16 flex flex-col items-center justify-center'
 			id='contactme'>
 			<Title title='Do you like contact me?' color='orange-700' />
 			<div className='w-full max-w-xs '>

@@ -53,4 +53,7 @@ html {
 	#top {
 		@apply fixed bottom-10 right-6 z-20 bg-orange-700 p-2 rounded-full cursor-pointer;
 	}
+	#icons {
+		@apply flex flex-wrap gap-6 items-center md:flex-nowrap;
+	}
 }

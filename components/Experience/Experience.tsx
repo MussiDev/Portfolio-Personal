@@ -14,7 +14,7 @@ import Title from "../../common/Title";
 const Experience = () => {
 	return (
 		<section
-			className='max-w-[1240px] m-auto px-4 md:h-screen py-16'
+			className='max-w-[1240px] m-auto px-4 md:h-screen py-16 mt-20'
 			id='experience'>
 			<Title title='Experience' color='orange-700' />
 			<div className='flex flex-col gap-6 pt-6'>

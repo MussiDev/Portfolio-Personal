@@ -4,7 +4,7 @@ import IconLink from "../../common/IconLink";
 const Footer = () => {
 	return (
 		<footer className='max-w-[1240px] m-auto px-4 py-8 flex flex-col items-center gap-8 text-4xl'>
-			<div className='flex'>
+			<div className='flex gap-2'>
 				<IconLink to='https://github.com/MussiDev' icon='github' />
 				<IconLink
 					to='https://www.linkedin.com/in/joaquinmussi/'

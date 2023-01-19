@@ -10,7 +10,7 @@ const Main = () => {
 		delaySpeed: 2000,
 	});
 	return (
-		<section className='w-full h-screen text-center' id='home'>
+		<section className='w-full h-screen text-center py-16' id='home'>
 			<div className='max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center'>
 				<div className='flex flex-col items-center'>
 					<p className='uppercase text-lg tracking-widest text-gray-300'>

@@ -7,7 +7,7 @@ const Jobs = (props: jobsItem) => {
 		<section className='flex gap-6 flex-col md:flex md:items-center'>
 			<div className='grid md:flex gap-6'>
 				<h4>{position}</h4>
-				<div className='flex gap-6 items-center '>{icons}</div>
+				<div id='icons'>{icons}</div>
 			</div>
 			<div>
 				<h5 className='text-orange-700'>{company}</h5>
