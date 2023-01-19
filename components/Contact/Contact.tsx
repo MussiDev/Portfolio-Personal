@@ -2,13 +2,13 @@ import React, { useRef, useState } from "react";
 import Title from "../../common/Title";
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
-import ReCAPTCHA from "react-google-recaptcha";
+import ReCaptchaV2 from "react-google-recaptcha";
 import { motion } from "framer-motion";
 
 const Contact = () => {
 	const [messageErrorCaptcha, setMessageErrorCaptcha] = useState(false);
 	const form = useRef<HTMLFormElement | null>(null);
-	const captchaRef = useRef<ReCAPTCHA | null>(null);
+	const captchaRef = useRef<ReCaptchaV2 | null>(null);
 
 	const token = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
 
@@ -111,7 +111,7 @@ const Contact = () => {
 					</div>
 					{token && (
 						<div className='py-4 '>
-							<ReCAPTCHA
+							<ReCaptchaV2
 								ref={captchaRef}
 								sitekey={token}
 								className='g-recaptcha'
