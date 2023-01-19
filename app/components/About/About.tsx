@@ -69,7 +69,7 @@ const About = () => {
 						href='https://www.linkedin.com/in/joaquinmussi/'
 						blank={true}
 					/>
-					<Button title='Ver CV' href='/CV' />
+					<Button title='Ver CV' href='pdf.pdf' blank={true} />
 				</div>
 			</div>
 		</motion.section>
