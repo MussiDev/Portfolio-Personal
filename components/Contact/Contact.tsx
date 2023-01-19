@@ -6,63 +6,55 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { motion } from "framer-motion";
 
 const Contact = () => {
-	const [messageErrorCaptcha, setMessageErrorCaptcha] = useState(false);
+	const [verifyCaptcha, setVerifyCaptcha] = useState(false);
 	const form = useRef<HTMLFormElement | null>(null);
-	const captchaRef = useRef<ReCAPTCHA | null>(null);
 
 	const token = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
-
+	const onChange = () => {
+		setVerifyCaptcha(true);
+	};
 	const sendEmail = (e: React.MouseEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		if (captchaRef.current?.getValue()) {
-			if (
-				form.current &&
-				process.env.NEXT_PUBLIC_SERVICE_ID &&
-				process.env.NEXT_PUBLIC_TEMPLATE_ID &&
-				process.env.NEXT_PUBLIC_PUBLIC_KEY
-			) {
-				emailjs
-					.sendForm(
-						process.env.NEXT_PUBLIC_SERVICE_ID,
-						process.env.NEXT_PUBLIC_TEMPLATE_ID,
-						form.current,
-						process.env.NEXT_PUBLIC_PUBLIC_KEY
-					)
-					.then(() => {
-						Swal.fire({
-							position: "center",
-							background: "rgb(30 41 59)",
-							icon: "success",
-							text: "Thanks! I will contact you as soon as possible! ;)",
-							showConfirmButton: false,
-							timer: 4000,
-							color: "rgb(194 65 12)",
-							timerProgressBar: true,
-						});
-					})
-					.catch(() => {
-						Swal.fire({
-							position: "center",
-							background: "rgb(30 41 59)",
-							icon: "error",
-							title: "Oops...",
-							text: "Something went wrong!",
-							showConfirmButton: false,
-							timer: 4000,
-							color: "rgb(194 65 12)",
-							timerProgressBar: true,
-						});
-					});
-			}
-			captchaRef.current.reset();
-		} else {
-			setMessageErrorCaptcha(true);
-			setTimeout(() => {
-				setMessageErrorCaptcha(false);
-			}, 3000);
-			return;
-		}
 
+		if (
+			form.current &&
+			process.env.NEXT_PUBLIC_SERVICE_ID &&
+			process.env.NEXT_PUBLIC_TEMPLATE_ID &&
+			process.env.NEXT_PUBLIC_PUBLIC_KEY
+		) {
+			emailjs
+				.sendForm(
+					process.env.NEXT_PUBLIC_SERVICE_ID,
+					process.env.NEXT_PUBLIC_TEMPLATE_ID,
+					form.current,
+					process.env.NEXT_PUBLIC_PUBLIC_KEY
+				)
+				.then(() => {
+					Swal.fire({
+						position: "center",
+						background: "rgb(30 41 59)",
+						icon: "success",
+						text: "Thanks! I will contact you as soon as possible! ;)",
+						showConfirmButton: false,
+						timer: 4000,
+						color: "rgb(194 65 12)",
+						timerProgressBar: true,
+					});
+				})
+				.catch(() => {
+					Swal.fire({
+						position: "center",
+						background: "rgb(30 41 59)",
+						icon: "error",
+						title: "Oops...",
+						text: "Something went wrong!",
+						showConfirmButton: false,
+						timer: 4000,
+						color: "rgb(194 65 12)",
+						timerProgressBar: true,
+					});
+				});
+		}
 		e.currentTarget.reset();
 	};
 	return (
@@ -112,21 +104,20 @@ const Contact = () => {
 					{token && (
 						<div className='py-4 '>
 							<ReCAPTCHA
-								ref={captchaRef}
+								onChange={onChange}
 								sitekey={token}
 								className='g-recaptcha'
 							/>
 						</div>
 					)}
-					{messageErrorCaptcha && (
-						<h3 className='py-4 text-center'>Please, accept catcha</h3>
-					)}
 					<div className='flex items-center justify-center'>
-						<input
-							type='submit'
-							value='Send'
-							className='text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full'
-						/>
+						{verifyCaptcha && (
+							<input
+								type='submit'
+								value='Send'
+								className='text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full'
+							/>
+						)}
 					</div>
 				</form>
 			</motion.div>
