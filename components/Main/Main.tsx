@@ -22,7 +22,12 @@ const Main = () => {
 						I’m dedicated on building responsive applications focusing in the
 						<b> scalability, clean architecture and good practises. </b>
 					</p>
-					<Button title='More Information' icon='arrowDown' href='#about' />
+					<Button
+						title='More Information'
+						icon='arrowDown'
+						href='about'
+						more={true}
+					/>
 				</div>
 			</div>
 		</section>

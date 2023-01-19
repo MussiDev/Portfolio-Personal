@@ -3,5 +3,6 @@ interface button {
 	icon?: string;
 	href: string;
 	blank?: boolean;
+	more?: boolean;
 }
 export default button;
