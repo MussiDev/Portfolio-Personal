@@ -15,14 +15,20 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 				/>
 				<meta name='robots' content='index, follow' />
 				<meta name='author' content='Joaquín Mussi' />
-				<link rel='icon' href='/favicon.ico' />
-
 				<meta name='copyright' content='Joaquín Mussi' />
 				<meta
 					name='keywords'
 					content='portfolio, joaquin, mussi, joaquin mussi'
 				/>
-				<meta name='theme-color' content="'rgb(30 41 59)" />
+				<meta name='theme-color' content='#3367D6' />
+				<meta name='msapplication-TileColor' content='#3367D6' />
+				<meta name='msapplication-navbutton-color' content='#3367D6' />
+				<meta name='apple-mobile-web-app-status-bar-style' content='black' />
+				<meta name='apple-mobile-web-app-title' content='Joaquín Mussi - Dev' />
+				<meta name='apple-mobile-web-app-capable' content='yes' />
+				<link rel='manifest' href='/manifest.json' />
+				<link rel='icon' href='/favicon.ico' />
+				<link rel='apple-touch-icon' href='/favicon.ico' />
 			</head>
 			<body className='text-white bg-slate-800 '>
 				{children}

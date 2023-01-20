@@ -1,0 +1,19 @@
+{
+	"short_name": "Portfolio",
+	"name": "Joaquín Mussi Portfolio",
+	"icons": [
+		{
+			"src": "/favicon.ico",
+			"type": "image/png",
+			"sizes": "512x512",
+			"purpose": "any maskable"
+		}
+	],
+	"start_url": ".",
+	"scope": "/",
+	"background_color": "#3367D6",
+	"display": "standalone",
+	"theme_color": "#3367D6",
+	"description": "Portfolio personal de Joaquín Mussi",
+	"orientation": "any"
+}
