@@ -7,7 +7,7 @@ const Jobs = (props: jobsItem) => {
 	const { position, company, time, description, icons } = props;
 	return (
 		<motion.section
-			className='flex gap-6 flex-col md:flex '
+			className='flex gap-2 flex-col md:flex '
 			initial={{ opacity: 0, y: -100 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 1.5 }}
@@ -17,7 +17,7 @@ const Jobs = (props: jobsItem) => {
 				<div id='icons'>{icons}</div>
 			</div>
 			<div>
-				<h5 className='text-orange-700'>{company}</h5>
+				<h1 className='text-orange-700 text-2xl'>{company}</h1>
 				<span>/ {time}</span>
 				<p>{description}</p>
 			</div>
