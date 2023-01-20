@@ -15,7 +15,7 @@ import { motion } from "framer-motion";
 const Experience = () => {
 	return (
 		<motion.section
-			className='max-w-[1240px] m-auto px-4 md:h-screen py-16 mt-20'
+			className='max-w-[1240px] m-auto px-4 md:h-screen py-16 mt-20 md:mt-32'
 			id='experience'
 			initial={{ opacity: 0 }}
 			whileInView={{ opacity: 1 }}
