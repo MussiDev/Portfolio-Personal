@@ -1,3 +1,4 @@
+import { fontFamily } from "tailwindcss/defaultTheme";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: [
@@ -7,6 +8,9 @@ module.exports = {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				sans: ["var(--font-poppins)", ...fontFamily.sans],
+			},
 			boxShadow: {
 				"3xl": "1px 3px 29px -8px rgba(242,79,15,1)",
 			},

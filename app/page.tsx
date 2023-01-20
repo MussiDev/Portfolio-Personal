@@ -1,17 +1,24 @@
 "use client"; // this is a client component
 import React from "react";
 import "../styles/globals.css";
-import About from "./components/About/About";
-import Main from "./components/Main/Main";
-import Projects from "./components/Projects/Projects";
-import Experience from "./components/Experience/Experience";
-import Contact from "./components/Contact/Contact";
-import Arrow from "./common/Arrow";
-import Navbar from "./components/Navbar/Navbar";
+import dynamic from "next/dynamic";
+import { Poppins } from "@next/font/google";
+const About = dynamic(() => import("./components/About/About"));
+const Main = dynamic(() => import("./components/Main/Main"));
+const Projects = dynamic(() => import("./components/Projects/Projects"));
+const Experience = dynamic(() => import("./components/Experience/Experience"));
+const Contact = dynamic(() => import("./components/Contact/Contact"));
+const Arrow = dynamic(() => import("./common/Arrow"));
+const Navbar = dynamic(() => import("./components/Navbar/Navbar"));
 
+const poppins = Poppins({
+	weight: ["300", "500", "700"],
+	style: ["normal"],
+	variable: "--font-poppins",
+});
 const Home = () => {
 	return (
-		<main>
+		<main className={`${poppins.variable} font-sans`}>
 			<Navbar />
 			<Main />
 			<About />
