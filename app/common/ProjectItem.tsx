@@ -27,7 +27,7 @@ const ProjectItem = (props: projectItem) => {
 				/>
 			</motion.div>
 			<p className='py-4 h-24 max-h-24 text-justify text-lg'>{paragraph}</p>
-			<span className='flex justify-center items-center gap-4'>{icon}</span>
+			<p className='flex justify-center items-center gap-4'>{icon}</p>
 			<div className='flex items-center justify-center gap-4 py-4'>
 				<Button title='Demo' href={page} blank={true} />
 				<Button title='Code' href={github} blank={true} />
