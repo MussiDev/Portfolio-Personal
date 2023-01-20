@@ -13,7 +13,7 @@ const Navbar = () => {
 	const [showIcons, setShowIcons] = useState(false);
 
 	useEffect(() => {
-		window.innerWidth > 768 ? setShowIcons(true) : setShowIcons(false);
+		window.innerWidth < 768 ? setShowIcons(true) : setShowIcons(false);
 		const handleShadow = () => {
 			if (window.scrollY) {
 				setShadow(true);
