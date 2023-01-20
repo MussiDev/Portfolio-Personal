@@ -13,7 +13,7 @@ const Jobs = (props: jobsItem) => {
 			transition={{ duration: 1.5 }}
 			viewport={{ once: true }}>
 			<div className='grid md:flex md:items-center gap-6'>
-				<h4>{position}</h4>
+				<h1 className='text-3xl'>{position}</h1>
 				<div id='icons'>{icons}</div>
 			</div>
 			<div>
