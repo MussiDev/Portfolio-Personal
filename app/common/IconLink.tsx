@@ -13,7 +13,7 @@ const IconLink = (props: iconLink) => {
 				transition: { duration: 0.2 },
 				color: "#F24F0F",
 			}}>
-			<Link href={to} target='_blank'>
+			<Link href={to} target='_blank' aria-label='social'>
 				{icon === "github" ? (
 					<FaGithub />
 				) : (
