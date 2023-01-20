@@ -7,12 +7,12 @@ const Jobs = (props: jobsItem) => {
 	const { position, company, time, description, icons } = props;
 	return (
 		<motion.section
-			className='flex gap-6 flex-col md:flex md:items-center'
+			className='flex gap-6 flex-col md:flex '
 			initial={{ opacity: 0, y: -100 }}
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 1.5 }}
 			viewport={{ once: true }}>
-			<div className='grid md:flex gap-6'>
+			<div className='grid md:flex md:items-center gap-6'>
 				<h4>{position}</h4>
 				<div id='icons'>{icons}</div>
 			</div>

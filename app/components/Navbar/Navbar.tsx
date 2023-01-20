@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import NavbarItem from "../../common/NavbarItem";
 import items from "../../../api/navbarItems.json";
 import { FaDev } from "react-icons/fa";
-import Link from "next/link";
+import { Link } from "react-scroll";
 import IconLink from "../../common/IconLink";
 import navbarItem from "../../../entities/navbarItem";
 import { motion } from "framer-motion";
@@ -36,8 +36,14 @@ const Navbar = () => {
 					scale: 1,
 				}}
 				transition={{ duration: 0.8 }}>
-				<Link href='/' className='flex items-center gap-2 font-semibold'>
-					<FaDev className='cursor-pointer' size={25} />
+				<Link
+					to='home'
+					spy={true}
+					smooth={true}
+					offset={-70}
+					duration={1000}
+					className='flex items-center gap-2 font-semibold cursor-pointer'>
+					<FaDev size={25} />
 					Joaquín Mussi
 				</Link>
 			</motion.div>
