@@ -15,7 +15,7 @@ const LinkItem = (props: button) => {
 				whileHover={{
 					scale: 1.1,
 					transition: { duration: 0.4 },
-					color: "#c2410c",
+					color: "#F24F0F",
 					backgroundColor: "#fff",
 				}}
 				whileTap={{ scale: 0.9, x: "-5px", y: "5px" }}>

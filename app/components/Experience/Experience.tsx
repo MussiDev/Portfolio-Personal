@@ -28,7 +28,7 @@ const Experience = () => {
 						<SiNextdotjs
 							key='key'
 							size={50}
-							className='text-black rounded-full  hover:scale-125 duration-700 bg-white'
+							className='text-black rounded-full hover:scale-125 duration-700 bg-white'
 						/>,
 						<SiChakraui
 							key='key2'

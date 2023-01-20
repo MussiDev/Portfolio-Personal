@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 const ProjectItem = (props: projectItem) => {
 	const { src, github, page, paragraph, icon } = props;
 	return (
-		<section className='shadow-sky-900 p-4 shadow-xl rounded-xl'>
+		<section className='shadow-orange-700 p-4 rounded-xl shadow-3xl'>
 			<motion.div
 				className='div'
 				initial={{ x: -200, opacity: 0 }}

@@ -10,7 +10,7 @@ const NavbarItem = (props: navbarItem) => {
 			whileHover={{
 				scale: 1.1,
 				transition: { duration: 0.2 },
-				color: "#c2410c",
+				color: "#F24F0F",
 			}}>
 			<Link
 				to={link}
