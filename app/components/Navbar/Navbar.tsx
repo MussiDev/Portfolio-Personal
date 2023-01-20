@@ -10,7 +10,10 @@ import { motion } from "framer-motion";
 
 const Navbar = () => {
 	const [shadow, setShadow] = useState(false);
+	const [showIcons, setShowIcons] = useState(false);
+
 	useEffect(() => {
+		window.innerWidth > 768 ? setShowIcons(true) : setShowIcons(false);
 		const handleShadow = () => {
 			if (window.scrollY) {
 				setShadow(true);
@@ -61,21 +64,23 @@ const Navbar = () => {
 						<NavbarItem key={k} link={item.link} text={item.text} />
 					))}
 			</motion.ul>
-			<motion.div
-				className='flex items-center gap-2 md:hidden'
-				initial={{ x: 3500, opacity: 0, scale: 0.5 }}
-				animate={{
-					x: 0,
-					opacity: 1,
-					scale: 1,
-				}}
-				transition={{ duration: 0.8 }}>
-				<IconLink to='https://github.com/MussiDev' icon='github' />
-				<IconLink
-					to='https://www.linkedin.com/in/joaquinmussi/'
-					icon='linkedin'
-				/>
-			</motion.div>
+			{showIcons && (
+				<motion.div
+					className='flex items-center gap-2'
+					initial={{ x: 3500, opacity: 0, scale: 0.5 }}
+					animate={{
+						x: 0,
+						opacity: 1,
+						scale: 1,
+					}}
+					transition={{ duration: 0.8 }}>
+					<IconLink to='https://github.com/MussiDev' icon='github' />
+					<IconLink
+						to='https://www.linkedin.com/in/joaquinmussi/'
+						icon='linkedin'
+					/>
+				</motion.div>
+			)}
 		</header>
 	);
 };
