@@ -11,6 +11,7 @@ const Button = (props: button) => {
 		<>
 			{more ? (
 				<Link
+					href={href}
 					to={href}
 					spy={true}
 					smooth={true}

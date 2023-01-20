@@ -13,6 +13,7 @@ const NavbarItem = (props: navbarItem) => {
 				color: "#F24F0F",
 			}}>
 			<Link
+				href={link}
 				to={link}
 				spy={true}
 				smooth={true}

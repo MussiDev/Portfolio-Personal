@@ -40,6 +40,7 @@ const Navbar = () => {
 				}}
 				transition={{ duration: 0.8 }}>
 				<Link
+					href='home'
 					to='home'
 					spy={true}
 					smooth={true}
