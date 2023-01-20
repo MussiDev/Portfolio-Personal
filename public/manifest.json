@@ -9,6 +9,7 @@
 			"purpose": "any maskable"
 		}
 	],
+	"lang": "en",
 	"start_url": ".",
 	"scope": "/",
 	"background_color": "#3367D6",
