@@ -2,7 +2,6 @@
 import React from "react";
 import "../styles/globals.css";
 import dynamic from "next/dynamic";
-import { Poppins } from "@next/font/google";
 const About = dynamic(() => import("./components/About/About"));
 const Main = dynamic(() => import("./components/Main/Main"));
 const Projects = dynamic(() => import("./components/Projects/Projects"));
@@ -11,14 +10,9 @@ const Contact = dynamic(() => import("./components/Contact/Contact"));
 const Arrow = dynamic(() => import("./common/Arrow"));
 const Navbar = dynamic(() => import("./components/Navbar/Navbar"));
 
-const poppins = Poppins({
-	weight: ["300", "500", "700"],
-	style: ["normal"],
-	variable: "--font-poppins",
-});
 const Home = () => {
 	return (
-		<main className={`${poppins.variable} font-sans`}>
+		<main>
 			<Navbar />
 			<Main />
 			<About />
