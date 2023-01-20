@@ -92,7 +92,7 @@ const Experience = () => {
 							alt='python'
 							key='key'
 							src='image/python.png'
-							className='h-8 w-8 hover:scale-125 duration-700'
+							className='h-16 w-16 hover:scale-125 duration-700'
 						/>,
 					]}
 					company='Hotel Costa Azul'
