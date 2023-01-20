@@ -9,13 +9,13 @@ import { motion } from "framer-motion";
 const Projects = () => {
 	return (
 		<motion.section
-			className='max-w-[1240px] m-auto  px-4 md:h-screen py-16'
+			className='max-w-[1240px] m-auto  px-4 md:min-h-screen py-16'
 			id='projects'
 			initial={{ opacity: 0 }}
 			whileInView={{ opacity: 1 }}
 			transition={{ duration: 2 }}>
 			<Title title='Projects' color='orange-700' />
-			<div className='grid md:grid-cols-2 gap-8 py-4'>
+			<div className='grid md:grid-cols-2 lg:cols-3 gap-8 py-4'>
 				<ProjectItem
 					src='image/weather.png'
 					github='https://github.com/MussiDev/ClimaReactAPI'
