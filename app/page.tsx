@@ -14,7 +14,6 @@ const Navbar = dynamic(() => import("./components/Navbar/Navbar"));
 const Home = () => {
 	return (
 		<main>
-			<Script src='https://www.google.com/recaptcha/api.js' />
 			<Navbar />
 			<Main />
 			<About />
