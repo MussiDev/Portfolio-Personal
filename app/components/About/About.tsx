@@ -47,20 +47,21 @@ const About = () => {
 						className='text-orange-700 underline'>
 						La Mutual De Socios de AMR
 					</Link>
-					&nbsp; and I'm Computer Security Student at &nbsp;
+					&nbsp; and I'm studying Computer Security at &nbsp;
 					<Link
 						href='https://www.educacionit.com/'
 						target='_blank'
 						className='text-orange-700 underline'>
 						Educacion IT
 					</Link>
-					&nbsp;. I am a person that if there is something that he does not
-					know, he learns it. My passion by the technology, It took me to be
-					Computer Technician and I study web development self-taught, I studied
-					Systems Engineering( from 2020 to 2021 ) but I decided don´t follow
-					the carrer for to study on my own. Football lover and the programming.
-					I stand out for being a proactive person who tries to improve his way
-					of writing code on a daily basis.
+					&nbsp;. If I don't know any topic related to IT, I'm ready to learn
+					right away. My passion by the tech It took me to be Computer
+					Technician. I'm studying web development on my own and I started
+					Systems Engineering since 2020-2021 but I quit University because I
+					started to work and I decided follow the IT studies on my own.
+					Moreover, I love Football and programming too. I stand out like a
+					proactive person, who tries to improve my way of work and my knowledge
+					about writting code daily.
 				</motion.p>
 
 				<div className='flex justify-center gap-2 py-4 w-max'>

@@ -8,7 +8,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 				<title>Joaquín Mussi - Dev</title>
 				<meta charSet='utf-8' />
 				<meta content='width=device-width, initial-scale=1.0' name='viewport' />
-				<meta content='en' http-equiv='Content-Language' />
+				<meta content='en' httpEquiv='Content-Language' />
 				<meta
 					name='description'
 					content='Portfolio personal de Joaquín Mussi'
