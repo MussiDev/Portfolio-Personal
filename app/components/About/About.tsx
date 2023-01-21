@@ -56,7 +56,7 @@ const About = () => {
 						Educacion IT
 					</Link>
 					&nbsp;. If I don't know any topic related to IT, I'm ready to learn
-					right away. My passion by the tech It took me to be Computer
+					right away. My passion by the technology It took me to be Computer
 					Technician. I'm studying web development on my own and I started
 					Systems Engineering since 2020-2021 but I quit University because I
 					started to work and I decided follow the IT studies on my own.

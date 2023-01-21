@@ -30,6 +30,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 				<meta name='apple-mobile-web-app-title' content='Joaquín Mussi - Dev' />
 				<meta name='apple-mobile-web-app-capable' content='yes' />
 				<link rel='manifest' href='/manifest.json' />
+				<link rel='preload' href='styles/globals.css' />
 				<link rel='icon' href='/favicon.ico' />
 				<link rel='apple-touch-icon' href='/favicon.ico' />
 			</head>
