@@ -1,5 +1,5 @@
 "use client"; // this is a client component
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "../styles/globals.css";
 import dynamic from "next/dynamic";
 const About = dynamic(() => import("./components/About/About"), { ssr: false });
@@ -19,24 +19,15 @@ const Navbar = dynamic(() => import("./components/Navbar/Navbar"), {
 });
 
 const Home = () => {
-	const [load, setLoad] = useState(true);
-	useEffect(() => {
-		setLoad(true);
-	}, []);
-
 	return (
 		<main>
 			<Navbar />
 			<Main />
-			{load && (
-				<>
-					<About />
-					<Projects />
-					<Experience />
-					<Contact />
-					<Arrow />
-				</>
-			)}
+			<About />
+			<Projects />
+			<Experience />
+			<Contact />
+			<Arrow />
 		</main>
 	);
 };
