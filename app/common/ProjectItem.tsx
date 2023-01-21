@@ -2,7 +2,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import projectItem from "../../entities/projectItem";
-const Button = dynamic(() => import("./Button"));
+const Button = dynamic(() => import("./Button"), { ssr: false });
 import { motion } from "framer-motion";
 
 const ProjectItem = (props: projectItem) => {

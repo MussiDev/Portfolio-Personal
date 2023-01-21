@@ -1,8 +1,10 @@
 "use client"; // this is a client component
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-const NavbarItem = dynamic(() => import("../../common/NavbarItem"));
-const IconLink = dynamic(() => import("../../common/IconLink"));
+const NavbarItem = dynamic(() => import("../../common/NavbarItem"), {
+	ssr: false,
+});
+const IconLink = dynamic(() => import("../../common/IconLink"), { ssr: false });
 import { FaDev } from "react-icons/fa";
 import { Link } from "react-scroll";
 import { motion } from "framer-motion";

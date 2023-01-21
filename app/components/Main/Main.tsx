@@ -1,8 +1,8 @@
 "use client"; // this is a client component
 import React from "react";
 import dynamic from "next/dynamic";
-const Title = dynamic(() => import("../../common/Title"));
-const Button = dynamic(() => import("../../common/Button"));
+const Title = dynamic(() => import("../../common/Title"), { ssr: false });
+const Button = dynamic(() => import("../../common/Button"), { ssr: false });
 import { useTypewriter } from "react-simple-typewriter";
 import { motion } from "framer-motion";
 

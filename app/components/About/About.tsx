@@ -2,8 +2,8 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
-const Title = dynamic(() => import("../../common/Title"));
-const Button = dynamic(() => import("../../common/Button"));
+const Title = dynamic(() => import("../../common/Title"), { ssr: false });
+const Button = dynamic(() => import("../../common/Button"), { ssr: false });
 import { motion } from "framer-motion";
 const About = () => {
 	const [ageToday, setAgeToday] = useState(0);

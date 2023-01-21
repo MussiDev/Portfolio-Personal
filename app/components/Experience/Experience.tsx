@@ -10,8 +10,8 @@ import {
 	SiTailwindcss,
 } from "react-icons/si";
 import { motion } from "framer-motion";
-const Jobs = dynamic(() => import("../../common/Jobs"));
-const Title = dynamic(() => import("../../common/Title"));
+const Jobs = dynamic(() => import("../../common/Jobs"), { ssr: false });
+const Title = dynamic(() => import("../../common/Title"), { ssr: false });
 
 const Experience = () => {
 	return (

@@ -3,7 +3,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import button from "../../entities/button";
 import { Link } from "react-scroll";
-const LinkItem = dynamic(() => import("./LinkItem"));
+const LinkItem = dynamic(() => import("./LinkItem"), {ssr: false});
 import { motion } from "framer-motion";
 import { FaArrowDown } from "react-icons/fa";
 const Button = (props: button) => {
