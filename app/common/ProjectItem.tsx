@@ -1,7 +1,8 @@
 "use client"; // this is a client component
 import React from "react";
+import dynamic from "next/dynamic";
 import projectItem from "../../entities/projectItem";
-import Button from "./Button";
+const Button = dynamic(() => import("./Button"));
 import { motion } from "framer-motion";
 
 const ProjectItem = (props: projectItem) => {

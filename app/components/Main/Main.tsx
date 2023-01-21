@@ -1,7 +1,8 @@
 "use client"; // this is a client component
 import React from "react";
-import Title from "../../common/Title";
-import Button from "../../common/Button";
+import dynamic from "next/dynamic";
+const Title = dynamic(() => import("../../common/Title"));
+const Button = dynamic(() => import("../../common/Button"));
 import { useTypewriter } from "react-simple-typewriter";
 import { motion } from "framer-motion";
 
@@ -30,7 +31,7 @@ const Main = () => {
 					<Title title='Joaquín Mussi' color='orange-700' />
 					<Title title={text} />
 					<p className='py-4 text-gray-300 sm:max-w-[70%] m-auto text-xl'>
-						I’m dedicated on building responsive applications focusing in the
+						I'm dedicated on building responsive applications focusing in the
 						<b> scalability, clean architecture and good practises. </b>
 					</p>
 					<Button title='About Me' icon='arrowDown' href='about' more={true} />

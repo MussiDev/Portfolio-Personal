@@ -1,6 +1,7 @@
 "use client"; // this is a client component
 import React from "react";
-import IconLink from "../../common/IconLink";
+import dynamic from "next/dynamic";
+const IconLink = dynamic(() => import("../../common/IconLink"));
 
 const Footer = () => {
 	return (

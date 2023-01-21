@@ -1,7 +1,6 @@
 "use client"; // this is a client component
 import React from "react";
 import "../styles/globals.css";
-import Script from "next/script";
 import dynamic from "next/dynamic";
 const About = dynamic(() => import("./components/About/About"));
 const Main = dynamic(() => import("./components/Main/Main"));

@@ -1,7 +1,8 @@
 "use client"; // this is a client component
 import React from "react";
-import Title from "../../common/Title";
-import ProjectItem from "../../common/ProjectItem";
+import dynamic from "next/dynamic";
+const Title = dynamic(() => import("../../common/Title"));
+const ProjectItem = dynamic(() => import("../../common/ProjectItem"));
 import { FaBootstrap, FaCss3, FaHtml5, FaJs, FaReact } from "react-icons/fa";
 import { SiChakraui } from "react-icons/si";
 import { motion } from "framer-motion";

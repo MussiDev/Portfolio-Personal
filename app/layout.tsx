@@ -1,5 +1,6 @@
 import React from "react";
-import Footer from "./components/Footer/Footer";
+import dynamic from "next/dynamic";
+const Footer = dynamic(() => import("./components/Footer/Footer"));
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (

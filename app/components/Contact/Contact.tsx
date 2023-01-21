@@ -1,9 +1,10 @@
 "use client"; // this is a client component
 import React, { useRef, useState } from "react";
-import Title from "../../common/Title";
+import dynamic from "next/dynamic";
+const Title = dynamic(() => import("../../common/Title"));
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
-import ReCAPTCHA from "react-google-recaptcha";
+import { ReCAPTCHA } from "react-google-recaptcha";
 import { motion } from "framer-motion";
 
 const Contact = () => {

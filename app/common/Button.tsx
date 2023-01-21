@@ -1,8 +1,9 @@
 "use client"; // this is a client component
 import React from "react";
+import dynamic from "next/dynamic";
 import button from "../../entities/button";
 import { Link } from "react-scroll";
-import LinkItem from "./LinkItem";
+const LinkItem = dynamic(() => import("./LinkItem"));
 import { motion } from "framer-motion";
 import { FaArrowDown } from "react-icons/fa";
 const Button = (props: button) => {

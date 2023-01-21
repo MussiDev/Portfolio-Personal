@@ -1,8 +1,9 @@
 "use client"; // this is a client component
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
-import Button from "../../common/Button";
-import Title from "../../common/Title";
+const Title = dynamic(() => import("../../common/Title"));
+const Button = dynamic(() => import("../../common/Button"));
 import { motion } from "framer-motion";
 const About = () => {
 	const [ageToday, setAgeToday] = useState(0);

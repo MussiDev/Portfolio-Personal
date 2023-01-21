@@ -1,4 +1,5 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import { DiDotnet } from "react-icons/di";
 import { FaReact, FaSass } from "react-icons/fa";
 import { TbCSharp } from "react-icons/tb";
@@ -8,9 +9,9 @@ import {
 	SiNextdotjs,
 	SiTailwindcss,
 } from "react-icons/si";
-import Jobs from "../../common/Jobs";
-import Title from "../../common/Title";
 import { motion } from "framer-motion";
+const Jobs = dynamic(() => import("../../common/Jobs"));
+const Title = dynamic(() => import("../../common/Title"));
 
 const Experience = () => {
 	return (
