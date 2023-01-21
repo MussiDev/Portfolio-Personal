@@ -1,8 +1,5 @@
 import React from "react";
 import dynamic from "next/dynamic";
-const Footer = dynamic(() => import("./components/Footer/Footer"), {
-	ssr: false,
-});
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
@@ -34,10 +31,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 				<link rel='icon' href='/favicon.ico' />
 				<link rel='apple-touch-icon' href='/favicon.ico' />
 			</head>
-			<body className='text-white bg-slate-800 '>
-				{children}
-				<Footer />
-			</body>
+			<body className='text-white bg-slate-800 '>{children}</body>
 		</html>
 	);
 };

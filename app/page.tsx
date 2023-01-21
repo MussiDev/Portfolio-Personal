@@ -17,6 +17,9 @@ const Arrow = dynamic(() => import("./common/Arrow"), { ssr: false });
 const Navbar = dynamic(() => import("./components/Navbar/Navbar"), {
 	ssr: false,
 });
+const Footer = dynamic(() => import("./components/Footer/Footer"), {
+	ssr: false,
+});
 
 const Home = () => {
 	return (
@@ -28,6 +31,7 @@ const Home = () => {
 			<Experience />
 			<Contact />
 			<Arrow />
+			<Footer />
 		</main>
 	);
 };
