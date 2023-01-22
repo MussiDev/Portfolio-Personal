@@ -20,6 +20,7 @@ const ProjectItem = (props: projectItem) => {
 				<motion.img
 					src={src}
 					id='img'
+					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 					alt='project'
 					loading='lazy'
 					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
