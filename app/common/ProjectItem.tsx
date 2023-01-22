@@ -22,9 +22,9 @@ const ProjectItem = (props: projectItem) => {
 					id='img'
 					sizes='(min-width: 1320px) 556px, (min-width: 780px) calc(44.23vw - 19px), calc(97.39vw - 44px)'
 					alt='project'
-					srcSet={`${src}-556.png 556w, 
-					${src}-1112.png 1112w,
-					${src}-1390.png 1390w`}
+					srcSet={`${src} 556w, 
+					${src} 1112w,
+					${src} 1390w`}
 					loading='lazy'
 					initial={{ objectPosition: "top" }}
 					whileHover={{
