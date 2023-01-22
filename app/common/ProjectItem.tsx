@@ -23,7 +23,6 @@ const ProjectItem = (props: projectItem) => {
 					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 					alt='project'
 					loading='lazy'
-					sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 					initial={{ objectPosition: "top" }}
 					whileHover={{
 						objectPosition: "bottom",
