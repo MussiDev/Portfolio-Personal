@@ -66,7 +66,7 @@ const Contact = () => {
 			transition={{ duration: 2 }}
 			className='max-w-[1240px] m-auto px-4 py-16 flex flex-col items-center justify-center'
 			id='contactme'>
-			<Title title='Do you like contact me?' color='orange-700' />
+			<Title title='Would you like contact me?' color='orange-700' />
 			<motion.div
 				className='w-full max-w-xs '
 				initial={{ opacity: 0, y: 200 }}
