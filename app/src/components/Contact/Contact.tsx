@@ -67,7 +67,7 @@ const Contact = () => {
 			initial={{ opacity: 0 }}
 			whileInView={{ opacity: 1 }}
 			transition={{ duration: 2 }}
-			className="max-w-[1240px] m-auto px-4 py-16 flex flex-col items-center justify-center"
+			className="max-w-[77.5rem] m-auto px-4 py-16 flex flex-col items-center justify-center"
 			id="contactme"
 		>
 			<Title title="Would you like contact me?" color="orange-700" />
@@ -112,7 +112,7 @@ const Contact = () => {
 							id="message"
 							name="message"
 							required
-							className=" min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black"
+							className=" min-h-[96px] max-h-56 appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black"
 						/>
 					</div>
 					{token && (

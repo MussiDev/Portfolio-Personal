@@ -1,5 +1,3 @@
-"use client"; // this is a client component
-
 import ProjectData from "../../../../entities/projects";
 import ProjectList from "../../../../api/projectsList.json";
 import React from "react";

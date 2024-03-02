@@ -1,0 +1,135 @@
+[
+	{
+		"company": "UnWrap",
+		"position": "Frontend Developer",
+		"icons": [
+			{
+				"name": "SiNextdotjs",
+				"classname": "text-black rounded-full hover:scale-125 duration-700 bg-white"
+			},
+			{
+				"name": "SiTailwindcss",
+				"classname": "text-cyan-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiTypescript",
+				"classname": "text-blue-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiRedux",
+				"classname": "text-purple-500 hover:scale-125 duration-700"
+			}
+		],
+		"time": "NOVEMBER 2023 - NOW",
+		"description": "We build your own app or website with modern design, accessible, efficient, trend technologies and SEO-friendly. Satisfying your clients with a modern app that includes everyone will help you increase your sales and be better indexed by web search engines in terms of accessibility principles and guidelines as per WCAG."
+	},
+	{
+		"company": "La Mutual de AMR",
+		"position": "Software Engineer",
+		"icons": [
+			{
+				"name": "SiNextdotjs",
+				"classname": "text-black rounded-full hover:scale-125 duration-700 bg-white"
+			},
+			{
+				"name": "SiTypescript",
+				"classname": "text-blue-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiChakraui",
+				"classname": "text-cyan-500  rounded-full hover:scale-125 duration-700 bg-white"
+			},
+			{
+				"name": "FaSass",
+				"classname": "text-pink-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "DiDotnet",
+				"classname": "hover:scale-125 duration-700 text-blue-400"
+			},
+			{
+				"name": "TbBrandCSharp",
+				"classname": "hover:scale-125 duration-700 text-white bg-purple-800 rounded-full p-"
+			}
+		],
+		"time": "NOVEMBER 2023 - NOW",
+		"description": ""
+	},
+	{
+		"position": "FullStack Developer",
+		"icons": [
+			{
+				"name": "SiNextdotjs",
+				"classname": "text-black rounded-full hover:scale-125 duration-700 bg-white"
+			},
+			{
+				"name": "SiTypescript",
+				"classname": "text-blue-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "DiDotnet",
+				"classname": "hover:scale-125 duration-700 text-blue-400"
+			},
+			{
+				"name": "TbBrandCSharp",
+				"classname": "hover:scale-125 duration-700 text-white bg-purple-800 rounded-full p-2"
+			}
+		],
+		"time": "AUGUST 2022 - NOVEMBER 2023",
+		"description": "I use ReactJS with NextJS - TypeScript - ChakraUI and SASS for styles. We apply SCRUM for agile and efficient work, CI/CD and Gitlab. We use JIRA for organized work. I participate in this projects: WSLaMedica ( Ecommerce ), MisInversiones ( Web to make investments ) and MutualData ( Web of massive data processing and visualization)."
+	},
+	{
+		"position": "Frontend Developer",
+		"icons": [
+			{
+				"name": "SiNextdotjs",
+				"classname": "text-black rounded-full hover:scale-125 duration-700 bg-white"
+			},
+			{
+				"name": "SiTypescript",
+				"classname": "text-blue-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiChakraui",
+				"classname": "text-cyan-500  rounded-full hover:scale-125 duration-700 bg-white"
+			},
+			{
+				"name": "FaSass",
+				"classname": "text-pink-500 hover:scale-125 duration-700"
+			}
+		],
+		"time": "JUNE 2022 - AUGUST 2022",
+		"description": "I work with ChakraUI and SASS for styles, adapting the web to different devices, I'm in charge of connecting the backend with the frontend. I participate in the backend by creating APIs. I use Postman for test endpoints. I modify old code made in CSHTML (HTML IN C#) and then migrate it to NextJs. I test components with Jest and I always respect the principles of solid and clean code allowing its reuse. I apply SCRUM for agile and efficient work (JIRA), CI/CD and Gitlab."
+	},
+	{
+		"position": "Front End Developer",
+		"icons": [
+			{
+				"name": "BiLogoReact",
+				"classname": "text-cyan-500  rounded-full hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiTailwindcss",
+				"classname": "text-cyan-500 hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiFramer",
+				"classname": "rounded-full hover:scale-125 duration-700"
+			}
+		],
+		"company": "IT Tech Group",
+		"time": "FEBRUARY 2022 - JULY 2022",
+		"description": "I used ReactJS, I designed with Styled Components and TailwindCSS adapting the web to different devices. I used Framer Motion and developed web pages according to UX/UI design. Some projects in which I participated: CRYPTGO, Reforce Infinity, and Sniper Bot."
+	},
+	{
+		"position": "Python Developer",
+		"icons": [
+			{
+				"name": "FaPython"
+			}
+		],
+		"company": "Hotel Costa Azul",
+		"time": "DECEMBER 2020 - JANUARY 2021",
+		"description": "My job was to participate in the development of an application. Tasks performed: simple login, store in a dictionary 2 previously registered users, creation of two modules that can be accessed depending on the type of privilege either manager or reception."
+	}
+]

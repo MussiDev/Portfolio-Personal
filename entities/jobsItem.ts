@@ -3,6 +3,6 @@ interface jobsItem {
 	company?: string;
 	time: string;
 	description: string;
-	icons: React.ReactNode;
+	icons: any[];
 }
 export default jobsItem;
