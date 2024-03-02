@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from "react";
 
-import { ReCAPTCHA } from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 import Swal from "sweetalert2";
 import dynamic from "next/dynamic";
 import emailjs from "@emailjs/browser";
