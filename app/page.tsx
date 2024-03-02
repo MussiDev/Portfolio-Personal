@@ -1,11 +1,6 @@
-import {
-	About,
-	Contact,
-	Experience,
-	Footer,
-	Main,
-	Navbar,
-} from "./src/components";
+"use client";
+
+import { About, Contact, Experience, Main } from "./src/components";
 
 import React from "react";
 
