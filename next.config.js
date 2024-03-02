@@ -2,9 +2,6 @@
 const nextConfig = {
 	reactStrictMode: true,
 	optimizeFonts: true,
-	experimental: {
-		appDir: true,
-	},
 };
 
 module.exports = nextConfig;
