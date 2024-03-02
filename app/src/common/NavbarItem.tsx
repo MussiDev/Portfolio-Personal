@@ -1,8 +1,10 @@
 "use client"; // this is a client component
+
 import { Link } from "react-scroll";
 import React from "react";
-import navbarItem from "../../entities/navbarItem";
 import { motion } from "framer-motion";
+import navbarItem from "../../../entities/navbarItem";
+
 const NavbarItem = (props: navbarItem) => {
 	const { link, text } = props;
 	return (
@@ -11,7 +13,8 @@ const NavbarItem = (props: navbarItem) => {
 				scale: 1.1,
 				transition: { duration: 0.2 },
 				color: "#F24F0F",
-			}}>
+			}}
+		>
 			<Link
 				href={link}
 				to={link}
@@ -19,7 +22,8 @@ const NavbarItem = (props: navbarItem) => {
 				smooth={true}
 				offset={-70}
 				duration={1000}
-				className='cursor-pointer'>
+				className="cursor-pointer"
+			>
 				{text}
 			</Link>
 		</motion.li>

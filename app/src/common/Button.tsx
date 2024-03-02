@@ -1,11 +1,15 @@
 "use client"; // this is a client component
-import React from "react";
-import dynamic from "next/dynamic";
-import button from "../../entities/button";
-import { Link } from "react-scroll";
-const LinkItem = dynamic(() => import("./LinkItem"), {ssr: false});
-import { motion } from "framer-motion";
+
 import { FaArrowDown } from "react-icons/fa";
+import { Link } from "react-scroll";
+import React from "react";
+import button from "../../../entities/button";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+
+const LinkItem = dynamic(() => import("./LinkItem"), {ssr: false});
+
+
 const Button = (props: button) => {
 	const { title, icon, href, blank, more } = props;
 	return (

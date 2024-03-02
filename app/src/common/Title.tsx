@@ -1,6 +1,7 @@
 "use client"; // this is a client component
+
 import React from "react";
-import title from "../../entities/title";
+import title from "../../../entities/title";
 
 const Title = (props: title) => {
 	const { title, color } = props;

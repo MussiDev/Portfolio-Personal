@@ -1,15 +1,18 @@
 "use client"; // this is a client component
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
+
+import { FaDev } from "react-icons/fa";
+import { Link } from "react-scroll";
 import dynamic from "next/dynamic";
+import items from "../../../../api/navbarItems.json";
+import { motion } from "framer-motion";
+import navbarItem from "../../../../entities/navbarItem";
+
 const NavbarItem = dynamic(() => import("../../common/NavbarItem"), {
 	ssr: false,
 });
 const IconLink = dynamic(() => import("../../common/IconLink"), { ssr: false });
-import { FaDev } from "react-icons/fa";
-import { Link } from "react-scroll";
-import { motion } from "framer-motion";
-import items from "../../../api/navbarItems.json";
-import navbarItem from "../../../entities/navbarItem";
 
 const Navbar = () => {
 	const [shadow, setShadow] = useState(false);
@@ -32,37 +35,41 @@ const Navbar = () => {
 				shadow
 					? "fixed w-full shadow-xl z-[100] ease-in-out duration-300 flex justify-between h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
 					: "fixed w-full z-[100] flex justify-between  h-16 px-10 text-lg backdrop-blur-md bg-slate-800"
-			}>
+			}
+		>
 			<motion.div
-				className='flex'
+				className="flex"
 				initial={{ x: -2500, opacity: 0, scale: 0.5 }}
 				animate={{
 					x: 0,
 					opacity: 1,
 					scale: 1,
 				}}
-				transition={{ duration: 0.8 }}>
+				transition={{ duration: 0.8 }}
+			>
 				<Link
-					href='home'
-					to='home'
+					href="home"
+					to="home"
 					spy={true}
 					smooth={true}
 					offset={-70}
 					duration={1000}
-					className='flex items-center gap-2 font-semibold cursor-pointer'>
+					className="flex items-center gap-2 font-semibold cursor-pointer"
+				>
 					<FaDev size={25} />
 					Joaquín Mussi
 				</Link>
 			</motion.div>
 			<motion.ul
-				className='items-center hidden gap-6 md:flex'
+				className="items-center hidden gap-6 md:flex"
 				initial={{ x: 2500, opacity: 0, scale: 0.5 }}
 				animate={{
 					x: 0,
 					opacity: 1,
 					scale: 1,
 				}}
-				transition={{ duration: 0.8 }}>
+				transition={{ duration: 0.8 }}
+			>
 				{items &&
 					items.map((item: navbarItem, k: number) => (
 						<NavbarItem key={k} link={item.link} text={item.text} />
@@ -70,18 +77,19 @@ const Navbar = () => {
 			</motion.ul>
 			{showIcons && (
 				<motion.div
-					className='flex items-center gap-2'
+					className="flex items-center gap-2"
 					initial={{ x: 3500, opacity: 0, scale: 0.5 }}
 					animate={{
 						x: 0,
 						opacity: 1,
 						scale: 1,
 					}}
-					transition={{ duration: 0.8 }}>
-					<IconLink to='https://github.com/MussiDev' icon='github' />
+					transition={{ duration: 0.8 }}
+				>
+					<IconLink to="https://github.com/MussiDev" icon="github" />
 					<IconLink
-						to='https://www.linkedin.com/in/joaquinmussi/'
-						icon='linkedin'
+						to="https://www.linkedin.com/in/joaquinmussi/"
+						icon="linkedin"
 					/>
 				</motion.div>
 			)}
