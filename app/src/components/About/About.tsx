@@ -47,7 +47,7 @@ const About = () => {
 					transition={{ duration: 1.2 }}
 					viewport={{ once: true }}
 				>
-					I'm {ageToday} years old, I'm FullStack Developer at &nbsp;
+					I'm {ageToday} years old, I'm Software Engineer at &nbsp;
 					<Link
 						href="https://www.mutualamr.org.ar/"
 						target="_blank"

@@ -89,7 +89,7 @@ const Jobs = (props: jobsItem) => {
 		>
 			<h1 className="text-orange-700 text-3xl">{company}</h1>
 			<>
-				<div className="grid md:flex md:items-center gap-6 ml-2">
+				<div className="flex items-center gap-6 ml-2 flex-wrap">
 					<h1 className="text-2xl flex flex-row gap-2 items-center">
 						<span>
 							<FaCircle className="text-orange-700" size={18} />
@@ -98,7 +98,7 @@ const Jobs = (props: jobsItem) => {
 					</h1>
 					<div id="icons">{renderIcons()}</div>
 				</div>
-				<p className="ml-8">/ {time}</p>
+				<p className="ml-8 mt-4">/ {time}</p>
 				<p className="ml-8 flex flex-row gap-2 items-center">{description}</p>
 			</>
 		</motion.section>
