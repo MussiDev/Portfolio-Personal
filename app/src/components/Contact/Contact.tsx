@@ -1,11 +1,14 @@
 "use client"; // this is a client component
+
 import React, { useRef, useState } from "react";
-import dynamic from "next/dynamic";
-const Title = dynamic(() => import("../../common/Title"), {ssr: false});
-import emailjs from "@emailjs/browser";
-import Swal from "sweetalert2";
+
 import { ReCAPTCHA } from "react-google-recaptcha";
+import Swal from "sweetalert2";
+import dynamic from "next/dynamic";
+import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
+
+const Title = dynamic(() => import("../../common/Title"), { ssr: false });
 
 const Contact = () => {
 	const [verifyCaptcha, setVerifyCaptcha] = useState(false);
@@ -64,74 +67,76 @@ const Contact = () => {
 			initial={{ opacity: 0 }}
 			whileInView={{ opacity: 1 }}
 			transition={{ duration: 2 }}
-			className='max-w-[1240px] m-auto px-4 py-16 flex flex-col items-center justify-center'
-			id='contactme'>
-			<Title title='Would you like contact me?' color='orange-700' />
+			className="max-w-[1240px] m-auto px-4 py-16 flex flex-col items-center justify-center"
+			id="contactme"
+		>
+			<Title title="Would you like contact me?" color="orange-700" />
 			<motion.div
-				className='w-full max-w-xs '
+				className="w-full max-w-xs "
 				initial={{ opacity: 0, y: 200 }}
 				whileInView={{ opacity: 1, y: 0 }}
-				transition={{ duration: 1 }}>
-				<form className='py-6' ref={form} onSubmit={sendEmail}>
-					<div className='mb-4 flex flex-col gap-4'>
-						<label className='text-lg font-bold' htmlFor='name'>
+				transition={{ duration: 1 }}
+			>
+				<form className="py-6" ref={form} onSubmit={sendEmail}>
+					<div className="mb-4 flex flex-col gap-4">
+						<label className="text-lg font-bold" htmlFor="name">
 							Name
 						</label>
 						<input
-							className=' appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black'
-							id='name'
-							type='text'
-							name='user_name'
-							placeholder=''
+							className=" appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black"
+							id="name"
+							type="text"
+							name="user_name"
+							placeholder=""
 							required
 						/>
 					</div>
-					<div className='mb-4 flex flex-col gap-4'>
-						<label className='text-lg font-bold' htmlFor='email'>
+					<div className="mb-4 flex flex-col gap-4">
+						<label className="text-lg font-bold" htmlFor="email">
 							Email
 						</label>
 						<input
-							className=' appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black'
-							id='email'
-							type='email'
-							name='user_email'
-							placeholder=''
+							className=" appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black"
+							id="email"
+							type="email"
+							name="user_email"
+							placeholder=""
 							required
 						/>
 					</div>
-					<div className='mb-4 flex flex-col gap-4'>
-						<label className='text-lg font-bold' htmlFor='message'>
+					<div className="mb-4 flex flex-col gap-4">
+						<label className="text-lg font-bold" htmlFor="message">
 							Mensaje
 						</label>
 						<textarea
-							id='message'
-							name='message'
+							id="message"
+							name="message"
 							required
-							className=' min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black'
+							className=" min-h-[6rem] max-h-56 appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline text-black"
 						/>
 					</div>
 					{token && (
-						<div className='py-4 '>
+						<div className="py-4 ">
 							<ReCAPTCHA
 								onChange={onChange}
 								sitekey={token}
-								className='g-recaptcha'
+								className="g-recaptcha"
 							/>
 						</div>
 					)}
-					<div className='flex items-center justify-center'>
+					<div className="flex items-center justify-center">
 						{verifyCaptcha ? (
 							<input
-								type='submit'
-								value='Send'
-								className='text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full'
+								type="submit"
+								value="Send"
+								className="text-xl flex items-center gap-2 text-md hover:scale-110 hover:bg-white hover:text-orange-700 transition-all text-white bg-orange-700 px-12 py-2 rounded-full"
 							/>
 						) : (
 							<input
-								type='submit'
-								value='Send'
+								type="submit"
+								value="Send"
 								disabled
-								className='disabled:opacity-50 text-xl flex items-center gap-2 text-md text-white bg-orange-700 px-12 py-2 rounded-full'
+								className="disabled:opacity-50 text-xl flex items-center gap-2 text-md text-white bg-orange-700 px-12 py-2 rounded-full"
 							/>
 						)}
 					</div>
