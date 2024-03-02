@@ -1,8 +1,9 @@
 @tailwind base;
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+@tailwind components;
+@tailwind utilities;
 @layer base {
 	button {
-		@apply px-8 py-2 bg-[#742506] rounded-full;
+		@apply px-8 py-2 bg-orange-700 rounded-full;
 	}
 	h4 {
 		@apply text-3xl;
@@ -41,8 +42,6 @@
 li {
 	color: #fff;
 }
-@tailwind components;
-@tailwind utilities;
 
 @layer components {
 	#img {

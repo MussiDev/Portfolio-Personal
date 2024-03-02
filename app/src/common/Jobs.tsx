@@ -1,4 +1,4 @@
-import { FaCircle, FaPython, FaReact, FaSass } from "react-icons/fa";
+import { FaCircle, FaPython, FaSass } from "react-icons/fa";
 import {
 	SiChakraui,
 	SiFramer,
@@ -25,42 +25,55 @@ const Jobs = (props: jobsItem) => {
 			switch (name) {
 				case "FaSass":
 					IconComponent = FaSass;
+					classname = "text-pink-500 hover:scale-125 duration-700";
 					break;
 				case "FaPython":
 					IconComponent = FaPython;
-					break;
-				case "FaReact":
-					IconComponent = FaReact;
+					classname = "hover:scale-125 duration-700";
 					break;
 				case "DiDotnet":
 					IconComponent = DiDotnet;
+					classname = "hover:scale-125 duration-700 text-blue-400";
 					break;
 				case "TbBrandCSharp":
 					IconComponent = TbBrandCSharp;
+					classname =
+						"hover:scale-125 duration-700 text-white bg-purple-800 rounded-full";
 					break;
 				case "SiNextdotjs":
 					IconComponent = SiNextdotjs;
+					classname =
+						"text-black rounded-full hover:scale-125 duration-700 bg-white";
 					break;
 				case "SiRedux":
 					IconComponent = SiRedux;
+					classname = "text-purple-500 hover:scale-125 duration-700";
 					break;
 				case "SiChakraui":
 					IconComponent = SiChakraui;
+					classname =
+						"text-cyan-500  rounded-full hover:scale-125 duration-700 bg-white";
 					break;
 				case "SiTailwindcss":
 					IconComponent = SiTailwindcss;
+					classname = "text-cyan-500 hover:scale-125 duration-700";
 					break;
 				case "SiTypescript":
 					IconComponent = SiTypescript;
+					classname = "text-blue-500 hover:scale-125 duration-700";
 					break;
 				case "SiFramer":
 					IconComponent = SiFramer;
+					classname = "rounded-full hover:scale-125 duration-700";
 					break;
 				case "SiStyledcomponents":
 					IconComponent = SiStyledcomponents;
+					classname = "text-purple-500 hover:scale-125 duration-700";
 					break;
 				case "BiLogoReact":
 					IconComponent = BiLogoReact;
+					classname =
+						"text-cyan-500  rounded-full hover:scale-125 duration-700";
 					break;
 				default:
 					IconComponent = FaCircle;
