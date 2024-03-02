@@ -66,16 +66,7 @@ const Jobs = (props: jobsItem) => {
 					IconComponent = FaCircle;
 					break;
 			}
-			return (
-				<IconComponent
-					key={key}
-					size={50}
-					className={`${classname} ${
-						IconComponent === FaPython &&
-						"bg-gradient-to-b from-blue-500 to-yellow-500"
-					}`}
-				/>
-			);
+			return <IconComponent key={key} size={50} className={classname} />;
 		});
 	};
 
