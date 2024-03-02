@@ -1,5 +1,3 @@
-"use client"; // this is a client component
-
 import React from "react";
 import title from "../../../entities/title";
 

@@ -2,10 +2,16 @@
 
 import "../styles/globals.css";
 
-import { Footer, Navbar } from "./src/components";
-
-import { Arrow } from "./src/common";
 import React from "react";
+import dynamic from "next/dynamic";
+
+const Arrow = dynamic(() => import("./src/common/Arrow"), { ssr: false });
+const Footer = dynamic(() => import("./src/components/Footer/Footer"), {
+	ssr: false,
+});
+const Navbar = dynamic(() => import("./src/components/Navbar/Navbar"), {
+	ssr: false,
+});
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (

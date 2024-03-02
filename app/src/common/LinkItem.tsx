@@ -1,5 +1,3 @@
-"use client"; // this is a client component
-
 import { FaArrowDown } from "react-icons/fa";
 import Link from "next/link";
 import React from "react";
@@ -12,19 +10,19 @@ const LinkItem = (props: button) => {
 	return (
 		<Link href={`${href}`} target={`${blank ? "_blank" : ""}`}>
 			<motion.button
-				className='flex items-center gap-2 text-md'
+				className="flex items-center gap-2 text-md hover:text-orange-700 hover:bg-white"
 				whileHover={{
 					scale: 1.1,
 					transition: { duration: 0.4 },
-					color: "#F24F0F",
-					backgroundColor: "#fff",
 				}}
-				whileTap={{ scale: 0.9, x: "-5px", y: "5px" }}>
-				<p className='text-md md:text-xl '>{title}</p>
+				whileTap={{ scale: 0.9, x: "-0.3125rem", y: "0.3125rem" }}
+			>
+				<p className="text-md md:text-xl ">{title}</p>
 				{icon === "arrowDown" && (
 					<motion.span
-						animate={{ y: ["2px", "-2px", "2px"] }}
-						transition={{ duration: 1, repeat: Infinity }}>
+						animate={{ y: ["0.125rem", "-0.125rem", "0.125rem"] }}
+						transition={{ duration: 1, repeat: Infinity }}
+					>
 						<FaArrowDown />
 					</motion.span>
 				)}

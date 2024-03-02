@@ -1,10 +1,8 @@
-"use client"; // this is a client component
-
 import { FaArrowDown } from "react-icons/fa";
 import { Link } from "react-scroll";
 import LinkItem from "./LinkItem";
 import React from "react";
-import { button } from "../../../entities";
+import button from "../../../entities/button";
 import { motion } from "framer-motion";
 
 const Button = (props: button) => {
@@ -26,7 +24,6 @@ const Button = (props: button) => {
 						whileHover={{
 							scale: 1.1,
 							transition: { duration: 0.4 },
-							color: "orange-700",
 						}}
 						whileTap={{ scale: 0.9, x: "-0.3125rem", y: "0.3125rem" }}
 					>

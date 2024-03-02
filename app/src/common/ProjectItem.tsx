@@ -1,11 +1,7 @@
-"use client"; // this is a client component
-
+import Button from "./Button";
 import React from "react";
-import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import projectItem from "../../../entities/projectItem";
-
-const Button = dynamic(() => import("./Button"), { ssr: false });
 
 const ProjectItem = (props: projectItem) => {
 	const { src, github, page, paragraph, icon } = props;
@@ -23,7 +19,7 @@ const ProjectItem = (props: projectItem) => {
 				<motion.img
 					src={src}
 					id="img"
-					sizes="(min-width: 1320px) 556px, (min-width: 780px) calc(44.23vw - 19px), calc(97.39vw - 44px)"
+					sizes="(min-width: 82.5rem) 34.75rem, (min-width: 48.75rem) calc(44.23vw - 1.1875rem), calc(97.39vw - 2.75rem)"
 					alt="project"
 					loading="lazy"
 					initial={{ objectPosition: "top" }}

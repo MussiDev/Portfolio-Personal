@@ -1,5 +1,3 @@
-"use client"; // this is a client component
-
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 import Link from "next/link";
@@ -14,14 +12,15 @@ const IconLink = (props: iconLink) => {
 			whileHover={{
 				scale: 1.1,
 				transition: { duration: 0.2 },
-				color: "#F24F0F",
 			}}
 		>
 			<Link href={to} target="_blank" aria-label="social">
 				{icon === "github" ? (
-					<FaGithub />
+					<FaGithub className="hover:text-orange-700" />
 				) : (
-					icon === "linkedin" && <FaLinkedin />
+					icon === "linkedin" && (
+						<FaLinkedin className="hover:text-orange-700" />
+					)
 				)}
 			</Link>
 		</motion.span>

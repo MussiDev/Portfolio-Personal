@@ -1,0 +1,70 @@
+[
+	{
+		"id": 1,
+		"image": "image/weather.png",
+		"github": "https://github.com/MussiDev/ClimaReactAPI",
+		"page": "https://reactappweather-7c1cb.web.app/",
+		"paragraph": "Weather Web App consuming the Open Weather App API.",
+		"icons": [
+			{
+				"type": "FaReact",
+				"size": 50,
+				"className": "text-cyan-500 hover:scale-125 duration-700"
+			},
+			{
+				"type": "img",
+				"key": "key3",
+				"src": "image/materialize.png",
+				"className": "w-16 h-8 hover:scale-125 duration-700"
+			}
+		]
+	},
+	{
+		"id": 2,
+		"image": "image/monolandia.png",
+		"github": "https://github.com/MussiDev/MonoLandia",
+		"page": "https://monolandia-7816e.web.app/",
+		"paragraph": "Website created to inform about the life and history of the Monkeys.",
+		"icons": [
+			{
+				"type": "FaHtml5",
+				"size": 50,
+				"className": "text-red-500 hover:scale-125 duration-700"
+			},
+			{
+				"type": "FaCss3",
+				"size": 50,
+				"className": "text-blue-500 hover:scale-125 duration-700"
+			},
+			{
+				"type": "FaJs",
+				"size": 50,
+				"className": "text-yellow-500 hover:scale-125 duration-700"
+			},
+			{
+				"type": "FaBootstrap",
+				"size": 50,
+				"className": "text-purple-500 hover:scale-125 duration-700"
+			}
+		]
+	},
+	{
+		"id": 3,
+		"image": "image/petinder.png",
+		"github": "https://github.com/joakom24/Petinder",
+		"page": "https://petinder-75b0e.web.app/",
+		"paragraph": "Web application to manage shifts with LocalStorage.",
+		"icons": [
+			{
+				"type": "FaReact",
+				"size": 50,
+				"className": "text-cyan-500 hover:scale-125 duration-700"
+			},
+			{
+				"type": "SiChakraui",
+				"size": 50,
+				"className": "text-cyan-500 bg-white rounded-full hover:scale-125 duration-700"
+			}
+		]
+	}
+]
