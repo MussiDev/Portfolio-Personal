@@ -1,14 +1,16 @@
 "use client"; // this is a client component
+
 import React from "react";
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+import { useTypewriter } from "react-simple-typewriter";
+
 const Title = dynamic(() => import("../../common/Title"), { ssr: false });
 const Button = dynamic(() => import("../../common/Button"), { ssr: false });
-import { useTypewriter } from "react-simple-typewriter";
-import { motion } from "framer-motion";
 
 const Main = () => {
 	const [text, count] = useTypewriter({
-		words: ["NextJS + .NET", "FullStack Developer"],
+		words: ["NextJS + .NET", "Software Engineer"],
 		loop: true,
 		delaySpeed: 2000,
 	});
@@ -22,7 +24,8 @@ const Main = () => {
 				opacity: 1,
 				scale: 1,
 			}}
-			transition={{ duration: 0.8 }}>
+			transition={{ duration: 0.8 }}
+		>
 			<div className='max-w-[1240px] w-full h-full mx-auto p-2 flex justify-center items-center'>
 				<div className='flex flex-col items-center'>
 					<p className='uppercase text-lg tracking-widest text-gray-300'>

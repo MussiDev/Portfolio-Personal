@@ -1,7 +1,10 @@
 "use client"; // this is a client component
-import React from "react";
+
 import "../styles/globals.css";
+
+import React from "react";
 import dynamic from "next/dynamic";
+
 const About = dynamic(() => import("./components/About/About"), { ssr: false });
 const Main = dynamic(() => import("./components/Main/Main"), { ssr: false });
 const Projects = dynamic(() => import("./components/Projects/Projects"), {
@@ -27,7 +30,7 @@ const Home = () => {
 			<Navbar />
 			<Main />
 			<About />
-			<Projects />
+			{/*<Projects />*/}
 			<Experience />
 			<Contact />
 			<Arrow />
