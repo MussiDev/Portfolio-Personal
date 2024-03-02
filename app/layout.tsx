@@ -1,7 +1,10 @@
+"use client";
+
+import "../styles/globals.css";
+
 import { Footer, Navbar } from "./src/components";
 
 import React from "react";
-import dynamic from "next/dynamic";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
@@ -36,7 +39,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 			<body className="text-white bg-slate-800 ">
 				<Navbar />
 				{children}
-				{/*<Footer />*/}
+				<Footer />
 			</body>
 		</html>
 	);
