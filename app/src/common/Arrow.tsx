@@ -1,7 +1,10 @@
-"use client"; // this is a client component
+"use client";
+
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+
 import { AiOutlineArrowUp } from "react-icons/ai";
+import { motion } from "framer-motion";
+
 const Arrow = () => {
 	const [showButton, setShowButton] = useState(false);
 	const handleScrollToTop = () => {
@@ -22,9 +25,10 @@ const Arrow = () => {
 			{showButton && (
 				<motion.p
 					onClick={handleScrollToTop}
-					id='top'
-					animate={{ y: ["5px", "-5px", "5px"] }}
-					transition={{ duration: 2, repeat: Infinity }}>
+					id="top"
+					animate={{ y: ["0.3125rem", "-0.3125rem", "0.3125rem"] }}
+					transition={{ duration: 2, repeat: Infinity }}
+				>
 					<AiOutlineArrowUp size={20} />
 				</motion.p>
 			)}

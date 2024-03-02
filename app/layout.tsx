@@ -4,6 +4,7 @@ import "../styles/globals.css";
 
 import { Footer, Navbar } from "./src/components";
 
+import { Arrow } from "./src/common";
 import React from "react";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
@@ -39,6 +40,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
 			<body className="text-white bg-slate-800 ">
 				<Navbar />
 				{children}
+				<Arrow />
 				<Footer />
 			</body>
 		</html>
