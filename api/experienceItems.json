@@ -115,6 +115,10 @@
 			{
 				"name": "SiFramer",
 				"classname": "rounded-full hover:scale-125 duration-700"
+			},
+			{
+				"name": "SiStyledcomponents",
+				"classname": "text-purple-500 hover:scale-125 duration-700"
 			}
 		],
 		"company": "IT Tech Group",
@@ -125,7 +129,8 @@
 		"position": "Python Developer",
 		"icons": [
 			{
-				"name": "FaPython"
+				"name": "FaPython",
+				"classname": "hover:scale-125 duration-700"
 			}
 		],
 		"company": "Hotel Costa Azul",

@@ -4,6 +4,7 @@ import {
 	SiFramer,
 	SiNextdotjs,
 	SiRedux,
+	SiStyledcomponents,
 	SiTailwindcss,
 	SiTypescript,
 } from "react-icons/si";
@@ -54,6 +55,9 @@ const Jobs = (props: jobsItem) => {
 					break;
 				case "SiFramer":
 					IconComponent = SiFramer;
+					break;
+				case "SiStyledcomponents":
+					IconComponent = SiStyledcomponents;
 					break;
 				case "BiLogoReact":
 					IconComponent = BiLogoReact;
