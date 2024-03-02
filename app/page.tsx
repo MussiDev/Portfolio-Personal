@@ -12,13 +12,10 @@ import React from "react";
 const Home = () => {
 	return (
 		<main>
-			{/*
-			<Navbar />
 			<Main />
 			<About />
 			<Experience />
 			<Contact />
-	/<Footer />*/}
 		</main>
 	);
 };
