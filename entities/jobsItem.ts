@@ -1,6 +1,6 @@
 interface jobsItem {
 	position: string;
-	company: string;
+	company?: string;
 	time: string;
 	description: string;
 	icons: React.ReactNode;
