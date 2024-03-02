@@ -66,27 +66,27 @@ const Experience = () => {
 							className='text-black rounded-full hover:scale-125 duration-700 bg-white'
 						/>,
 						<SiTypescript
-							key='key3'
+							key='key2'
 							size={40}
 							className='text-blue-500 hover:scale-125 duration-700'
 						/>,
 						<SiChakraui
-							key='key2'
+							key='key3'
 							size={50}
 							className='text-cyan-500  rounded-full hover:scale-125 duration-700 bg-white'
 						/>,
 						<FaSass
-							key='key3'
+							key='key4'
 							size={50}
 							className='text-pink-500 hover:scale-125 duration-700'
 						/>,
 						<DiDotnet
-							key='key4'
+							key='key5'
 							size={50}
 							className=' hover:scale-125 duration-700 text-blue-400'
 						/>,
 						<TbCSharp
-							key='key5'
+							key='key6'
 							size={50}
 							className=' hover:scale-125 duration-700 text-white bg-purple-800 rounded-full p-2'
 						/>,
@@ -103,17 +103,17 @@ const Experience = () => {
 							className='text-black rounded-full hover:scale-125 duration-700 bg-white'
 						/>,
 						<SiTypescript
-							key='key3'
+							key='key2'
 							size={40}
 							className='text-blue-500 hover:scale-125 duration-700'
 						/>,
 						<DiDotnet
-							key='key2'
+							key='key3'
 							size={50}
 							className=' hover:scale-125 duration-700 text-blue-400'
 						/>,
 						<TbCSharp
-							key='key3'
+							key='key4'
 							size={50}
 							className=' hover:scale-125 duration-700 text-white bg-purple-800 rounded-full p-2'
 						/>,
