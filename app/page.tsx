@@ -2,9 +2,7 @@
 
 import "../styles/globals.css";
 
-import { Analytics } from "@vercel/analytics/react"
 import React from "react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import dynamic from "next/dynamic";
 
 const About = dynamic(() => import("./components/About/About"), { ssr: false });
