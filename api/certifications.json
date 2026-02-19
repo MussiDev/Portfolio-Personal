@@ -113,7 +113,7 @@
 	},
 	{
 		"id": 17,
-		"platform": "Otros",
+		"platform": "Others",
 		"name": "Curso de Introducción a la programación con JavaScript",
 		"date": "Feb 2021",
 		"credentialId": "N°038",
@@ -121,7 +121,7 @@
 	},
 	{
 		"id": 18,
-		"platform": "Otros",
+		"platform": "Others",
 		"name": "Curso de Introducción a la programación en Python",
 		"date": "Dec 2020",
 		"credentialId": "",
@@ -129,7 +129,7 @@
 	},
 	{
 		"id": 19,
-		"platform": "Otros",
+		"platform": "Others",
 		"name": "HTML Fundamentals Course",
 		"date": "Aug 2020",
 		"credentialId": "#1014-17145711",

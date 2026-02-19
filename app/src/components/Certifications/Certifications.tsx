@@ -22,7 +22,7 @@ const PLATFORMS = [
 	"EducaciónIT",
 	"LinkedIn Learning",
 	"CodeaRock",
-	"Otros",
+	"Others",
 ] as const;
 type Platform = (typeof PLATFORMS)[number];
 
