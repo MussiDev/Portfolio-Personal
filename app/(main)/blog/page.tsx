@@ -8,6 +8,30 @@ import { urlFor } from "../../../sanity/lib/image";
 
 export const dynamic = "force-dynamic";
 
+const BASE_URL = "https://joaquinmussi.vercel.app";
+
+export const metadata = {
+	title: "Blog — Joaquín Mussi",
+	description:
+		"Articles and thoughts on software engineering, web development, and technology by Joaquín Mussi.",
+	alternates: {
+		canonical: `${BASE_URL}/blog`,
+	},
+	openGraph: {
+		title: "Blog — Joaquín Mussi",
+		description:
+			"Articles and thoughts on software engineering, web development, and technology by Joaquín Mussi.",
+		url: `${BASE_URL}/blog`,
+		type: "website",
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Blog — Joaquín Mussi",
+		description:
+			"Articles and thoughts on software engineering, web development, and technology by Joaquín Mussi.",
+	},
+};
+
 interface Post {
 	_id: string;
 	title: string;

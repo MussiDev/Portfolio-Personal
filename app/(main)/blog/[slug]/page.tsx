@@ -21,6 +21,21 @@ interface PageProps {
 	params: Promise<{ slug: string }>;
 }
 
+const BASE_URL = "https://joaquinmussi.vercel.app";
+
+function extractExcerpt(body: any[]): string {
+	if (!Array.isArray(body)) return "";
+	const firstParagraph = body.find(
+		(block) => block._type === "block" && block.style === "normal",
+	);
+	return (
+		firstParagraph?.children
+			?.map((child: any) => child.text ?? "")
+			.join("")
+			.slice(0, 160) ?? ""
+	);
+}
+
 const portableTextComponents = {
 	block: {
 		normal: ({ children }: any) => (
@@ -93,13 +108,32 @@ export async function generateMetadata({ params }: PageProps) {
 	const { slug } = await params;
 	const post: Post | null = await client.fetch(postBySlugQuery, { slug });
 	if (!post) return { title: "Post not found" };
+
+	const description = extractExcerpt(post.body);
+	const ogImage = post.coverImage
+		? urlFor(post.coverImage).width(1200).height(630).url()
+		: undefined;
+
 	return {
 		title: `${post.title} — Joaquín Mussi`,
+		description,
+		alternates: {
+			canonical: `${BASE_URL}/blog/${slug}`,
+		},
 		openGraph: {
 			title: post.title,
-			images: post.coverImage
-				? [{ url: urlFor(post.coverImage).width(1200).height(630).url() }]
-				: [],
+			description,
+			url: `${BASE_URL}/blog/${slug}`,
+			type: "article",
+			publishedTime: post.publishedAt,
+			authors: ["Joaquín Mussi"],
+			images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: post.title,
+			description,
+			images: ogImage ? [ogImage] : [],
 		},
 	};
 }
@@ -109,8 +143,34 @@ async function PostContent({ slug }: { slug: string }) {
 
 	if (!post) return notFound();
 
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		headline: post.title,
+		description: extractExcerpt(post.body),
+		author: {
+			"@type": "Person",
+			name: "Joaquín Mussi",
+			url: BASE_URL,
+		},
+		publisher: {
+			"@type": "Person",
+			name: "Joaquín Mussi",
+			url: BASE_URL,
+		},
+		url: `${BASE_URL}/blog/${slug}`,
+		datePublished: post.publishedAt ?? undefined,
+		...(post.coverImage && {
+			image: urlFor(post.coverImage).width(1200).height(630).url(),
+		}),
+	};
+
 	return (
 		<>
+			<script
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+			/>
 			<h1 className='text-3xl md:text-4xl font-bold text-white mb-3'>
 				{post.title}
 			</h1>
