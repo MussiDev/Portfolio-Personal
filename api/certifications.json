@@ -1,0 +1,138 @@
+[
+	{
+		"id": 1,
+		"platform": "Platzi",
+		"name": "Curso de Fundamentos de TypeScript",
+		"date": "Oct 2022",
+		"credentialId": "5bce14f9-044a-4073-a7a3-ce99a52fae52"
+	},
+	{
+		"id": 2,
+		"platform": "Platzi",
+		"name": "Curso de Unit Testing con Jest en React",
+		"date": "Sep 2022",
+		"credentialId": "3ee9988a-0829-4a49-8b31-9fb4e291bfac"
+	},
+	{
+		"id": 3,
+		"platform": "Platzi",
+		"name": "Curso de State Machines en React.js",
+		"date": "Sep 2022",
+		"credentialId": "a93095e1-f38c-4781-996b-f49c2601bab7"
+	},
+	{
+		"id": 4,
+		"platform": "Platzi",
+		"name": "Curso de Introducción a C#",
+		"date": "Sep 2022",
+		"credentialId": "ef887dff-b97c-4fec-83e9-2bf89c48cda2"
+	},
+	{
+		"id": 5,
+		"platform": "Platzi",
+		"name": "Curso de Transformaciones y Transiciones en CSS",
+		"date": "Sep 2022",
+		"credentialId": "4d77aed1-7847-464e-a5f6-44efcf9df29a"
+	},
+	{
+		"id": 6,
+		"platform": "Platzi",
+		"name": "Curso de React Avanzado",
+		"date": "Sep 2022",
+		"credentialId": "539add21-d994-4c7c-bdf4-f9bb2203d04f"
+	},
+	{
+		"id": 7,
+		"platform": "Platzi",
+		"name": "Curso de Fundamentos de .NET",
+		"date": "Aug 2022",
+		"credentialId": "d7851b21-f010-4cd0-9461-9f3037cfd123"
+	},
+	{
+		"id": 8,
+		"platform": "EducaciónIT",
+		"name": "Introducción a Bases De Datos y SQL",
+		"date": "Oct 2022",
+		"credentialId": ""
+	},
+	{
+		"id": 9,
+		"platform": "EducaciónIT",
+		"name": "Introducción a la Seguridad Informática",
+		"date": "Jun 2022",
+		"credentialId": ""
+	},
+	{
+		"id": 10,
+		"platform": "LinkedIn Learning",
+		"name": "MySQL esencial",
+		"date": "Jun 2021",
+		"credentialId": "Aag2Fo6_M7CVA_2QQBPmUFcCQkh6"
+	},
+	{
+		"id": 11,
+		"platform": "LinkedIn Learning",
+		"name": "JavaScript avanzado: Buenas prácticas",
+		"date": "Jun 2021",
+		"credentialId": "AZlVE5GxR1_jLfM6yuYpIDOLulOc"
+	},
+	{
+		"id": 12,
+		"platform": "LinkedIn Learning",
+		"name": "Fundamentos del desarrollo web: Full Stack o Front-end",
+		"date": "Jun 2021",
+		"credentialId": "AfSWqodHfj668lXg2tqEyaPdnLOM"
+	},
+	{
+		"id": 13,
+		"platform": "LinkedIn Learning",
+		"name": "JavaScript Esencial",
+		"date": "Jun 2021",
+		"credentialId": "AU1dz8bQY5fByYRA-4oPKD5JTuK7"
+	},
+	{
+		"id": 14,
+		"platform": "CodeaRock",
+		"name": "Curso de ReactJS",
+		"date": "Mar 2022",
+		"credentialId": "vcTZyg5X4WMXr9KNgNv57sHMmQN2"
+	},
+	{
+		"id": 15,
+		"platform": "CodeaRock",
+		"name": "Curso de JavaScript",
+		"date": "Jun 2021",
+		"credentialId": "vcTZyg5X4WMXr9KNgNv57sHMmQN2"
+	},
+	{
+		"id": 16,
+		"platform": "CodeaRock",
+		"name": "HTML for Babies",
+		"date": "Jun 2021",
+		"credentialId": "vcTZyg5X4WMXr9KNgNv57sHMmQN2"
+	},
+	{
+		"id": 17,
+		"platform": "Otros",
+		"name": "Curso de Introducción a la programación con JavaScript",
+		"date": "Feb 2021",
+		"credentialId": "N°038",
+		"institution": "UPDN"
+	},
+	{
+		"id": 18,
+		"platform": "Otros",
+		"name": "Curso de Introducción a la programación en Python",
+		"date": "Dec 2020",
+		"credentialId": "",
+		"institution": "UPDN"
+	},
+	{
+		"id": 19,
+		"platform": "Otros",
+		"name": "HTML Fundamentals Course",
+		"date": "Aug 2020",
+		"credentialId": "#1014-17145711",
+		"institution": "Sololearn"
+	}
+]

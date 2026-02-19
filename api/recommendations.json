@@ -1,0 +1,34 @@
+[
+	{
+		"id": 1,
+		"name": "Nicolás Antonelli",
+		"role": "Fullstack Developer .NET + Node.js + React.js",
+		"relation": "Worked in the same team",
+		"date": "Jan 2023",
+		"text": "Joaquín es una persona muy capaz, persistente para tratar de cumplir objetivos aún si son difíciles o requieren aprender nuevas cosas para lograrlos, sabe cuando es necesario pedir ayuda así como también brindar su ayuda a otro si es necesario, y se anima a proponer y realizar mejoras cuando las encuentra."
+	},
+	{
+		"id": 2,
+		"name": "Federico Gabriel Castro",
+		"role": "Full-Stack Developer (React, TypeScript, Django)",
+		"relation": "Worked in the same team",
+		"date": "Oct 2022",
+		"text": "Sin duda alguna una gran persona con la cual tuve el placer trabajar, colaborando codo a codo en la construcción de un casino online donde pude observar de sus destacadas técnicas en el manejo de React.js."
+	},
+	{
+		"id": 3,
+		"name": "Alejandro Manuel Navarini",
+		"role": "Senior Software Engineer | Tech Lead",
+		"relation": "Directly supervised Joaquín",
+		"date": "Oct 2022",
+		"text": "Joaquin is a very tenacious developer and excels at learning new skills."
+	},
+	{
+		"id": 4,
+		"name": "Priscila Sacchi",
+		"role": "Frontend Developer - DevOps",
+		"relation": "Worked in the same team",
+		"date": "Oct 2022",
+		"text": "Joaquín es un excelente profesional, siempre dispuesto a aprender cosas nuevas. Muy buen compañero, carismático y dispuesto a ayudar a todos."
+	}
+]

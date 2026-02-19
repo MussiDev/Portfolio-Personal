@@ -1,0 +1,50 @@
+[
+	{
+		"id": 1,
+		"name": "CommuniFit",
+		"company": "Independent",
+		"period": "Nov 2023 – Feb 2024",
+		"description": "Fitness user management platform facilitating communication between trainers and clients. Responsible for frontend development and backend integration using Axios, Zustand for state management, Next.js 13, Tailwind CSS, and NextAuth for authentication.",
+		"skills": ["Next.js", "Tailwind CSS", "Zustand", "Axios", "React.js"]
+	},
+	{
+		"id": 2,
+		"name": "CRYPTGO",
+		"company": "It-techgroup",
+		"period": "Feb 2022 – Jul 2022",
+		"description": "Online casino platform utilizing cryptocurrency as payment method. Responsible for frontend-backend integration, pixel-perfect CSS with Styled Components based on Figma designs, and managing user interactions with games.",
+		"skills": ["Styled Components", "React.js", "Axios"]
+	},
+	{
+		"id": 3,
+		"name": "Cras",
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": "Web platform for cabin reservations. Served as technical lead, responsible for architecture selection, supporting trainees, and leading frontend migration from Angular to Next.js 15 with Bootstrap styling.",
+		"skills": ["Next.js", "Bootstrap", "React.js"]
+	},
+	{
+		"id": 4,
+		"name": "Mutual Data",
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
+		"skills": ["ChakraUI", "React.js", "Next.js", "GraphQL"]
+	},
+	{
+		"id": 5,
+		"name": "Mutual Pago",
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": "Virtual wallet web project. Led architecture selection, frontend development and backend integration with Zustand, Next.js 14, Sass, and NextAuth. Also led backend migration from ASP.NET Core to a RESTful .NET API.",
+		"skills": ["ASP.NET", "Next.js", "Sass", "React.js", "C#", "Zustand", "Axios"]
+	},
+	{
+		"id": 6,
+		"name": "Tus Cuentas",
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": "Web platform for investment management. Created reusable components, adapted the site to multiple devices, consumed backend APIs, styled with SASS, and contributed to backend changes with C# and .NET.",
+		"skills": ["ASP.NET", "Next.js", "Sass", "React.js", "Zustand"]
+	}
+]

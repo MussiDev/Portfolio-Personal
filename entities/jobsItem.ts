@@ -4,5 +4,6 @@ interface jobsItem {
 	time: string;
 	description: string;
 	icons: any[];
+	index?: number;
 }
 export default jobsItem;

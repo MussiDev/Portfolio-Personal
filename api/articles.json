@@ -1,0 +1,18 @@
+[
+	{
+		"id": 1,
+		"title": "El momento en que la web empezó a hablar en Markdown",
+		"summary": "Cloudflare launched a feature that serves Markdown content when requested by AI agents, cutting token usage by 70–80% vs full HTML. A signal of how internet infrastructure is adapting: the web is no longer only for humans.",
+		"date": "Feb 2026",
+		"href": "https://www.linkedin.com/in/joaquinmussi/recent-activity/articles/",
+		"tags": ["AI Agents", "Cloudflare", "Web Performance", "LLMs"]
+	},
+	{
+		"id": 2,
+		"title": "SEO para devs: tu código puede marcar la diferencia",
+		"summary": "A developer's guide to SEO — how CSR vs SSR impacts indexing, metadata best practices, Core Web Vitals (LCP, INP, CLS), structured data with JSON-LD, and a quick audit checklist to rank better through clean code.",
+		"date": "Jan 2026",
+		"href": "https://www.linkedin.com/in/joaquinmussi/recent-activity/articles/",
+		"tags": ["SEO", "Next.js", "Performance", "Web Development"]
+	}
+]

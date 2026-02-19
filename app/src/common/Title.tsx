@@ -1,9 +1,8 @@
 import React from "react";
 import title from "../../../entities/title";
 
-const Title = (props: title) => {
-	const { title, color } = props;
-	return <h1 className={`py-4 ${color && `text-${color}`}`}>{title}</h1>;
+const Title = ({ title, color, tag: Tag = "h2" }: title) => {
+	return <Tag className={`py-4 ${color && `text-${color}`}`}>{title}</Tag>;
 };
 
 export default Title;

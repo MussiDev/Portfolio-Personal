@@ -8,12 +8,24 @@
 		"text": "About Me"
 	},
 	{
+		"link": "experience",
+		"text": "Experience"
+	},
+	{
 		"link": "projects",
 		"text": "Projects"
 	},
 	{
-		"link": "experience",
-		"text": "Experience"
+		"link": "articles",
+		"text": "Articles"
+	},
+	{
+		"link": "certifications",
+		"text": "Certifications"
+	},
+	{
+		"link": "recommendations",
+		"text": "Recommendations"
 	},
 	{
 		"link": "contactme",

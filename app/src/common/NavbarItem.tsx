@@ -1,7 +1,9 @@
-import { Link } from "react-scroll";
 import React from "react";
+import { Link as ScrollLink } from "react-scroll";
 import { motion } from "framer-motion";
 import navbarItem from "../../../entities/navbarItem";
+
+const Link = ScrollLink as React.ElementType;
 
 const NavbarItem = (props: navbarItem) => {
 	const { link, text } = props;

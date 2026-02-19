@@ -1,34 +1,132 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Joaquín Mussi — Portfolio
 
-## Getting Started
+**Live:** [joaquinmussi.vercel.app](https://joaquinmussi.vercel.app)
 
-First, run the development server:
+Personal portfolio built with Next.js 14 App Router, TypeScript and Tailwind CSS. Showcases experience, projects, certifications and recommendations, with a functional contact form.
 
-```bash
-npm run dev
-# or
-yarn dev
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Animations | Framer Motion |
+| Icons | React Icons |
+| Contact form | EmailJS + Google reCAPTCHA |
+| Scroll navigation | react-scroll |
+| Hero typewriter | react-simple-typewriter |
+| Alerts | SweetAlert2 |
+
+## Features
+
+- **SSR-first hero** — LCP element rendered on the server for optimal Lighthouse scores
+- **Smooth scroll navigation** — Navbar with active section detection
+- **Animated sections** — Framer Motion `whileInView` with `once: true` per section
+- **Responsive typography** — Fluid scale from mobile to desktop
+- **Tabbed Projects** — Toggle between Personal and Work projects
+- **Tabbed Certifications** — Grouped by platform (Platzi, EducaciónIT, LinkedIn Learning, CodeaRock, Otros)
+- **Recommendations** — LinkedIn testimonials in card layout
+- **Contact form** — EmailJS integration with reCAPTCHA validation and SweetAlert2 feedback
+- **PWA-ready** — Web manifest and theme color configured
+- **JSON-LD** — Structured data (`Person` schema) for search engines
+- **SEO metadata** — Open Graph and Twitter Card via Next.js Metadata API
+
+## Project structure
+
+```
+├── app/
+│   ├── layout.tsx              # Root layout: Metadata, JSON-LD, Navbar, Footer
+│   ├── page.tsx                # Page: section composition and dynamic imports
+│   └── src/
+│       ├── common/             # Reusable components
+│       │   ├── Arrow.tsx
+│       │   ├── Button.tsx
+│       │   ├── IconLink.tsx
+│       │   ├── JobGroup.tsx
+│       │   ├── Jobs.tsx
+│       │   ├── LinkItem.tsx
+│       │   ├── NavbarItem.tsx
+│       │   ├── ProjectItem.tsx
+│       │   ├── Title.tsx
+│       │   ├── TypewriterTitle.tsx
+│       │   └── WorkProjectItem.tsx
+│       └── components/
+│           ├── About/
+│           ├── Articles/
+│           ├── Certifications/
+│           ├── Contact/
+│           ├── Experience/
+│           ├── Footer/
+│           ├── Main/
+│           ├── Navbar/
+│           ├── Projects/
+│           └── Recommendations/
+├── api/                        # JSON data files
+│   ├── articles.json
+│   ├── certifications.json
+│   ├── experienceItems.json
+│   ├── navbarItems.json
+│   ├── projectsList.json
+│   ├── recommendations.json
+│   └── workProjects.json
+├── entities/                   # TypeScript interfaces
+├── public/
+│   ├── image/                  # Project screenshots
+│   ├── favicon.ico
+│   ├── manifest.json
+│   └── pdf.pdf                 # CV
+└── styles/
+    └── globals.css
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file at the root:
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+```env
+# EmailJS
+NEXT_PUBLIC_SERVICE_ID=your_emailjs_service_id
+NEXT_PUBLIC_TEMPLATE_ID=your_emailjs_template_id
+NEXT_PUBLIC_PUBLIC_KEY=your_emailjs_public_key
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+# Google reCAPTCHA
+NEXT_PUBLIC_FIRSTCAPTCHA=your_recaptcha_site_key
+```
 
-## Learn More
+## Getting started
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Install dependencies
+yarn install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Run development server
+yarn dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# Build for production
+yarn build
 
-## Deploy on Vercel
+# Start production server
+yarn start
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Lint
+yarn lint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+> **Note:** Run `yarn build && yarn start` before using Lighthouse — `yarn dev` does not minify or tree-shake, which skews performance metrics.
+
+## Adding content
+
+All data is JSON-driven — no code changes needed to add new items:
+
+| Content | File |
+|---|---|
+| Experience | `api/experienceItems.json` |
+| Portfolio projects | `api/projectsList.json` |
+| Work projects | `api/workProjects.json` |
+| Articles | `api/articles.json` |
+| Certifications | `api/certifications.json` |
+| Recommendations | `api/recommendations.json` |
+| Navbar links | `api/navbarItems.json` |

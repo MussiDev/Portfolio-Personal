@@ -1,121 +1,62 @@
 [
 	{
-		"company": "UnWrap",
-		"position": "Frontend Developer",
-		"icons": [
-			{
-				"name": "SiNextdotjs"
-			},
-			{
-				"name": "SiTailwindcss"
-			},
-			{
-				"name": "SiTypescript"
-			},
-			{
-				"name": "SiRedux"
-			}
-		],
-		"time": "NOVEMBER 2023 - NOW",
-		"description": "We build your own app or website with modern design, accessible, efficient, trend technologies and SEO-friendly. Satisfying your clients with a modern app that includes everyone will help you increase your sales and be better indexed by web search engines in terms of accessibility principles and guidelines as per WCAG."
-	},
-	{
 		"company": "La Mutual de AMR",
-		"position": "Software Engineer",
-		"icons": [
+		"totalTime": "JUNE 2022 - PRESENT · REMOTE",
+		"roles": [
 			{
-				"name": "SiNextdotjs"
+				"position": "Software Engineer",
+				"time": "NOV 2023 - PRESENT",
+				"description": "Designed and implemented scalable web architectures, improving application load times by 35%. Led and mentored junior developers, reviewing PRs and enforcing clean architecture best practices. Collaborated with stakeholders to define architecture and tech stack for new projects.",
+				"icons": [
+					{ "name": "SiNextdotjs" },
+					{ "name": "SiTypescript" },
+					{ "name": "BiLogoReact" },
+					{ "name": "TbBrandCSharp" },
+					{ "name": "DiDotnet" }
+				]
 			},
 			{
-				"name": "SiTypescript"
+				"position": "FullStack Web Developer",
+				"time": "AUG 2022 - MAR 2024",
+				"description": "Developed MutualData, a platform for massive data processing and visualization. Built reusable UI components and integrated APIs for Tus Cuentas (investment platform). Migrated La Medica e-commerce from CSHTML to Next.js 15 and Cras app from Angular to Next.js 15, reducing technical debt.",
+				"icons": [
+					{ "name": "SiNextdotjs" },
+					{ "name": "SiTypescript" },
+					{ "name": "BiLogoReact" },
+					{ "name": "SiChakraui" },
+					{ "name": "FaSass" }
+				]
 			},
 			{
-				"name": "SiChakraui"
-			},
-			{
-				"name": "FaSass"
-			},
-			{
-				"name": "DiDotnet"
-			},
-			{
-				"name": "TbBrandCSharp"
+				"position": "Frontend Web Developer",
+				"time": "JUN 2022 - AUG 2022",
+				"description": "Implemented responsive designs using Next.js, TypeScript, ChakraUI and SASS. Applied Agile SCRUM methodology, CI/CD pipelines and GitLab workflows. Participated in WSLaMedica, Mis Inversiones and MutualData projects.",
+				"icons": [
+					{ "name": "SiNextdotjs" },
+					{ "name": "SiTypescript" },
+					{ "name": "SiChakraui" },
+					{ "name": "FaSass" }
+				]
 			}
-		],
-		"time": "NOVEMBER 2023 - NOW",
-		"description": "My job is to build apps focusing on improving web performance, selecting the correct architecture for the project and programming languagues, programming the frontend, and making changes to the backend. I work in a team where I'm in charge of trainees, supervising, inspecting pull requests, and improving the code base based on good practices, scalability, and clean architecture. My most recent work involved leading a project that focused on migrating some components from Angular to Nextjs and embedding them into a Wordpress page."
+		]
 	},
 	{
-		"position": "FullStack Developer",
+		"company": "It-techgroup",
+		"position": "Frontend Web Developer",
+		"time": "FEBRUARY 2022 - JULY 2022 · PART-TIME",
+		"description": "Developed online casino platforms, bot applications and Web3 landing pages. Applied Styled Components, Tailwind CSS and Framer Motion for high-quality animations. Ensured responsiveness and API integration aligned with UX/UI designs.",
 		"icons": [
-			{
-				"name": "SiNextdotjs",
-				"classname": "text-black rounded-full hover:scale-125 duration-700 bg-white"
-			},
-			{
-				"name": "SiTypescript",
-				"classname": "text-blue-500 hover:scale-125 duration-700"
-			},
-			{
-				"name": "DiDotnet",
-				"classname": "hover:scale-125 duration-700 text-blue-400"
-			},
-			{
-				"name": "TbBrandCSharp",
-				"classname": "hover:scale-125 duration-700 text-white bg-purple-800 rounded-full p-2"
-			}
-		],
-		"time": "AUGUST 2022 - NOVEMBER 2023",
-		"description": "I use ReactJS with NextJS - TypeScript - ChakraUI and SASS for styles. We apply SCRUM for agile and efficient work, CI/CD and Gitlab. We use JIRA for organized work. I participate in this projects: WSLaMedica ( Ecommerce ), MisInversiones ( Web to make investments ) and MutualData ( Web of massive data processing and visualization)."
+			{ "name": "BiLogoReact" },
+			{ "name": "SiTailwindcss" },
+			{ "name": "SiStyledcomponents" },
+			{ "name": "SiFramer" }
+		]
 	},
 	{
-		"position": "Frontend Developer",
-		"icons": [
-			{
-				"name": "SiNextdotjs"
-			},
-			{
-				"name": "SiTypescript"
-			},
-			{
-				"name": "SiChakraui"
-			},
-			{
-				"name": "FaSass"
-			}
-		],
-		"time": "JUNE 2022 - AUGUST 2022",
-		"description": "I work with ChakraUI and SASS for styles, adapting the web to different devices, I'm in charge of connecting the backend with the frontend. I participate in the backend by creating APIs. I use Postman for test endpoints. I modify old code made in CSHTML (HTML IN C#) and then migrate it to NextJs. I test components with Jest and I always respect the principles of solid and clean code allowing its reuse. I apply SCRUM for agile and efficient work (JIRA), CI/CD and Gitlab."
-	},
-	{
-		"position": "Front End Developer",
-		"icons": [
-			{
-				"name": "BiLogoReact"
-			},
-			{
-				"name": "SiTailwindcss"
-			},
-			{
-				"name": "SiFramer"
-			},
-			{
-				"name": "SiStyledcomponents"
-			}
-		],
-		"company": "IT Tech Group",
-		"time": "FEBRUARY 2022 - JULY 2022",
-		"description": "I used ReactJS, I designed with Styled Components and TailwindCSS adapting the web to different devices. I used Framer Motion and developed web pages according to UX/UI design. Some projects in which I participated: CRYPTGO, Reforce Infinity, and Sniper Bot."
-	},
-	{
-		"position": "Python Developer",
-		"icons": [
-			{
-				"name": "FaPython"
-			}
-		],
 		"company": "Hotel Costa Azul",
+		"position": "Python Developer",
 		"time": "DECEMBER 2020 - JANUARY 2021",
-		"description": "My job was to participate in the development of an application. Tasks performed: simple login, store in a dictionary 2 previously registered users, creation of two modules that can be accessed depending on the type of privilege either manager or reception."
+		"description": "Developed a role-based access application with login and user privilege management using Python.",
+		"icons": [{ "name": "FaPython" }]
 	}
 ]

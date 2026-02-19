@@ -1,21 +1,32 @@
-"use client";
+import React from "react";
+import dynamic from "next/dynamic";
+import Main from "./src/components/Main/Main";
 
-const Main = dynamic(() => import("./src/components/Main/Main"), {
-	ssr: false,
-});
 const About = dynamic(() => import("./src/components/About/About"), {
 	ssr: false,
 });
 const Experience = dynamic(
 	() => import("./src/components/Experience/Experience"),
-	{ ssr: false }
+	{ ssr: false },
+);
+const Projects = dynamic(() => import("./src/components/Projects/Projects"), {
+	ssr: false,
+});
+const Articles = dynamic(
+	() => import("./src/components/Articles/Articles"),
+	{ ssr: false },
+);
+const Certifications = dynamic(
+	() => import("./src/components/Certifications/Certifications"),
+	{ ssr: false },
+);
+const Recommendations = dynamic(
+	() => import("./src/components/Recommendations/Recommendations"),
+	{ ssr: false },
 );
 const Contact = dynamic(() => import("./src/components/Contact/Contact"), {
 	ssr: false,
 });
-
-import React from "react";
-import dynamic from "next/dynamic";
 
 const Home = () => {
 	return (
@@ -23,6 +34,10 @@ const Home = () => {
 			<Main />
 			<About />
 			<Experience />
+			<Projects />
+			<Articles />
+			<Certifications />
+			<Recommendations />
 			<Contact />
 		</main>
 	);

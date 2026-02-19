@@ -1,9 +1,8 @@
-"use client";
-
 import "../styles/globals.css";
 
 import React from "react";
 import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 
 const Arrow = dynamic(() => import("./src/common/Arrow"), { ssr: false });
 const Footer = dynamic(() => import("./src/components/Footer/Footer"), {
@@ -13,36 +12,104 @@ const Navbar = dynamic(() => import("./src/components/Navbar/Navbar"), {
 	ssr: false,
 });
 
+const BASE_URL = "https://joaquinmussi.vercel.app";
+
+export const metadata: Metadata = {
+	metadataBase: new URL(BASE_URL),
+	title: "Joaquín Mussi - Software Engineer | Full Stack Developer",
+	description:
+		"Joaquín Mussi — Software Engineer with 3+ years of experience building high-performance web applications. Next.js, React, TypeScript, .NET, C#, Clean Architecture, Team Leadership.",
+	keywords: [
+		"joaquin mussi",
+		"software engineer",
+		"full stack developer",
+		"next.js",
+		"react",
+		"typescript",
+		"tailwind css",
+		"asp.net",
+		"c#",
+		".net",
+		"clean architecture",
+		"ux performance optimization",
+		"team leadership",
+		"argentina",
+		"portfolio",
+	],
+	authors: [{ name: "Joaquín Mussi", url: BASE_URL }],
+	robots: { index: true, follow: true },
+	manifest: "/manifest.json",
+	icons: {
+		icon: "/favicon.ico",
+		apple: "/favicon.ico",
+	},
+	alternates: {
+		canonical: BASE_URL,
+	},
+	openGraph: {
+		type: "website",
+		url: BASE_URL,
+		title: "Joaquín Mussi - Software Engineer | Full Stack Developer",
+		description:
+			"Software Engineer with 3+ years of experience. Next.js · React · TypeScript · .NET · C# · Clean Architecture · Team Leadership.",
+		siteName: "Joaquín Mussi Portfolio",
+		locale: "en_US",
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Joaquín Mussi - Software Engineer | Full Stack Developer",
+		description:
+			"Software Engineer with 3+ years of experience. Next.js · React · TypeScript · .NET · C# · Clean Architecture.",
+	},
+	appleWebApp: {
+		capable: true,
+		title: "Joaquín Mussi - Dev",
+		statusBarStyle: "black",
+	},
+	other: {
+		"msapplication-TileColor": "#F24F0F",
+		"msapplication-navbutton-color": "#F24F0F",
+		copyright: "Joaquín Mussi",
+	},
+};
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "Person",
+	name: "Joaquín Mussi",
+	url: BASE_URL,
+	jobTitle: "Software Engineer | Full Stack Developer",
+	sameAs: [
+		"https://github.com/MussiDev",
+		"https://www.linkedin.com/in/joaquinmussi/",
+	],
+	knowsAbout: [
+		"Next.js",
+		"React",
+		"TypeScript",
+		"Tailwind CSS",
+		"Sass",
+		"ChakraUI",
+		"Styled Components",
+		"Framer Motion",
+		"C#",
+		"ASP.NET Web API",
+		"SQL Server",
+		"REST APIs",
+		"Clean Architecture",
+		"Agile SCRUM",
+		"CI/CD",
+	],
+};
+
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<html lang="en">
-			<head>
-				<title>Joaquín Mussi - Dev</title>
-				<meta charSet="utf-8" />
-				<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-				<meta content="en" httpEquiv="Content-Language" />
-				<meta
-					name="description"
-					content="Portfolio personal de Joaquín Mussi"
+			<body className="text-white bg-slate-800">
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
 				/>
-				<meta name="robots" content="index, follow" />
-				<meta name="author" content="Joaquín Mussi" />
-				<meta name="copyright" content="Joaquín Mussi" />
-				<meta
-					name="keywords"
-					content="portfolio, joaquin, mussi, joaquin mussi"
-				/>
-				<meta name="theme-color" content="#3367D6" />
-				<meta name="msapplication-TileColor" content="#3367D6" />
-				<meta name="msapplication-navbutton-color" content="#3367D6" />
-				<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-				<meta name="apple-mobile-web-app-title" content="Joaquín Mussi - Dev" />
-				<meta name="apple-mobile-web-app-capable" content="yes" />
-				<link rel="manifest" href="/manifest.json" />
-				<link rel="icon" href="/favicon.ico" />
-				<link rel="apple-touch-icon" href="/favicon.ico" />
-			</head>
-			<body className="text-white bg-slate-800 ">
 				<Navbar />
 				{children}
 				<Arrow />

@@ -10,11 +10,11 @@
 		}
 	],
 	"lang": "en",
-	"start_url": ".",
+	"start_url": "/",
 	"scope": "/",
-	"background_color": "#3367D6",
+	"background_color": "#040508",
 	"display": "standalone",
-	"theme_color": "#3367D6",
-	"description": "Portfolio personal de Joaquín Mussi",
+	"theme_color": "#F24F0F",
+	"description": "Joaquín Mussi - Software Engineer portfolio",
 	"orientation": "any"
 }

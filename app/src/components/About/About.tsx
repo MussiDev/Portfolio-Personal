@@ -9,79 +9,103 @@ import { motion } from "framer-motion";
 const Title = dynamic(() => import("../../common/Title"), { ssr: false });
 const Button = dynamic(() => import("../../common/Button"), { ssr: false });
 
+const highlights = [
+	"Team Leadership",
+	"Clean Architecture",
+	"Performance Optimization",
+	"Legacy Migrations",
+	"SEO-Optimized Apps",
+	"Agile SCRUM",
+	"CI/CD",
+];
+
 const About = () => {
 	const [ageToday, setAgeToday] = useState(0);
 
-	const getAge = () => {
-		let today = new Date();
-		let dateOfBirth = new Date("2002/02/24");
+	useEffect(() => {
+		const today = new Date();
+		const dateOfBirth = new Date("2002/02/24");
 		let age = today.getFullYear() - dateOfBirth.getFullYear();
-		let months = today.getMonth() - dateOfBirth.getMonth();
+		const months = today.getMonth() - dateOfBirth.getMonth();
 		if (
 			months < 0 ||
 			(months === 0 && today.getDate() < dateOfBirth.getDate())
 		) {
 			age--;
 		}
-		return setAgeToday(age);
-	};
-
-	useEffect(() => {
-		getAge();
+		setAgeToday(age);
 	}, []);
 
 	return (
 		<motion.section
-			className="flex items-center w-full px-4 h-screen py-16"
-			id="about"
+			className='max-w-[77.5rem] m-auto px-4 py-16 min-h-screen flex flex-col justify-center'
+			id='about'
 			initial={{ opacity: 0 }}
 			whileInView={{ opacity: 1 }}
-			transition={{ duration: 2 }}
+			transition={{ duration: 0.8 }}
+			viewport={{ once: true }}
 		>
-			<div className="max-w-[77.5rem] m-auto md:flex flex-col gap-4">
-				<Title title="About Me" color="orange-700" />
-				<motion.p
-					className="text-lg md:text-xl lg:text-2xl"
-					initial={{ x: -200, opacity: 0 }}
-					whileInView={{ opacity: 1, x: 0 }}
-					transition={{ duration: 1.2 }}
-					viewport={{ once: true }}
-				>
-					I'm {ageToday} years old, I'm Software Engineer at &nbsp;
-					<Link
-						href="https://www.mutualamr.org.ar/"
-						target="_blank"
-						className="text-orange-700 underline"
-					>
-						La Mutual De Socios de AMR
-					</Link>
-					&nbsp; and I'm studying Computer Security at &nbsp;
-					<Link
-						href="https://www.educacionit.com/"
-						target="_blank"
-						className="text-orange-700 underline"
-					>
-						Educacion IT
-					</Link>
-					&nbsp;. If I don't know any topic related to IT, I'm ready to learn
-					right away. My passion by the technology It took me to be Computer
-					Technician. I'm studying web development on my own and I started
-					Systems Engineering since 2020-2021 but I quit University because I
-					started to work and I decided follow the IT studies on my own.
-					Moreover, I love Football and programming too. I stand out like a
-					proactive person, who tries to improve my way of work and my knowledge
-					about writting code daily.
-				</motion.p>
+			<Title title='About Me' color='orange-700' />
 
-				<div className="flex justify-center gap-2 py-4 w-max">
-					<Button
-						title="Ir a Linkedin"
-						href="https://www.linkedin.com/in/joaquinmussi/"
-						blank={true}
-					/>
-					<Button title="Ver CV" href="pdf.pdf" blank={true} />
+			<motion.div
+				className='border border-slate-700 rounded-xl p-6 md:p-8 hover:border-orange-700 transition-colors duration-300 flex flex-col gap-6'
+				initial={{ opacity: 0, y: 40 }}
+				whileInView={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5, delay: 0.1 }}
+				viewport={{ once: true }}
+			>
+				<p className='text-gray-300 text-sm md:text-base lg:text-lg xl:text-xl leading-relaxed'>
+					I&apos;m {ageToday} years old, Software Engineer with{" "}
+					<span className='text-white font-semibold'>
+						3+ years of experience
+					</span>{" "}
+					designing, developing and deploying high-performance web applications
+					from scratch. Currently at{" "}
+					<Link
+						href='https://www.mutualamr.org.ar/'
+						target='_blank'
+						className='text-orange-700 underline hover:opacity-80 transition-opacity'
+					>
+						La Mutual de AMR
+					</Link>
+					, where I lead junior developers, design scalable architectures and
+					migrate legacy systems to modern frameworks (Angular → Next.js, CSHTML
+					→ React/Next.js). Passionate about clean architecture, performance
+					optimization and continuous learning — seeking an international
+					challenge to deliver impactful solutions.
+				</p>
+
+				<div className='flex flex-col gap-2'>
+					<p className='text-sm text-gray-400 uppercase tracking-widest'>
+						Highlights
+					</p>
+					<div className='flex flex-wrap gap-2'>
+						{highlights.map((item) => (
+							<span
+								key={item}
+								className='text-xs px-3 py-1 rounded-full border border-slate-600 text-gray-300'
+							>
+								{item}
+							</span>
+						))}
+					</div>
 				</div>
-			</div>
+
+				<div className='flex flex-wrap gap-3'>
+					<Button
+						title='Go to LinkedIn'
+						href='https://www.linkedin.com/in/joaquinmussi/'
+						blank={true}
+						variant='primary'
+					/>
+					<Button
+						title='View CV'
+						href='pdf.pdf'
+						blank={true}
+						variant='secondary'
+					/>
+				</div>
+			</motion.div>
 		</motion.section>
 	);
 };

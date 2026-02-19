@@ -1,7 +1,7 @@
-import React from "react";
-import dynamic from "next/dynamic";
+"use client";
 
-const IconLink = dynamic(() => import("../../common/IconLink"), { ssr: false });
+import React from "react";
+import IconLink from "../../common/IconLink";
 
 const Footer = () => {
 	return (
@@ -13,7 +13,7 @@ const Footer = () => {
 					icon="linkedin"
 				/>
 			</div>
-			<p className="text-sm">Joaquín Mussi &copy; 2023</p>
+			<p className="text-sm">Joaquín Mussi &copy; 2026</p>
 		</footer>
 	);
 };
