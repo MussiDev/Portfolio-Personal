@@ -1,3 +1,4 @@
+import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
@@ -7,7 +8,6 @@ import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../sanity/lib/queries";
 import { urlFor } from "../../../../sanity/lib/image";
-import { FaArrowLeft } from "react-icons/fa";
 
 interface Post {
 	title: string;
@@ -24,7 +24,9 @@ interface PageProps {
 const portableTextComponents = {
 	block: {
 		normal: ({ children }: any) => (
-			<p className='text-gray-300 leading-relaxed mb-4'>{children}</p>
+			<p className='text-gray-300 leading-relaxed mb-4 break-words'>
+				{children}
+			</p>
 		),
 		h1: ({ children }: any) => (
 			<h1 className='text-3xl font-bold text-white mt-8 mb-4'>{children}</h1>
@@ -43,19 +45,19 @@ const portableTextComponents = {
 	},
 	list: {
 		bullet: ({ children }: any) => (
-			<ul className='list-disc list-inside text-gray-300 mb-4 space-y-1'>
+			<ul className='list-disc list-inside pl-5 text-gray-300 mb-4 space-y-1'>
 				{children}
 			</ul>
 		),
 		number: ({ children }: any) => (
-			<ol className='list-decimal list-inside text-gray-300 mb-4 space-y-1'>
+			<ol className='list-decimal list-inside pl-5 text-gray-300 mb-4 space-y-1'>
 				{children}
 			</ol>
 		),
 	},
 	listItem: {
-		bullet: ({ children }: any) => <li>{children}</li>,
-		number: ({ children }: any) => <li>{children}</li>,
+		bullet: ({ children }: any) => <li className='break-words'>{children}</li>,
+		number: ({ children }: any) => <li className='break-words'>{children}</li>,
 	},
 	marks: {
 		strong: ({ children }: any) => (
@@ -130,7 +132,7 @@ async function PostContent({ slug }: { slug: string }) {
 				</div>
 			)}
 
-			<article className='max-w-3xl'>
+			<article className='max-w-3xl break-words'>
 				<PortableText value={post.body} components={portableTextComponents} />
 			</article>
 
