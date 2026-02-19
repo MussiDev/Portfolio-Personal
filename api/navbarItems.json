@@ -16,10 +16,6 @@
 		"text": "Projects"
 	},
 	{
-		"link": "articles",
-		"text": "Articles"
-	},
-	{
 		"link": "certifications",
 		"text": "Certifications"
 	},
@@ -27,6 +23,7 @@
 		"link": "recommendations",
 		"text": "Recommendations"
 	},
+	{ "link": "/blog", "text": "Blog" },
 	{
 		"link": "contactme",
 		"text": "Contact me"

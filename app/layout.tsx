@@ -1,16 +1,8 @@
 import "../styles/globals.css";
 
-import React from "react";
-import dynamic from "next/dynamic";
 import type { Metadata } from "next";
-
-const Arrow = dynamic(() => import("./src/common/Arrow"), { ssr: false });
-const Footer = dynamic(() => import("./src/components/Footer/Footer"), {
-	ssr: false,
-});
-const Navbar = dynamic(() => import("./src/components/Navbar/Navbar"), {
-	ssr: false,
-});
+import React from "react";
+import Arrow from "./src/common/Arrow";
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
 
@@ -104,16 +96,14 @@ const jsonLd = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<html lang="en">
-			<body className="text-white bg-slate-800">
+		<html lang='en'>
+			<body className='text-white bg-slate-800'>
 				<script
-					type="application/ld+json"
+					type='application/ld+json'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
 				/>
-				<Navbar />
 				{children}
 				<Arrow />
-				<Footer />
 			</body>
 		</html>
 	);

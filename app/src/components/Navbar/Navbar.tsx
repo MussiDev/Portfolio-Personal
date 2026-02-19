@@ -1,24 +1,32 @@
-"use client"; // this is a client component
+"use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaDev, FaTimes } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 
+import NextLink from "next/link";
 import { Link as ScrollLink } from "react-scroll";
-
-const Link = ScrollLink as React.ElementType;
 import dynamic from "next/dynamic";
 import items from "../../../../api/navbarItems.json";
 import navbarItem from "../../../../entities/navbarItem";
+import { usePathname } from "next/navigation";
+
+const Link = ScrollLink as React.ElementType;
 
 const NavbarItem = dynamic(() => import("../../common/NavbarItem"), {
 	ssr: false,
 });
-const IconLink = dynamic(() => import("../../common/IconLink"), { ssr: false });
+
+const scrollItems = items.filter(
+	(item: navbarItem) => !item.link.startsWith("/"),
+);
+const pageItems = items.filter((item: navbarItem) => item.link.startsWith("/"));
 
 const Navbar = () => {
 	const [shadow, setShadow] = useState(false);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const pathname = usePathname();
+	const isHome = pathname === "/";
 
 	useEffect(() => {
 		const handleShadow = () => {
@@ -96,22 +104,50 @@ const Navbar = () => {
 						transition={{ duration: 0.2 }}
 					>
 						<ul className='flex flex-col py-2'>
-							{items.map((item: navbarItem, k: number) => (
+							{scrollItems.map((item: navbarItem, k: number) => (
 								<li key={k}>
-									<Link
-										href={item.link}
-										to={item.link}
-										spy={true}
-										smooth={true}
-										offset={-70}
-										duration={1000}
-										className='block px-10 py-3 cursor-pointer text-white hover:text-orange-700 hover:bg-slate-700 transition-colors'
-										onClick={() => setIsMenuOpen(false)}
-									>
-										{item.text}
-									</Link>
+									{isHome ? (
+										<Link
+											href={item.link}
+											to={item.link}
+											spy={true}
+											smooth={true}
+											offset={-70}
+											duration={1000}
+											className='block px-10 py-3 cursor-pointer text-white hover:text-orange-700 hover:bg-slate-700 transition-colors'
+											onClick={() => setIsMenuOpen(false)}
+										>
+											{item.text}
+										</Link>
+									) : (
+										<NextLink
+											href={`/#${item.link}`}
+											className='block px-10 py-3 cursor-pointer text-white hover:text-orange-700 hover:bg-slate-700 transition-colors'
+											onClick={() => setIsMenuOpen(false)}
+										>
+											{item.text}
+										</NextLink>
+									)}
 								</li>
 							))}
+							{pageItems.length > 0 && (
+								<>
+									<li>
+										<hr className='my-2 border-slate-700 mx-10' />
+									</li>
+									{pageItems.map((item: navbarItem, k: number) => (
+										<li key={`page-${k}`} className='px-10 py-2'>
+											<NextLink
+												href={item.link}
+												className='inline-block px-4 py-1.5 rounded-full border border-orange-700 text-orange-400 hover:bg-orange-700 hover:text-white transition-colors text-sm font-medium'
+												onClick={() => setIsMenuOpen(false)}
+											>
+												{item.text}
+											</NextLink>
+										</li>
+									))}
+								</>
+							)}
 						</ul>
 					</motion.nav>
 				)}
