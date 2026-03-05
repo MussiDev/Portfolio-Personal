@@ -1,11 +1,8 @@
-import React from "react";
 import { FaArrowDown } from "react-icons/fa";
-import { Link as ScrollLink } from "react-scroll";
 import { motion } from "framer-motion";
 import LinkItem from "./LinkItem";
 import button from "../../../entities/button";
-
-const Link = ScrollLink as React.ElementType;
+import { scrollTo } from "./scrollTo";
 
 const variantClass = {
 	primary:
@@ -20,15 +17,7 @@ const Button = (props: button) => {
 	return (
 		<>
 			{more ? (
-				<Link
-					href={href}
-					to={href}
-					spy={true}
-					smooth={true}
-					offset={-70}
-					duration={1000}
-					className="cursor-pointer"
-				>
+				<span onClick={() => scrollTo(href)} className="cursor-pointer">
 					<motion.span
 						className={`inline-flex items-center gap-2 text-sm md:text-base ${variantClass[variant]}`}
 						whileHover={{ scale: 1.04, transition: { duration: 0.2 } }}
@@ -44,7 +33,7 @@ const Button = (props: button) => {
 							</motion.span>
 						)}
 					</motion.span>
-				</Link>
+				</span>
 			) : (
 				<LinkItem
 					title={title}

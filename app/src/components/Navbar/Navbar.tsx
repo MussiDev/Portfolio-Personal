@@ -2,16 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaDev, FaTimes } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import NextLink from "next/link";
-import { Link as ScrollLink } from "react-scroll";
 import dynamic from "next/dynamic";
 import items from "../../../../api/navbarItems.json";
 import navbarItem from "../../../../entities/navbarItem";
 import { usePathname } from "next/navigation";
-
-const Link = ScrollLink as React.ElementType;
+import { scrollTo } from "../../common/scrollTo";
 
 const NavbarItem = dynamic(() => import("../../common/NavbarItem"), {
 	ssr: false,
@@ -51,19 +49,13 @@ const Navbar = () => {
 					animate={{ x: 0, opacity: 1 }}
 					transition={{ duration: 0.5 }}
 				>
-					<Link
-						href='home'
-						to='home'
-						spy={true}
-						smooth={true}
-						offset={-70}
-						duration={1000}
+					<span
+						onClick={() => { scrollTo("home"); setIsMenuOpen(false); }}
 						className='flex items-center gap-2 text-base font-semibold cursor-pointer'
-						onClick={() => setIsMenuOpen(false)}
 					>
 						<FaDev size={25} />
 						Joaquín Mussi
-					</Link>
+					</span>
 				</motion.div>
 
 				<motion.ul
@@ -107,18 +99,12 @@ const Navbar = () => {
 							{scrollItems.map((item: navbarItem, k: number) => (
 								<li key={k}>
 									{isHome ? (
-										<Link
-											href={item.link}
-											to={item.link}
-											spy={true}
-											smooth={true}
-											offset={-70}
-											duration={1000}
+										<span
+											onClick={() => { scrollTo(item.link); setIsMenuOpen(false); }}
 											className='block px-10 py-3 cursor-pointer text-white hover:text-orange-700 hover:bg-slate-700 transition-colors'
-											onClick={() => setIsMenuOpen(false)}
 										>
 											{item.text}
-										</Link>
+										</span>
 									) : (
 										<NextLink
 											href={`/#${item.link}`}

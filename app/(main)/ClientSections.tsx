@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 import Main from "../src/components/Main/Main";
 import dynamic from "next/dynamic";
-import { scroller } from "react-scroll";
+import { scrollTo } from "../src/common/scrollTo";
 
 const About = dynamic(() => import("../src/components/About/About"), {
 	ssr: false,
@@ -34,11 +34,7 @@ const ClientSections = () => {
 		if (hash) {
 			const target = hash.slice(1);
 			setTimeout(() => {
-				scroller.scrollTo(target, {
-					smooth: true,
-					offset: -70,
-					duration: 800,
-				});
+				scrollTo(target);
 				window.history.replaceState(null, "", "/");
 			}, 100);
 		}

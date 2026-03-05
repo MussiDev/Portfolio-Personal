@@ -1,13 +1,10 @@
 "use client";
 
 import LinkNext from "next/link";
-import React from "react";
-import { Link as ScrollLink } from "react-scroll";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import navbarItem from "../../../entities/navbarItem";
-
-const ScrollLinkComponent = ScrollLink as React.ElementType;
+import { scrollTo } from "./scrollTo";
 
 const NavbarItem = ({ link, text }: navbarItem) => {
 	const pathname = usePathname();
@@ -27,16 +24,12 @@ const NavbarItem = ({ link, text }: navbarItem) => {
 					{text}
 				</LinkNext>
 			) : isHome ? (
-				<ScrollLinkComponent
-					to={link}
-					spy={true}
-					smooth={true}
-					offset={-70}
-					duration={1000}
+				<span
+					onClick={() => scrollTo(link)}
 					className='cursor-pointer'
 				>
 					{text}
-				</ScrollLinkComponent>
+				</span>
 			) : (
 				<LinkNext href={`/#${link}`} className='cursor-pointer'>
 					{text}
