@@ -2,6 +2,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
+import ReactMarkdown from "react-markdown";
 import { Suspense } from "react";
 import { client } from "../../../../sanity/lib/client";
 import dynamic from "next/dynamic";
@@ -19,7 +20,8 @@ interface Post {
 	title: string;
 	publishedAt: string;
 	coverImage?: any;
-	body: any;
+	body?: any;
+	markdownBody?: string;
 	tags?: string[];
 }
 
@@ -29,10 +31,13 @@ interface PageProps {
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
 
-function extractExcerpt(body: any[]): string {
-	if (!Array.isArray(body)) return "";
-	const firstParagraph = body.find(
-		(block) => block._type === "block" && block.style === "normal",
+function extractExcerpt(post: Pick<Post, "body" | "markdownBody">): string {
+	if (post.markdownBody) {
+		return post.markdownBody.replace(/[#*`>\[\]]/g, "").slice(0, 160);
+	}
+	if (!Array.isArray(post.body)) return "";
+	const firstParagraph = post.body.find(
+		(block: any) => block._type === "block" && block.style === "normal",
 	);
 	return (
 		firstParagraph?.children
@@ -118,7 +123,7 @@ export async function generateMetadata({ params }: PageProps) {
 	const post: Post | null = await client.fetch(postBySlugQuery, { slug });
 	if (!post) return { title: "Post not found" };
 
-	const description = extractExcerpt(post.body);
+	const description = extractExcerpt(post);
 	const ogImage = post.coverImage
 		? urlFor(post.coverImage).width(1200).height(630).url()
 		: undefined;
@@ -156,7 +161,7 @@ async function PostContent({ slug }: { slug: string }) {
 		"@context": "https://schema.org",
 		"@type": "BlogPosting",
 		headline: post.title,
-		description: extractExcerpt(post.body),
+		description: extractExcerpt(post),
 		author: {
 			"@type": "Person",
 			name: "Joaquín Mussi",
@@ -202,7 +207,32 @@ async function PostContent({ slug }: { slug: string }) {
 			)}
 
 			<article className='text-justify break-words'>
-				<PortableText value={post.body} components={portableTextComponents} />
+				{post.markdownBody ? (
+					<ReactMarkdown
+						components={{
+							p: ({ children }) => <p className='text-gray-300 leading-relaxed mb-4 break-words'>{children}</p>,
+							h1: ({ children }) => <h1 className='text-3xl font-bold text-white mt-8 mb-4'>{children}</h1>,
+							h2: ({ children }) => <h2 className='text-2xl font-bold text-white mt-8 mb-3'>{children}</h2>,
+							h3: ({ children }) => <h3 className='text-xl font-semibold text-white mt-6 mb-2'>{children}</h3>,
+							blockquote: ({ children }) => <blockquote className='border-l-4 border-orange-700 pl-4 text-gray-400 italic my-4'>{children}</blockquote>,
+							ul: ({ children }) => <ul className='list-disc list-inside pl-5 text-gray-300 mb-4 space-y-1'>{children}</ul>,
+							ol: ({ children }) => <ol className='list-decimal list-inside pl-5 text-gray-300 mb-4 space-y-1'>{children}</ol>,
+							li: ({ children }) => <li className='break-words'>{children}</li>,
+							strong: ({ children }) => <strong className='font-semibold text-white'>{children}</strong>,
+							em: ({ children }) => <em className='italic'>{children}</em>,
+							code: ({ className, children }) => {
+								const lang = /language-(\w+)/.exec(className ?? "")?.[1];
+								if (lang === "mermaid") return <MermaidDiagram code={String(children).trim()} />;
+								return <code className='bg-slate-700 text-orange-400 px-1.5 py-0.5 rounded text-sm font-mono'>{children}</code>;
+							},
+							a: ({ children, href }) => <a href={href} target='_blank' rel='noopener noreferrer' className='text-orange-700 underline hover:opacity-80 transition-opacity'>{children}</a>,
+						}}
+					>
+						{post.markdownBody}
+					</ReactMarkdown>
+				) : (
+					<PortableText value={post.body} components={portableTextComponents} />
+				)}
 			</article>
 
 			{post.tags && post.tags.length > 0 && (

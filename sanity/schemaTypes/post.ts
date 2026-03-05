@@ -54,8 +54,15 @@ export const postType = defineType({
 		}),
 
 		defineField({
+			name: "markdownBody",
+			title: "Body (Markdown)",
+			type: "markdown",
+			description: "Use this OR the Portable Text body below, not both.",
+		}),
+
+		defineField({
 			name: "body",
-			title: "Body",
+			title: "Body (Portable Text)",
 			type: "array",
 			of: [
 				{ type: "block" },

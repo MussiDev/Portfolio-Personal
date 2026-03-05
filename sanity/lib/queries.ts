@@ -19,6 +19,7 @@ export const postBySlugQuery = groq`
     publishedAt,
     coverImage,
     tags,
-    body
+    body,
+    markdownBody
   }
 `;
