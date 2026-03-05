@@ -3,8 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import { client } from "../../../../sanity/lib/client";
+import dynamic from "next/dynamic";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../sanity/lib/queries";
@@ -12,7 +12,7 @@ import { urlFor } from "../../../../sanity/lib/image";
 
 const MermaidDiagram = dynamic(
 	() => import("../../../src/components/Blog/MermaidDiagram"),
-	{ ssr: false },
+	{ ssr: true },
 );
 
 interface Post {
