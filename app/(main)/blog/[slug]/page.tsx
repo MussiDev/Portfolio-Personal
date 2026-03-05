@@ -201,7 +201,7 @@ async function PostContent({ slug }: { slug: string }) {
 				</div>
 			)}
 
-			<article className='max-w-3xl break-words'>
+			<article className='text-justify break-words'>
 				<PortableText value={post.body} components={portableTextComponents} />
 			</article>
 
