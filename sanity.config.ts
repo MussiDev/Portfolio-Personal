@@ -2,7 +2,7 @@ import { defineConfig } from "sanity";
 import { schemaTypes } from "./sanity/schemaTypes";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
-import { markdownSchema } from "sanity-plugin-markdown";
+import { markdownSchema } from "sanity-plugin-markdown/next";
 
 export default defineConfig({
 	name: "portfolio",
