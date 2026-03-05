@@ -57,7 +57,30 @@ export const postType = defineType({
 			name: "body",
 			title: "Body",
 			type: "array",
-			of: [{ type: "block" }],
+			of: [
+				{ type: "block" },
+				{
+					type: "object",
+					name: "mermaidBlock",
+					title: "Mermaid Diagram",
+					fields: [
+						defineField({
+							name: "code",
+							title: "Mermaid Code",
+							type: "text",
+						}),
+					],
+					preview: {
+						select: { code: "code" },
+						prepare({ code }: { code?: string }) {
+							return {
+								title: "Mermaid Diagram",
+								subtitle: code?.split("\n")[0] ?? "",
+							};
+						},
+					},
+				},
+			],
 		}),
 	],
 });

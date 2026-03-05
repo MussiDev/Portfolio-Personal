@@ -3,11 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { client } from "../../../../sanity/lib/client";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../sanity/lib/queries";
 import { urlFor } from "../../../../sanity/lib/image";
+
+const MermaidDiagram = dynamic(
+	() => import("../../../src/components/Blog/MermaidDiagram"),
+	{ ssr: false },
+);
 
 interface Post {
 	title: string;
@@ -37,6 +43,9 @@ function extractExcerpt(body: any[]): string {
 }
 
 const portableTextComponents = {
+	types: {
+		mermaidBlock: ({ value }: any) => <MermaidDiagram code={value.code} />,
+	},
 	block: {
 		normal: ({ children }: any) => (
 			<p className='text-gray-300 leading-relaxed mb-4 break-words'>
