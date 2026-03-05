@@ -30,6 +30,7 @@
 		"react-markdown": "^10.1.0",
 		"react-simple-typewriter": "^5.0.1",
 		"sanity": "^5.11.0",
+		"easymde": "^2.18.0",
 		"sanity-plugin-markdown": "^8.0.5",
 		"styled-components": "^6.3.10",
 		"sweetalert2": "^11.10.5",
