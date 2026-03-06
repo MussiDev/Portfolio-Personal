@@ -70,9 +70,8 @@ const About = () => {
 					</Link>
 					, where I lead junior developers, design scalable architectures and
 					migrate legacy systems to modern frameworks (Angular → Next.js, CSHTML
-					→ React/Next.js). Passionate about clean architecture, performance
-					optimization and continuous learning — seeking an international
-					challenge to deliver impactful solutions.
+					→ React/Next.js). Open to international product teams where frontend
+					architecture and long-term system design are first-class concerns.
 				</p>
 
 				<div className='flex flex-col gap-2'>
