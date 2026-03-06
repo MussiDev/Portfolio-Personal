@@ -10,13 +10,13 @@ const Title = dynamic(() => import("../../common/Title"), { ssr: false });
 const Button = dynamic(() => import("../../common/Button"), { ssr: false });
 
 const highlights = [
-	"Team Leadership",
-	"Clean Architecture",
+	"Frontend Architecture",
 	"Performance Optimization",
 	"Legacy Migrations",
+	"Clean Architecture",
 	"SEO-Optimized Apps",
-	"Agile SCRUM",
-	"CI/CD",
+	"Team Leadership",
+	"System Design",
 ];
 
 const About = () => {

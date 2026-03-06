@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
+import Title from "../../common/Title";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import Title from "../../common/Title";
 
 const TypewriterTitle = dynamic(() => import("../../common/TypewriterTitle"), {
 	ssr: false,
-	loading: () => <Title title="Software Engineer" />,
+	loading: () => <Title title='Software Engineer' />,
 });
 
 const Button = dynamic(() => import("../../common/Button"), { ssr: false });
@@ -41,9 +41,9 @@ const Main = () => {
 					<TypewriterTitle />
 
 					<p className='text-gray-300 sm:max-w-[60%] text-sm md:text-base lg:text-lg leading-relaxed'>
-						Software Engineer · Full Stack Developer focused on{" "}
+						Software Engineer focused on architecture,{" "}
 						<span className='text-white font-semibold'>
-							performance, clean architecture and scalable solutions.
+							performance and scalable web systems.
 						</span>
 					</p>
 

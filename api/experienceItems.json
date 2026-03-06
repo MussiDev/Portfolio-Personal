@@ -6,7 +6,7 @@
 			{
 				"position": "Software Engineer",
 				"time": "NOV 2023 - PRESENT",
-				"description": "Designed and implemented scalable web architectures, improving application load times by 35%. Led and mentored junior developers, reviewing PRs and enforcing clean architecture best practices. Collaborated with stakeholders to define architecture and tech stack for new projects.",
+				"description": "Redesigned core web architecture, reducing application load times by 35%. Defined frontend architecture and technology stack across products. Built full-stack features integrating Next.js, React, TypeScript and .NET APIs. Established code review standards and mentored junior developers.",
 				"icons": [
 					{ "name": "SiNextdotjs" },
 					{ "name": "SiTypescript" },
@@ -16,9 +16,9 @@
 				]
 			},
 			{
-				"position": "FullStack Web Developer",
-				"time": "AUG 2022 - MAR 2024",
-				"description": "Developed MutualData, a platform for massive data processing and visualization. Built reusable UI components and integrated APIs for Tus Cuentas (investment platform). Migrated La Medica e-commerce from CSHTML to Next.js 15 and Cras app from Angular to Next.js 15, reducing technical debt.",
+				"position": "FullStack Engineer",
+				"time": "AUG 2022 - NOV 2023",
+				"description": "Built MutualData, a platform for large-scale financial data processing and visualization. Architected component systems and API integrations for Tus Cuentas, an investment platform. Migrated e-commerce platform from CSHTML to Next.js, improving maintainability. Modernized legacy Angular applications to Next.js architecture.",
 				"icons": [
 					{ "name": "SiNextdotjs" },
 					{ "name": "SiTypescript" },
@@ -28,9 +28,9 @@
 				]
 			},
 			{
-				"position": "Frontend Web Developer",
+				"position": "Frontend Engineer",
 				"time": "JUN 2022 - AUG 2022",
-				"description": "Implemented responsive designs using Next.js, TypeScript, ChakraUI and SASS. Applied Agile SCRUM methodology, CI/CD pipelines and GitLab workflows. Participated in WSLaMedica, Mis Inversiones and MutualData projects.",
+				"description": "Built responsive UIs for WSLaMedica, Mis Inversiones and MutualData. Implemented component systems with Next.js, TypeScript, Chakra UI and SASS.",
 				"icons": [
 					{ "name": "SiNextdotjs" },
 					{ "name": "SiTypescript" },
@@ -42,21 +42,14 @@
 	},
 	{
 		"company": "It-techgroup",
-		"position": "Frontend Web Developer",
+		"position": "Frontend Developer",
 		"time": "FEBRUARY 2022 - JULY 2022 · PART-TIME",
-		"description": "Developed online casino platforms, bot applications and Web3 landing pages. Applied Styled Components, Tailwind CSS and Framer Motion for high-quality animations. Ensured responsiveness and API integration aligned with UX/UI designs.",
+		"description": "Built responsive interfaces with React, Tailwind CSS and Styled Components. Implemented UI animations with Framer Motion. Delivered production-ready frontends integrated with external APIs.",
 		"icons": [
 			{ "name": "BiLogoReact" },
 			{ "name": "SiTailwindcss" },
 			{ "name": "SiStyledcomponents" },
 			{ "name": "SiFramer" }
 		]
-	},
-	{
-		"company": "Hotel Costa Azul",
-		"position": "Python Developer",
-		"time": "DECEMBER 2020 - JANUARY 2021",
-		"description": "Developed a role-based access application with login and user privilege management using Python.",
-		"icons": [{ "name": "FaPython" }]
 	}
 ]
