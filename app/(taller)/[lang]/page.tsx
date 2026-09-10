@@ -4,17 +4,26 @@ import Link from "next/link";
 import { t, type Idioma, type Texto } from "../../../entities/i18n";
 import { ruta } from "../../../entities/i18n";
 import Idiomas from "../../src/common/Idiomas";
+import { alternativas } from "../../src/i18n/meta";
 import { getDict } from "../../src/i18n/dict";
 
 import articles from "../../../api/articles.json";
 import mesa from "../../../api/mesa.json";
 import { ESTADO_LABEL, getMachines, tiemposEscritos } from "../../src/common/taller";
 
-export const metadata: Metadata = {
-	title: "Joaquín Mussi — Software Engineer",
-	description:
-		"Construyo y modernizo productos web, desde la arquitectura hasta la implementación. Sistemas heredados, migraciones medibles y un producto propio en producción.",
-	alternates: { canonical: "/" },
+export const generateMetadata = async ({
+	params,
+}: {
+	params: Promise<{ lang: Idioma }>;
+}): Promise<Metadata> => {
+	const { lang } = await params;
+	const d = getDict(lang);
+
+	return {
+		title: "Joaquín Mussi — Software Engineer",
+		description: d.presentacion,
+		alternates: alternativas(lang, "/"),
+	};
 };
 
 type Articulo = { id: number; title: Texto; summary: Texto; date: string };

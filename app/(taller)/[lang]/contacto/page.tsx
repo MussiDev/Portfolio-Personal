@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import FormularioContacto from "../../../src/components/Taller/FormularioContacto";
 import { getDict } from "../../../src/i18n/dict";
+import { alternativas } from "../../../src/i18n/meta";
 import { ruta, type Idioma } from "../../../../entities/i18n";
 
 const COPY = {
@@ -37,10 +38,7 @@ export const generateMetadata = async ({
 	return {
 		title: `${c.titulo} — Joaquín Mussi`,
 		description: c.descripcion,
-		alternates: {
-			canonical: ruta(lang, "/contacto"),
-			languages: { es: "/contacto", en: "/en/contacto" },
-		},
+		alternates: alternativas(lang, "/contacto"),
 	};
 };
 

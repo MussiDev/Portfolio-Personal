@@ -3,15 +3,24 @@ import Link from "next/link";
 
 import { t, type Idioma } from "../../../../entities/i18n";
 import { ruta } from "../../../../entities/i18n";
+import { alternativas } from "../../../src/i18n/meta";
 import { getDict } from "../../../src/i18n/dict";
 
 import { ESTADO_LABEL, getMachines, tiemposEscritos } from "../../../src/common/taller";
 
-export const metadata: Metadata = {
-	title: "Máquinas — Joaquín Mussi",
-	description:
-		"Sistemas que construí o modernicé. Cada uno se abre en seis tiempos: problema, decisión, mecanismo, trade-off, resultado y qué haría distinto.",
-	alternates: { canonical: "/maquinas" },
+export const generateMetadata = async ({
+	params,
+}: {
+	params: Promise<{ lang: Idioma }>;
+}): Promise<Metadata> => {
+	const { lang } = await params;
+	const d = getDict(lang);
+
+	return {
+		title: `${d.maquinas.titulo} — Joaquín Mussi`,
+		description: d.maquinas.bajada,
+		alternates: alternativas(lang, "/maquinas"),
+	};
 };
 
 const renglon =

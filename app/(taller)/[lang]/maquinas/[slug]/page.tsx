@@ -11,10 +11,9 @@ import {
 	parrafos,
 } from "../../../../src/common/taller";
 import type { Medida } from "../../../../../entities/machine";
-import { t, type Idioma } from "../../../../../entities/i18n";
-import { ruta } from "../../../../../entities/i18n";
-import { IDIOMAS } from "../../../../../entities/i18n";
+import { IDIOMAS, ruta, t, type Idioma } from "../../../../../entities/i18n";
 import { getDict } from "../../../../src/i18n/dict";
+import { alternativas } from "../../../../src/i18n/meta";
 
 type Props = { params: Promise<{ slug: string; lang: Idioma }> };
 
@@ -31,11 +30,11 @@ export const generateMetadata = async ({
 	return {
 		title: `${maquina.nombre} — Joaquín Mussi`,
 		description: t(maquina.resumen, lang),
-		alternates: { canonical: `/maquinas/${maquina.slug}` },
+		alternates: alternativas(lang, `/maquinas/${maquina.slug}`),
 		openGraph: {
 			title: `${maquina.nombre} — Joaquín Mussi`,
 			description: t(maquina.resumen, lang),
-			url: `/maquinas/${maquina.slug}`,
+			url: ruta(lang, `/maquinas/${maquina.slug}`),
 		},
 	};
 };

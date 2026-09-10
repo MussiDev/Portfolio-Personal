@@ -6,13 +6,22 @@ import experienceItems from "../../../../api/experienceItems.json";
 import recommendations from "../../../../api/recommendations.json";
 import { t, type Idioma, type Texto } from "../../../../entities/i18n";
 import { ruta } from "../../../../entities/i18n";
+import { alternativas } from "../../../src/i18n/meta";
 import { getDict } from "../../../src/i18n/dict";
 
-export const metadata: Metadata = {
-	title: "El oficio — Joaquín Mussi",
-	description:
-		"Trayectoria, cómo aprendí, lo que dicen quienes trabajaron conmigo y las credenciales.",
-	alternates: { canonical: "/oficio" },
+export const generateMetadata = async ({
+	params,
+}: {
+	params: Promise<{ lang: Idioma }>;
+}): Promise<Metadata> => {
+	const { lang } = await params;
+	const d = getDict(lang);
+
+	return {
+		title: `${d.oficio.titulo} — Joaquín Mussi`,
+		description: d.oficio.bio,
+		alternates: alternativas(lang, "/oficio"),
+	};
 };
 
 type Rol = { position: string; time: string; description: Texto };

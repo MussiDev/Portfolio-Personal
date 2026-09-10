@@ -4,31 +4,39 @@ import { client } from "../../../../sanity/lib/client";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { postsQuery } from "../../../../sanity/lib/queries";
-import { IDIOMA_POR_DEFECTO, type Idioma } from "../../../../entities/i18n";
-import { ruta } from "../../../../entities/i18n";
+import { ruta, type Idioma } from "../../../../entities/i18n";
+import { alternativas } from "../../../src/i18n/meta";
 import { getDict } from "../../../src/i18n/dict";
 
 export const dynamic = "force-dynamic";
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
-const DESCRIPCION =
-	"Notas de laboratorio: hipótesis, experimento y resultado sobre ingeniería web, arquitectura y sistemas con IA.";
 
-export const metadata = {
-	title: "Cuaderno — Joaquín Mussi",
-	description: DESCRIPCION,
-	alternates: { canonical: `${BASE_URL}/blog` },
-	openGraph: {
-		title: "Cuaderno — Joaquín Mussi",
-		description: DESCRIPCION,
-		url: `${BASE_URL}/blog`,
-		type: "website",
-	},
-	twitter: {
-		card: "summary_large_image",
-		title: "Cuaderno — Joaquín Mussi",
-		description: DESCRIPCION,
-	},
+export const generateMetadata = async ({
+	params,
+}: {
+	params: Promise<{ lang: Idioma }>;
+}) => {
+	const { lang } = await params;
+	const d = getDict(lang);
+	const titulo = `${d.cuaderno.titulo} — Joaquín Mussi`;
+
+	return {
+		title: titulo,
+		description: d.cuaderno.bajada,
+		alternates: alternativas(lang, "/blog"),
+		openGraph: {
+			title: titulo,
+			description: d.cuaderno.bajada,
+			url: `${BASE_URL}${ruta(lang, "/blog")}`,
+			type: "website",
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: titulo,
+			description: d.cuaderno.bajada,
+		},
+	};
 };
 
 interface Post {

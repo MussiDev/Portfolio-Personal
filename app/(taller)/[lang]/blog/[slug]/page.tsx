@@ -8,6 +8,7 @@ import { client } from "../../../../../sanity/lib/client";
 import dynamic from "next/dynamic";
 import { format } from "date-fns";
 import { ruta, type Idioma } from "../../../../../entities/i18n";
+import { alternativas } from "../../../../src/i18n/meta";
 import { es } from "date-fns/locale";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../../sanity/lib/queries";
@@ -121,7 +122,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-	const { slug } = await params;
+	const { slug, lang } = await params;
 	const post: Post | null = await client.fetch(postBySlugQuery, { slug });
 	if (!post) return { title: "Post not found" };
 
@@ -133,13 +134,11 @@ export async function generateMetadata({ params }: PageProps) {
 	return {
 		title: `${post.title} — Joaquín Mussi`,
 		description,
-		alternates: {
-			canonical: `${BASE_URL}/blog/${slug}`,
-		},
+		alternates: alternativas(lang, `/blog/${slug}`),
 		openGraph: {
 			title: post.title,
 			description,
-			url: `${BASE_URL}/blog/${slug}`,
+			url: `${BASE_URL}${ruta(lang, `/blog/${slug}`)}`,
 			type: "article",
 			publishedTime: post.publishedAt,
 			authors: ["Joaquín Mussi"],
