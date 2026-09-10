@@ -1,0 +1,13 @@
+{
+	"descartado": {
+		"titulo": {
+			"es": "Three.js como base",
+			"en": "Three.js as the foundation"
+		},
+		"motivo": {
+			"es": "350 KB antes del primer modelo, para una metáfora que se resolvía con CSS. El sitio habla de performance: no puede desmentirse solo.",
+			"en": "350 KB before the first model, for a metaphor that CSS could carry. The site talks about performance: it cannot contradict itself."
+		}
+	},
+	"experimento": null
+}
