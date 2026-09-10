@@ -36,3 +36,14 @@ yarn-error.log*
 next-env.d.ts
 email.env
 .env
+.ddw-state.json
+.ddw-paused/
+.ddw-sessions/
+.ddw-journal.jsonl
+.ddw/**/__pycache__/
+
+# Mockups y direccion de diseno (Claude Design)
+.design/
+
+# node_modules anidado (instalacion accidental dentro de app/)
+app/node_modules/

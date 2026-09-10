@@ -3,5 +3,8 @@
     "allow": [
       "Bash(yarn build)"
     ]
+  },
+  "enabledPlugins": {
+    "ddw@dilux": false
   }
 }
