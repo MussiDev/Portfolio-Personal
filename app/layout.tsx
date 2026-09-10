@@ -2,7 +2,42 @@ import "../styles/globals.css";
 
 import type { Metadata } from "next";
 import React from "react";
-import Arrow from "./src/common/Arrow";
+import {
+	Caveat,
+	IBM_Plex_Mono,
+	IBM_Plex_Sans_Condensed,
+	IBM_Plex_Serif,
+} from "next/font/google";
+
+const rotulo = IBM_Plex_Sans_Condensed({
+	subsets: ["latin"],
+	weight: ["500", "600", "700"],
+	variable: "--font-rotulo",
+	display: "swap",
+});
+
+const nota = IBM_Plex_Serif({
+	subsets: ["latin"],
+	weight: ["400", "500"],
+	style: ["normal", "italic"],
+	variable: "--font-nota",
+	display: "swap",
+});
+
+// Lápiz: solo para lo anotado a mano sobre el dibujo, nunca para el dibujo.
+const lapiz = Caveat({
+	subsets: ["latin"],
+	weight: ["400", "500"],
+	variable: "--font-lapiz",
+	display: "swap",
+});
+
+const pieza = IBM_Plex_Mono({
+	subsets: ["latin"],
+	weight: ["400", "500", "600"],
+	variable: "--font-pieza",
+	display: "swap",
+});
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
 
@@ -96,14 +131,16 @@ const jsonLd = {
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<html lang='en'>
+		<html
+			lang='en'
+			className={`${rotulo.variable} ${nota.variable} ${pieza.variable} ${lapiz.variable}`}
+		>
 			<body className='text-white bg-slate-800'>
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
 				/>
 				{children}
-				<Arrow />
 			</body>
 		</html>
 	);

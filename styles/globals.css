@@ -81,3 +81,175 @@ li {
 		@apply flex flex-wrap gap-6 items-center md:flex-nowrap;
 	}
 }
+
+/* ---------------------------------------------------------------------
+   Taller — papel, y punto.
+
+   Un taller sobre papel es una cosa clara. El sitio se compromete con un
+   solo mundo: no hay modo oscuro, y por eso cada decisión se toma una vez.
+
+   Tres materiales y dos tintas:
+     mesa   — la superficie de trabajo, más oscura que el papel
+     hoja   — el papel apoyado encima; tiene canto y levanta sombra
+     linea  — azul de plano. SOLO aparato de dibujo: cotas, reglas, ejes.
+     marca  — lápiz rojo. Una corrección, una vez por página.
+   --------------------------------------------------------------------- */
+.taller {
+	/* La mesa es fría y el papel cálido: ese contraste es lo que hace que
+	   una hoja parezca apoyada y no pintada. */
+	--mesa: 190 196 186;
+	--hoja: 247 246 241;
+	--hoja-honda: 236 234 227;
+	--texto: 31 33 36;
+	--texto-medio: 106 108 110;
+	--linea: 47 92 126;
+	--marca: 154 58 42;
+
+	color-scheme: light;
+	background-color: rgb(var(--mesa));
+	color: rgb(var(--texto));
+	font-family: theme("fontFamily.nota");
+
+	/* El rayado del tablero de dibujo. Vive SOLO en la mesa: las hojas lo
+	   tapan con su propio fondo, y esa diferencia es la que separa la
+	   superficie de lo que está apoyado encima. */
+	background-image:
+		repeating-linear-gradient(to right, rgb(var(--linea) / 0.07) 0 1px, transparent 1px 24px),
+		repeating-linear-gradient(to bottom, rgb(var(--linea) / 0.07) 0 1px, transparent 1px 24px);
+}
+
+/* Marcas de registro: las cruces de esquina de una hoja lista para imprimir. */
+.marcas::before,
+.marcas::after {
+	content: "";
+	position: absolute;
+	width: 11px;
+	height: 11px;
+	background-image:
+		linear-gradient(to right, rgb(var(--linea) / 0.55) 0 100%),
+		linear-gradient(to bottom, rgb(var(--linea) / 0.55) 0 100%);
+	background-size: 100% 1px, 1px 100%;
+	background-position: center, center;
+	background-repeat: no-repeat;
+}
+.marcas::before { top: 7px; left: 7px; }
+.marcas::after { bottom: 7px; right: 7px; }
+
+/* Una hoja apoyada sobre la mesa: tono propio, canto y una sombra corta.
+   Es lo que separa un objeto de un párrafo. */
+.hoja {
+	background-color: rgb(var(--hoja));
+	box-shadow:
+		0 1px 1px rgb(var(--texto) / 0.10),
+		0 10px 24px -14px rgb(var(--texto) / 0.45);
+}
+
+/* El rayado aparece solo donde significa algo: espacio preparado y sin usar. */
+.rayado {
+	background-image: repeating-linear-gradient(
+		to bottom,
+		transparent 0 27px,
+		rgb(var(--linea) / 0.18) 27px 28px
+	);
+}
+
+html:has(.taller) {
+	scrollbar-color: rgb(var(--texto-medio, 106 108 110)) rgb(var(--mesa, 190 196 186));
+}
+html:has(.taller) *::-webkit-scrollbar-track {
+	background: rgb(190 196 186);
+}
+html:has(.taller) *::-webkit-scrollbar-thumb {
+	background-color: rgb(106 108 110 / 0.65);
+	border: none;
+	border-radius: 0;
+}
+
+@layer base {
+	.taller button {
+		@apply px-0 py-0 bg-transparent rounded-none;
+	}
+
+	.taller h1,
+	.taller h2,
+	.taller h3,
+	.taller h4 {
+		font-family: theme("fontFamily.rotulo");
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		text-wrap: balance;
+	}
+
+	.taller li {
+		color: inherit;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.taller *,
+	.taller *::before,
+	.taller *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ---------------------------------------------------------------------
+   La tapa de un tiempo.
+
+   Una sola interacción por máquina: abrir. El signo pasa de + a − porque
+   es la marca que se usa en un plano para desplegar un detalle, y el
+   contenido empuja el layout en vez de aparecer flotando.
+   --------------------------------------------------------------------- */
+.taller .tiempo > summary::-webkit-details-marker {
+	display: none;
+}
+.taller .tiempo[open] > summary .marcador::before {
+	content: "−";
+}
+.taller .tiempo:not([open]) > summary .marcador::before {
+	content: "+";
+}
+.taller .tiempo > summary .marcador {
+	font-size: 0;
+}
+.taller .tiempo > summary .marcador::before {
+	font-size: 15px;
+	line-height: 1;
+}
+
+@supports (interpolate-size: allow-keywords) {
+	.taller {
+		interpolate-size: allow-keywords;
+	}
+	.taller .tiempo::details-content {
+		block-size: 0;
+		overflow: clip;
+		transition:
+			block-size 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+			content-visibility 0.28s allow-discrete;
+	}
+	.taller .tiempo[open]::details-content {
+		block-size: auto;
+	}
+}
+
+/* Ver más / ver menos del registro: el mismo mecanismo que las tapas de
+   los tiempos, sin una línea de JavaScript. */
+.taller .vermas > summary::-webkit-details-marker {
+	display: none;
+}
+.taller .vermas > summary .menos,
+.taller .vermas[open] > summary .mas {
+	display: none;
+}
+.taller .vermas[open] > summary .menos {
+	display: inline;
+}
+.taller .vermas > summary::after {
+	content: "▾";
+	font-size: 9px;
+}
+.taller .vermas[open] > summary::after {
+	content: "▴";
+}
