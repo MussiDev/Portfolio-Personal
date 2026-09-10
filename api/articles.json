@@ -1,18 +1,40 @@
 [
 	{
 		"id": 1,
-		"title": "The moment the web started speaking Markdown",
-		"summary": "Cloudflare launched a feature that serves Markdown content when requested by AI agents, cutting token usage by 70–80% vs full HTML. A signal of how internet infrastructure is adapting: the web is no longer only for humans.",
+		"title": {
+			"en": "The moment the web started speaking Markdown",
+			"es": "El momento en que la web empezó a hablar Markdown"
+		},
+		"summary": {
+			"en": "Cloudflare launched a feature that serves Markdown content when requested by AI agents, cutting token usage by 70–80% vs full HTML. A signal of how internet infrastructure is adapting: the web is no longer only for humans.",
+			"es": "Cloudflare lanzó una función que sirve contenido en Markdown cuando lo pide un agente de IA, con 70-80% menos tokens que el HTML completo. Una señal de cómo la infraestructura de internet se está adaptando: la web ya no es solo para humanos."
+		},
 		"date": "Feb 2026",
 		"href": "https://www.linkedin.com/in/joaquinmussi/recent-activity/articles/",
-		"tags": ["AI Agents", "Cloudflare", "Web Performance", "LLMs"]
+		"tags": [
+			"AI Agents",
+			"Cloudflare",
+			"Web Performance",
+			"LLMs"
+		]
 	},
 	{
 		"id": 2,
-		"title": "SEO for devs: your code can make the difference",
-		"summary": "A developer's guide to SEO — how CSR vs SSR impacts indexing, metadata best practices, Core Web Vitals (LCP, INP, CLS), structured data with JSON-LD, and a quick audit checklist to rank better through clean code.",
+		"title": {
+			"en": "SEO for devs: your code can make the difference",
+			"es": "SEO para devs: tu código puede marcar la diferencia"
+		},
+		"summary": {
+			"en": "A developer's guide to SEO — how CSR vs SSR impacts indexing, metadata best practices, Core Web Vitals (LCP, INP, CLS), structured data with JSON-LD, and a quick audit checklist to rank better through clean code.",
+			"es": "Cuando escuchaba «SEO» me imaginaba gente ajustando títulos y keywords todo el día. Nada que ver con mi trabajo como dev… hasta que un cambio de código llevó una página del fondo de Google a las primeras posiciones."
+		},
 		"date": "Jan 2026",
 		"href": "https://www.linkedin.com/in/joaquinmussi/recent-activity/articles/",
-		"tags": ["SEO", "Next.js", "Performance", "Web Development"]
+		"tags": [
+			"SEO",
+			"Next.js",
+			"Performance",
+			"Web Development"
+		]
 	}
 ]

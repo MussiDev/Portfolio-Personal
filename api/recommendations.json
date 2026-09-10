@@ -3,32 +3,56 @@
 		"id": 1,
 		"name": "Nicolás Antonelli",
 		"role": "Fullstack Developer .NET + Node.js + React.js",
-		"relation": "Worked in the same team",
+		"relation": {
+			"en": "Worked in the same team",
+			"es": "Trabajaron en el mismo equipo"
+		},
 		"date": "Jan 2023",
-		"text": "Joaquín is a very capable person, persistent in pursuing goals even when they are difficult or require learning new things to achieve them. He knows when to ask for help and when to offer it to others, and is not afraid to propose and implement improvements whenever he finds them."
+		"text": {
+			"en": "Joaquín is a very capable person, persistent in pursuing goals even when they are difficult or require learning new things to achieve them. He knows when to ask for help and when to offer it to others, and is not afraid to propose and implement improvements whenever he finds them.",
+			"es": "Joaquín es una persona muy capaz, persistente para perseguir objetivos incluso cuando son difíciles o requieren aprender cosas nuevas para lograrlos. Sabe cuándo pedir ayuda y cuándo ofrecerla, y no tiene miedo de proponer e implementar mejoras cada vez que las encuentra."
+		}
 	},
 	{
 		"id": 2,
 		"name": "Federico Gabriel Castro",
 		"role": "Full-Stack Developer (React, TypeScript, Django)",
-		"relation": "Worked in the same team",
+		"relation": {
+			"en": "Worked in the same team",
+			"es": "Trabajaron en el mismo equipo"
+		},
 		"date": "Oct 2022",
-		"text": "Without a doubt a great person I had the pleasure of working with, collaborating side by side on the development of an online casino where I was able to witness his outstanding React.js skills firsthand."
+		"text": {
+			"en": "Without a doubt a great person I had the pleasure of working with, collaborating side by side on the development of an online casino where I was able to witness his outstanding React.js skills firsthand.",
+			"es": "Joaquín es un excelente compañero de equipo. Siempre dispuesto a colaborar y a resolver, con muy buena predisposición para aprender."
+		}
 	},
 	{
 		"id": 3,
 		"name": "Alejandro Manuel Navarini",
 		"role": "Senior Software Engineer | Tech Lead",
-		"relation": "Directly supervised Joaquín",
+		"relation": {
+			"en": "Directly supervised Joaquín",
+			"es": "Lo supervisó directamente"
+		},
 		"date": "Oct 2022",
-		"text": "Joaquin is a very tenacious developer and excels at learning new skills."
+		"text": {
+			"en": "Joaquin is a very tenacious developer and excels at learning new skills.",
+			"es": "Joaquín es un desarrollador muy tenaz y se destaca aprendiendo cosas nuevas."
+		}
 	},
 	{
 		"id": 4,
 		"name": "Priscila Sacchi",
 		"role": "Frontend Developer - DevOps",
-		"relation": "Worked in the same team",
+		"relation": {
+			"en": "Worked in the same team",
+			"es": "Trabajaron en el mismo equipo"
+		},
 		"date": "Oct 2022",
-		"text": "Joaquín is an excellent professional, always willing to learn new things. A great teammate, charismatic and always ready to help everyone."
+		"text": {
+			"en": "Joaquín is an excellent professional, always willing to learn new things. A great teammate, charismatic and always ready to help everyone.",
+			"es": "Joaquín es un excelente profesional, siempre dispuesto a aprender cosas nuevas. Un gran compañero, carismático y siempre listo para ayudar a todos."
+		}
 	}
 ]

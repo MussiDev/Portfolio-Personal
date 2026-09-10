@@ -11,9 +11,9 @@ interface Recommendation {
 	id: number;
 	name: string;
 	role: string;
-	relation: string;
+	relation: { es: string; en: string };
 	date: string;
-	text: string;
+	text: { es: string; en: string };
 }
 
 const Recommendations = () => {
@@ -51,14 +51,14 @@ const Recommendations = () => {
 						<FaQuoteLeft size={20} className="text-orange-700 opacity-70" />
 
 						<p className="text-gray-300 text-sm md:text-base leading-relaxed italic">
-							{rec.text}
+							{rec.text.es}
 						</p>
 
 						<div className="flex flex-col gap-1 pt-2 border-t border-slate-700">
 							<p className="font-semibold text-sm">{rec.name}</p>
 							<p className="text-xs text-gray-400">{rec.role}</p>
 							<p className="text-xs text-gray-500">
-								{rec.relation} · {rec.date}
+								{rec.relation.es} · {rec.date}
 							</p>
 						</div>
 					</motion.article>
