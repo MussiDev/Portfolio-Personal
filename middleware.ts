@@ -1,28 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { IDIOMA_POR_DEFECTO, IDIOMAS } from "./entities/i18n";
 
 const COOKIE_NAME = "studio_auth";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
-export function middleware(req: NextRequest) {
-	const { pathname, searchParams } = req.nextUrl;
+/** Rutas que no pertenecen al taller y no llevan idioma. */
+const FUERA_DEL_TALLER = ["/anterior", "/studio", "/api", "/_next"];
 
-	if (!pathname.startsWith("/studio")) {
-		return NextResponse.next();
-	}
-
+const studio = (req: NextRequest) => {
+	const { searchParams } = req.nextUrl;
 	const secret = process.env.STUDIO_SECRET;
 
-	if (!secret) {
-		return new NextResponse("Studio not configured.", { status: 403 });
-	}
+	if (!secret) return new NextResponse("Studio not configured.", { status: 403 });
 
-	const cookie = req.cookies.get(COOKIE_NAME);
-	if (cookie?.value === secret) {
-		return NextResponse.next();
-	}
+	if (req.cookies.get(COOKIE_NAME)?.value === secret) return NextResponse.next();
 
-	const querySecret = searchParams.get("secret");
-	if (querySecret === secret) {
+	if (searchParams.get("secret") === secret) {
 		const url = req.nextUrl.clone();
 		url.searchParams.delete("secret");
 		const res = NextResponse.redirect(url);
@@ -37,8 +30,37 @@ export function middleware(req: NextRequest) {
 	}
 
 	return new NextResponse("Unauthorized.", { status: 401 });
+};
+
+export function middleware(req: NextRequest) {
+	const { pathname } = req.nextUrl;
+
+	if (pathname.startsWith("/studio")) return studio(req);
+
+	if (FUERA_DEL_TALLER.some((p) => pathname.startsWith(p)) || pathname.includes(".")) {
+		return NextResponse.next();
+	}
+
+	// El español es el idioma sin prefijo: `/es/algo` existe solo en el árbol
+	// de archivos, nunca como URL. Si alguien la pide, se la manda al canónico.
+	if (pathname === `/${IDIOMA_POR_DEFECTO}` || pathname.startsWith(`/${IDIOMA_POR_DEFECTO}/`)) {
+		const url = req.nextUrl.clone();
+		url.pathname = pathname.slice(IDIOMA_POR_DEFECTO.length + 1) || "/";
+		return NextResponse.redirect(url, 308);
+	}
+
+	// Los demás idiomas sí viven con prefijo y pasan derecho.
+	if (IDIOMAS.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))) {
+		return NextResponse.next();
+	}
+
+	// Todo lo demás es español: se reescribe sin que cambie la URL, así que
+	// ninguna dirección ya indexada se rompe.
+	const url = req.nextUrl.clone();
+	url.pathname = `/${IDIOMA_POR_DEFECTO}${pathname === "/" ? "" : pathname}`;
+	return NextResponse.rewrite(url);
 }
 
 export const config = {
-	matcher: "/studio/:path*",
+	matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
