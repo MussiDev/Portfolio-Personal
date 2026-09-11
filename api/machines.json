@@ -45,59 +45,52 @@
 				"parrafos": {
 					"es": [
 						"El margen es la métrica central, no un reporte más en un menú: es la cifra que el sistema devuelve por defecto. Si la métrica principal es la facturación, el usuario sigue mirando lo que ya miraba.",
-						"Servicios, no retail. Un comercio que revende conoce su costo unitario. Un negocio de servicios no: el insumo se consume de a fracciones y nadie las anota. Ese es el hueco."
+						"Servicios, no retail. Un comercio que revende conoce su costo unitario. Un negocio de servicios no: el insumo se consume de a fracciones y nadie las anota. Ese es el hueco.",
+						"Multi-tenant desde el modelo de datos, no como capa encima: cada tabla filtra por empresa. La alternativa — una base por cliente — escala peor apenas hay que tocar todas a la vez, y acá el negocio es justamente medir y comparar, no aislar."
 					],
 					"en": [
 						"Margin is the headline metric, not one more report in a menu: it is the figure the system returns by default. If the main number is revenue, the user keeps looking at what they already looked at.",
-						"Services, not retail. A shop that resells knows its unit cost. A service business does not: stock is consumed in fractions and nobody writes them down. That is the gap."
+						"Services, not retail. A shop that resells knows its unit cost. A service business does not: stock is consumed in fractions and nobody writes them down. That is the gap.",
+						"Multi-tenant from the data model, not as a layer on top: every table filters by company. The alternative — one database per client — scales worse the moment you need to touch all of them at once, and here the business is precisely measuring and comparing, not isolating."
 					]
-				},
-				"pendiente": {
-					"es": "La tercera decisión: qué elección técnica tomaste al principio que hoy sostiene todo lo demás. Multi-tenant, modelo de datos, offline.",
-					"en": "La tercera decisión: qué elección técnica tomaste al principio que hoy sostiene todo lo demás. Multi-tenant, modelo de datos, offline."
 				}
 			},
 			"mecanismo": {
 				"parrafos": {
 					"es": [
-						"El problema difícil no es contable, es de modelado: cómo saber cuánto insumo consumió un servicio si nadie lo pesa. La respuesta fue atar cada servicio a una receta y descontar contra el stock real."
+						"El problema difícil no es contable, es de modelado: cómo saber cuánto insumo consumió un servicio si nadie lo pesa. La respuesta fue atar cada servicio a sus insumos y descontar contra el stock real."
 					],
 					"en": [
-						"The hard problem is not accounting, it is modelling: how to know how much stock a service consumed if nobody weighs it. The answer was to tie each service to a recipe and draw down against real stock."
+						"The hard problem is not accounting, it is modelling: how to know how much stock a service consumed if nobody weighs it. The answer was to tie each service to its supplies and draw down against real stock."
 					]
 				},
 				"flujo": {
 					"es": [
 						"Turno",
-						"Receta",
+						"Insumos",
 						"Stock",
 						"Margen"
 					],
 					"en": [
 						"Appointment",
-						"Recipe",
+						"Supplies",
 						"Stock",
 						"Margin"
 					]
 				},
-				"codigo": null,
-				"pendiente": {
-					"es": "El fragmento de código. El repo es cerrado, pero un fragmento no es el repositorio: el cálculo de margen, el modelo de la receta o el descuento de stock alcanzan. Es el único lugar del sitio donde alguien puede leer código tuyo.",
-					"en": "El fragmento de código. El repo es cerrado, pero un fragmento no es el repositorio: el cálculo de margen, el modelo de la receta o el descuento de stock alcanzan. Es el único lugar del sitio donde alguien puede leer código tuyo."
-				}
+				"codigo": "// Every service carries its supplies (serviceSupplies): what it consumes and\n// how much of each. Selling it draws down real stock, not an estimate.\nconst consumptions = serviceItems.flatMap((item) => {\n  const service = services.find((s) => s.id === item.serviceId)!;\n\n  // quantityNeeded counts service uses; convert to base-unit stock consumption.\n  return service.serviceSupplies.map((ss) => ({\n    supplyId: ss.supplyId,\n    consumed:\n      unitsPerUse(ss.packageContent, ss.servingsPerPackage) *\n      Number(ss.quantityNeeded) *\n      item.quantity,\n  }));\n});\n\nconst stockDelta = new Map<string, number>();\nfor (const { supplyId, consumed } of consumptions) {\n  stockDelta.set(supplyId, (stockDelta.get(supplyId) ?? 0) + consumed);\n}",
+				"diagrama": "flowchart LR\n    subgraph EMP[Empresa - scope en cada tabla]\n        direction LR\n        TUR[Turno] -->|serviceItems| SER[Servicio]\n        SER -->|serviceSupplies| INS[Insumo]\n        INS -->|descuenta| STK[Stock real]\n        TUR --> MAR[Margen]\n        STK --> MAR\n    end"
 			},
 			"tradeoff": {
 				"parrafos": {
 					"es": [
-						"Cargar recetas es trabajo del usuario, y ese trabajo es la barrera de entrada del producto: sin recetas no hay margen, y con el sistema vacío no se ve el valor. Todo lo demás se subordina a bajar ese costo inicial."
+						"Cargar los insumos es trabajo del usuario, y ese trabajo es la barrera de entrada del producto: sin insumos cargados no hay margen, y con el sistema vacío no se ve el valor. Todo lo demás se subordina a bajar ese costo inicial.",
+						"Lo que quedó afuera a propósito: facturación electrónica (AFIP/ARCA no existe en el schema), multi-sucursal y app nativa. Alcance corto por decisión, no por límite técnico — el producto está pensado para un tipo de negocio, no para todos."
 					],
 					"en": [
-						"Loading recipes is the user's work, and that work is the product's barrier to entry: without recipes there is no margin, and with an empty system the value is invisible. Everything else is subordinate to lowering that initial cost."
+						"Loading the supplies is the user's work, and that work is the product's barrier to entry: without supplies loaded there is no margin, and with an empty system the value is invisible. Everything else is subordinate to lowering that initial cost.",
+						"What was left out on purpose: electronic invoicing (AFIP/ARCA does not exist in the schema), multi-branch and a native app. Narrow scope by decision, not by technical limit — the product is built for one kind of business, not for everyone."
 					]
-				},
-				"pendiente": {
-					"es": "Confirmar o corregir el párrafo de arriba — está deducido del producto, no contado. Y agregar qué quedó afuera a propósito: facturación electrónica, multi-sucursal, app nativa.",
-					"en": "Confirmar o corregir el párrafo de arriba — está deducido del producto, no contado. Y agregar qué quedó afuera a propósito: facturación electrónica, multi-sucursal, app nativa."
 				}
 			},
 			"resultado": {
@@ -111,710 +104,39 @@
 							"es": "Negocios activos",
 							"en": "Active businesses"
 						},
-						"valor": null
+						"valor": "2"
 					},
 					{
 						"etiqueta": {
 							"es": "Trial → pago",
 							"en": "Trial → paid"
 						},
-						"valor": null
+						"valor": "2"
 					},
 					{
 						"etiqueta": {
 							"es": "Retención 3 meses",
 							"en": "3-month retention"
 						},
-						"valor": null
+						"valor": "2/2"
 					},
 					{
 						"etiqueta": {
 							"es": "En producción desde",
 							"en": "In production since"
 						},
-						"valor": null
-					}
-				],
-				"pendiente": {
-					"es": "Acá no van Core Web Vitals: un producto propio se mide por gente que lo usa y lo paga. Si un número es chico, va igual — «cuatro negocios usándolo» es verificable.",
-					"en": "Acá no van Core Web Vitals: un producto propio se mide por gente que lo usa y lo paga. Si un número es chico, va igual — «cuatro negocios usándolo» es verificable."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Qué harías distinto. Sos la única persona que tomó todas las decisiones de este producto, así que este párrafo es más honesto acá que en cualquier máquina de trabajo.",
-					"en": "Qué harías distinto. Sos la única persona que tomó todas las decisiones de este producto, así que este párrafo es más honesto acá que en cualquier máquina de trabajo."
-				}
-			}
-		}
-	},
-	{
-		"slug": "ecommerce-razor-next",
-		"nombre": "Ecommerce · de Razor a Next.js",
-		"tipo": "maquina",
-		"estado": "en-construccion",
-		"contexto": {
-			"es": "La Mutual de AMR",
-			"en": "La Mutual de AMR"
-		},
-		"periodo": {
-			"es": "ago 2022 — nov 2023",
-			"en": "aug 2022 — nov 2023"
-		},
-		"resumen": {
-			"es": "Migrar sin perder el posicionamiento ya ganado, con una home que el cliente rearma solo.",
-			"en": "Migrating without losing hard-won search rankings, with a homepage the client rearranges alone."
-		},
-		"stack": [
-			"Next.js",
-			".NET",
-			"SEO"
-		],
-		"enlaces": [],
-		"peso": 2,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [
-						"El sitio vivía en Razor y cada cambio de la home pasaba por un desarrollador y un deploy. Marketing quería mover bloques por temporada; el negocio no podía perder el posicionamiento que ya tenía. Migrar era fácil de decir y caro de hacer mal: las URLs viejas ya rankeaban."
-					],
-					"en": [
-						"The site lived in Razor and every homepage change went through a developer and a deploy. Marketing wanted to move blocks by season; the business could not lose the ranking it already had. Migrating was easy to say and expensive to get wrong: the old URLs already ranked."
-					]
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [
-						"El orden de los bloques de la home pasa a ser dato, no código. Un registry mapea cada tipo de bloque a su componente y a su schema; la home es una lista de identificadores guardada, no un archivo versionado."
-					],
-					"en": [
-						"The order of the homepage blocks becomes data, not code. A registry maps each block type to its component and its schema; the homepage is a stored list of identifiers, not a versioned file."
-					]
-				},
-				"pendiente": {
-					"es": "Qué se evaluó y se descartó — un CMS completo, por ejemplo — y cuál fue la restricción real que lo dejó afuera.",
-					"en": "Qué se evaluó y se descartó — un CMS completo, por ejemplo — y cuál fue la restricción real que lo dejó afuera."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"flujo": {
-					"es": [
-						"Panel",
-						"Layout",
-						"Registry",
-						"Render en servidor"
-					],
-					"en": [
-						"Panel",
-						"Layout",
-						"Registry",
-						"Server render"
-					]
-				},
-				"codigo": "// el contrato entre el panel y el render\nexport const registry = {\n  hero:       { render: Hero,       schema: heroSchema },\n  grillaProd: { render: GrillaProd, schema: grillaSchema },\n  banner:     { render: Banner,     schema: bannerSchema },\n  // un bloque nuevo = una entrada, no un deploy del panel\n} satisfies Record<string, Bloque>;",
-				"pendiente": {
-					"es": "Cómo se mapearon las rutas viejas de Razor a las nuevas sin romper el SEO.",
-					"en": "Cómo se mapearon las rutas viejas de Razor a las nuevas sin romper el SEO."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [
-						"Se pierde el chequeo en compilación: una home rota ya no falla en el build, falla en producción. A cambio, marketing cambia la portada sin abrir un ticket."
-					],
-					"en": [
-						"Compile-time checking is lost: a broken homepage no longer fails at build, it fails in production. In exchange, marketing changes the front page without opening a ticket."
-					]
-				},
-				"pendiente": {
-					"es": "Qué se puso en su lugar: validación por schema, preview, lo que haya sido.",
-					"en": "Qué se puso en su lugar: validación por schema, preview, lo que haya sido."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [
-					{
-						"etiqueta": {
-							"es": "LCP",
-							"en": "LCP"
-						},
-						"valor": null
-					},
-					{
-						"etiqueta": {
-							"es": "INP",
-							"en": "INP"
-						},
-						"valor": null
-					},
-					{
-						"etiqueta": {
-							"es": "Tráfico orgánico",
-							"en": "Organic traffic"
-						},
-						"valor": null
-					},
-					{
-						"etiqueta": {
-							"es": "Cambios sin deploy",
-							"en": "Changes without deploy"
-						},
-						"valor": null
+						"valor": "Junio 2026"
 					}
 				]
 			},
 			"despues": {
 				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Qué harías distinto hoy. Es el tiempo que casi nadie escribe y el único que muestra criterio en vez de memoria.",
-					"en": "Qué harías distinto hoy. Es el tiempo que casi nadie escribe y el único que muestra criterio en vez de memoria."
-				}
-			}
-		}
-	},
-	{
-		"slug": "mutual-pago",
-		"nombre": "Mutual Pago",
-		"tipo": "maquina",
-		"estado": "terminado",
-		"contexto": {
-			"es": "La Mutual de AMR",
-			"en": "La Mutual de AMR"
-		},
-		"periodo": null,
-		"resumen": {
-			"es": "Una billetera virtual cuyo backend seguía en ASP.NET Core. Lideré la elección de arquitectura y la migración a una API REST .NET.",
-			"en": "A digital wallet whose backend still ran on ASP.NET Core. I led the architecture choice and the migration to a .NET REST API."
-		},
-		"stack": [
-			"ASP.NET",
-			"Next.js",
-			"Sass",
-			"React.js",
-			"C#",
-			"Zustand",
-			"Axios"
-		],
-		"enlaces": [],
-		"peso": 3,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"codigo": null,
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [],
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			}
-		}
-	},
-	{
-		"slug": "cras",
-		"nombre": "Cras",
-		"tipo": "maquina",
-		"estado": "terminado",
-		"contexto": {
-			"es": "La Mutual de AMR",
-			"en": "La Mutual de AMR"
-		},
-		"periodo": null,
-		"resumen": {
-			"es": "Reserva de cabañas heredada en Angular. Como líder técnico elegí la arquitectura, acompañé trainees y conduje la migración a Next.js 15.",
-			"en": "Cabin booking inherited in Angular. As tech lead I chose the architecture, mentored trainees and drove the migration to Next.js 15."
-		},
-		"stack": [
-			"Next.js",
-			"Bootstrap",
-			"React.js"
-		],
-		"enlaces": [],
-		"peso": 4,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"codigo": null,
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [],
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			}
-		}
-	},
-	{
-		"slug": "mutual-data",
-		"nombre": "Mutual Data",
-		"tipo": "maquina",
-		"estado": "terminado",
-		"contexto": {
-			"es": "La Mutual de AMR",
-			"en": "La Mutual de AMR"
-		},
-		"periodo": null,
-		"resumen": {
-			"es": "Procesamiento y visualización de datos financieros a escala: login con validación, integración de APIs y respuesta en todos los dispositivos.",
-			"en": "Large-scale financial data processing and visualisation: validated login, API integration and responsive behaviour across devices."
-		},
-		"stack": [
-			"ChakraUI",
-			"React.js",
-			"Next.js",
-			"GraphQL"
-		],
-		"enlaces": [],
-		"peso": 5,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"codigo": null,
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [],
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			}
-		}
-	},
-	{
-		"slug": "tus-cuentas",
-		"nombre": "Tus Cuentas",
-		"tipo": "maquina",
-		"estado": "terminado",
-		"contexto": {
-			"es": "La Mutual de AMR",
-			"en": "La Mutual de AMR"
-		},
-		"periodo": null,
-		"resumen": {
-			"es": "Gestión de inversiones. Sistema de componentes reutilizables y cambios en el backend .NET.",
-			"en": "Investment management. Reusable component system and backend changes in .NET."
-		},
-		"stack": [
-			"ASP.NET",
-			"Next.js",
-			"Sass",
-			"React.js",
-			"Zustand"
-		],
-		"enlaces": [],
-		"peso": 6,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"codigo": null,
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [],
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			}
-		}
-	},
-	{
-		"slug": "communifit",
-		"nombre": "CommuniFit",
-		"tipo": "maquina",
-		"estado": "terminado",
-		"contexto": {
-			"es": "Independent",
-			"en": "Independent"
-		},
-		"periodo": {
-			"es": "Nov 2023 – Feb 2024",
-			"en": "Nov 2023 – Feb 2024"
-		},
-		"resumen": {
-			"es": "Plataforma entre entrenadores y clientes. Arquitectura de frontend e integración con el backend, en paralelo al trabajo full-time.",
-			"en": "A platform between trainers and clients. Frontend architecture and backend integration, alongside a full-time job."
-		},
-		"stack": [
-			"Next.js",
-			"Tailwind CSS",
-			"Zustand",
-			"Axios",
-			"React.js"
-		],
-		"enlaces": [],
-		"peso": 7,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"codigo": null,
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [],
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			}
-		}
-	},
-	{
-		"slug": "cryptgo",
-		"nombre": "CRYPTGO",
-		"tipo": "maquina",
-		"estado": "terminado",
-		"contexto": {
-			"es": "It-techgroup",
-			"en": "It-techgroup"
-		},
-		"periodo": {
-			"es": "Feb 2022 – Jul 2022",
-			"en": "Feb 2022 – Jul 2022"
-		},
-		"resumen": {
-			"es": "Plataforma Web3 con pagos en cripto. UI pixel-perfect desde Figma e integración de la lógica de juego.",
-			"en": "Web3 platform with crypto payments. Pixel-perfect UI from Figma and game interaction logic."
-		},
-		"stack": [
-			"Styled Components",
-			"React.js",
-			"Axios"
-		],
-		"enlaces": [],
-		"peso": 8,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"decision": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"mecanismo": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"codigo": null,
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"tradeoff": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"resultado": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"medidas": [],
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
-				}
-			},
-			"despues": {
-				"parrafos": {
-					"es": [],
-					"en": []
-				},
-				"pendiente": {
-					"es": "Sin abrir todavía.",
-					"en": "Not opened yet."
+					"es": [
+						"Si arrancara de nuevo, no alargaría el alcance desde el principio. Fui sumando complejización — multi-sucursal, roles, reportes por profesional — para un uso que, en esta primera instancia, es un puñado de clientes conocidos. Esa complejidad se paga en tiempo de desarrollo que no vuelve, y el producto todavía no la necesitaba para probar si funcionaba."
+					],
+					"en": [
+						"If I started over, I would not stretch the scope from day one. I kept adding complexity — multi-branch, roles, per-professional reports — for what, at this first stage, is a handful of known clients. That complexity costs development time that does not come back, and the product did not need it yet to prove it worked."
+					]
 				}
 			}
 		}
