@@ -30,6 +30,13 @@ export interface TiempoMecanismo extends Tiempo {
 	flujo?: Record<string, string[]>;
 	/** Fragmento de código. null mientras no se eligió cuál mostrar. */
 	codigo?: string | null;
+	/**
+	 * Un plano: diagrama Mermaid del mecanismo (arquitectura, modelo de
+	 * datos, flujo real). El `flujo` de arriba es la cinta de pasos; esto
+	 * es la vista de conjunto cuando el mecanismo tiene forma de sistema,
+	 * no solo de secuencia.
+	 */
+	diagrama?: string;
 }
 
 export interface TiempoResultado extends Tiempo {

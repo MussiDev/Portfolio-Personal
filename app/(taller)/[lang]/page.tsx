@@ -10,6 +10,7 @@ import { getDict } from "../../src/i18n/dict";
 import articles from "../../../api/articles.json";
 import mesa from "../../../api/mesa.json";
 import { ESTADO_LABEL, getMachines, tiemposEscritos } from "../../src/common/taller";
+import Cota from "../../src/common/Cota";
 
 export const generateMetadata = async ({
 	params,
@@ -87,6 +88,14 @@ const Renglones = ({
 									<p className='m-0 min-w-0 flex-1 truncate font-nota text-[15px] leading-snug text-texto-medio'>
 										{t(m.resumen, lang)}
 									</p>
+									{/* La cota real de la fila, no antes de que alguien se
+									    detenga a mirarla. */}
+									{abierta && (
+										<Cota
+											valor={`${tiemposEscritos(m)} / 6`}
+											className='shrink-0 opacity-0 transition-opacity duration-200 ease-mecanico group-hover:opacity-100'
+										/>
+									)}
 								</div>
 																<span
 									className={`col-start-2 font-pieza text-[11px] md:col-start-3 ${
@@ -195,7 +204,7 @@ const MesaPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) => {
 					<div className='flex flex-col gap-2 border-b-[1.5px] border-linea px-6 pb-5 pt-7 md:px-9'>
 						<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 							<h2 className='m-0 text-2xl md:text-3xl'>{d.maquinas.titulo}</h2>
-							<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+							<span className='font-nota text-lg italic leading-none text-texto-medio'>
 								{d.maquinas.glosa}
 							</span>
 						</div>
@@ -254,7 +263,7 @@ const MesaPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) => {
 				<div className='flex flex-col gap-5'>
 					<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 						<h2 className='m-0 text-2xl md:text-3xl'>{d.cuaderno.titulo}</h2>
-						<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+						<span className='font-nota text-lg italic leading-none text-texto-medio'>
 							{d.cuaderno.glosa}
 						</span>
 					</div>

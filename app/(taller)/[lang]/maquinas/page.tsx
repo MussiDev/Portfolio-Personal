@@ -7,6 +7,7 @@ import { alternativas } from "../../../src/i18n/meta";
 import { getDict } from "../../../src/i18n/dict";
 
 import { ESTADO_LABEL, getMachines, tiemposEscritos } from "../../../src/common/taller";
+import Cota from "../../../src/common/Cota";
 
 export const generateMetadata = async ({
 	params,
@@ -45,7 +46,7 @@ const MaquinasPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) =
 					<div className='flex flex-col gap-2 border-b-[1.5px] border-linea px-6 pb-6 pt-8 md:px-9'>
 						<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 							<h1 className='m-0 text-3xl md:text-4xl'>{d.maquinas.titulo}</h1>
-							<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+							<span className='font-nota text-lg italic leading-none text-texto-medio'>
 								{d.maquinas.glosa}
 							</span>
 						</div>
@@ -83,13 +84,25 @@ const MaquinasPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) =
 									{String(i + 1).padStart(2, "0")}
 								</span>
 								<div className='flex flex-col gap-1.5'>
-									<h2
-										className={`m-0 leading-tight ${
-											propio ? "text-2xl text-marca md:text-3xl" : "text-xl md:text-2xl"
-										}`}
-									>
-										{m.nombre}
-									</h2>
+									<div className='flex flex-wrap items-baseline gap-3'>
+										<h2
+											className={`m-0 leading-tight ${
+												propio ? "text-2xl text-marca md:text-3xl" : "text-xl md:text-2xl"
+											}`}
+										>
+											{m.nombre}
+										</h2>
+										{/* La cota real de la fila: cuánto de la máquina está
+										    escrito. Aparece al pasar el mouse, no antes — es
+										    apoyo para quien ya se detuvo en la fila, no ruido
+										    para quien todavía la está leyendo por arriba. */}
+										{abierta && (
+											<Cota
+												valor={`${tiemposEscritos(m)} / 6`}
+												className='opacity-0 transition-opacity duration-200 ease-mecanico group-hover:opacity-100'
+											/>
+										)}
+									</div>
 									<p className='m-0 max-w-[54ch] font-nota text-[15px] leading-relaxed text-texto-medio'>
 										{t(m.resumen, lang)}
 									</p>

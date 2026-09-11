@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import Cota from "../../../../src/common/Cota";
 import Pendiente from "../../../../src/common/Pendiente";
+import PlanoDiagrama from "../../../../src/common/PlanoDiagrama";
 import {
 	ESTADO_LABEL,
 	TIEMPOS,
@@ -205,6 +207,10 @@ const MaquinaPage = async ({ params }: Props) => {
 											<Flujo pasos={tiempo.flujo[lang] ?? tiempo.flujo.es} />
 										)}
 
+										{clave === "mecanismo" && "diagrama" in tiempo && tiempo.diagrama && (
+											<PlanoDiagrama codigo={tiempo.diagrama} />
+										)}
+
 										{clave === "mecanismo" && "codigo" in tiempo && tiempo.codigo && (
 											<pre className='overflow-x-auto border-l-2 border-linea bg-hoja-honda px-6 py-5 font-pieza text-[13px] leading-relaxed'>
 												{tiempo.codigo}
@@ -228,7 +234,6 @@ const MaquinaPage = async ({ params }: Props) => {
 					<dl className='m-0 grid grid-cols-2 border-t-[1.5px] border-linea md:grid-cols-4'>
 						{[
 							[d.campos.documento, `MAQ-${maquina.slug.slice(0, 8).toUpperCase()}`],
-							[d.campos.tiempos, d.maquinas.escritos(escritos)],
 							[d.campos.estado, ESTADO_LABEL[maquina.estado][lang]],
 							[d.campos.autor, "J. Mussi"],
 						].map(([k, v]) => (
@@ -242,6 +247,16 @@ const MaquinaPage = async ({ params }: Props) => {
 								<dd className='m-0 font-pieza text-xs tabular-nums text-linea'>{v}</dd>
 							</div>
 						))}
+						{/* La única cota del cajetín: mide lo que sí se puede medir sin
+						    inventar un número, cuántos de los seis tiempos existen. */}
+						<div className='flex flex-col gap-0.5 border-r border-linea/20 px-7 py-3 last:border-r-0 md:px-12'>
+							<dt className='font-rotulo text-[9px] uppercase tracking-[.16em] text-texto-medio'>
+								{d.campos.tiempos}
+							</dt>
+							<dd className='m-0'>
+								<Cota valor={`${escritos} / ${TIEMPOS.length}`} />
+							</dd>
+						</div>
 					</dl>
 				</article>
 			</div>
