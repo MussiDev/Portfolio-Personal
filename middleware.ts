@@ -4,8 +4,23 @@ import { IDIOMA_POR_DEFECTO, IDIOMAS } from "./entities/i18n";
 const COOKIE_NAME = "studio_auth";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
-/** Rutas que no pertenecen al taller y no llevan idioma. */
-const FUERA_DEL_TALLER = ["/anterior", "/studio", "/api", "/_next"];
+/**
+ * Rutas que no pertenecen al taller y no llevan idioma. Incluye las
+ * convenciones de metadata de Next (opengraph-image, icon, twitter-image)
+ * porque no tienen extensión en la URL — sin esto, `pathname.includes(".")`
+ * no las salva y el idioma por defecto las reescribe a un path que no
+ * existe: la imagen que se ve al compartir el link, rota en silencio.
+ */
+const FUERA_DEL_TALLER = [
+	"/anterior",
+	"/studio",
+	"/api",
+	"/_next",
+	"/opengraph-image",
+	"/twitter-image",
+	"/icon",
+	"/apple-icon",
+];
 
 const studio = (req: NextRequest) => {
 	const { searchParams } = req.nextUrl;
