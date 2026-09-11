@@ -21,63 +21,77 @@
 	background-size: 200% 100%;
 	animation: shimmer 1.8s ease-in-out infinite;
 }
+/* ---------------------------------------------------------------------
+   Anterior — el sitio previo.
+
+   Reglas globales del sitio anterior, con /anterior fuera del índice
+   (ver metadata en app/(main)/anterior/page.tsx). Viven scopeadas bajo
+   `.anterior` para que dejen de pelear contra el taller: el taller es la
+   base, esto es la excepción.
+   --------------------------------------------------------------------- */
+.anterior {
+	background-color: #040508;
+	color: #fff;
+	min-height: 100vh;
+}
+
 @layer base {
-	button {
+	.anterior button {
 		@apply px-8 py-2 bg-orange-700 rounded-full;
 	}
-	h1,
-	h2,
-	h3,
-	h4 {
+	.anterior h1,
+	.anterior h2,
+	.anterior h3,
+	.anterior h4 {
 		@apply font-bold;
 	}
-	h1,
-	h2 {
+	.anterior h1,
+	.anterior h2 {
 		@apply text-3xl md:text-4xl lg:text-5xl;
 	}
-	h3 {
+	.anterior h3 {
 		@apply text-xl md:text-2xl;
 	}
-	h4 {
+	.anterior h4 {
 		@apply text-lg md:text-xl;
 	}
-	h5 {
+	.anterior h5 {
 		@apply text-base md:text-lg;
 	}
 }
 
-*::-webkit-scrollbar {
+.anterior *::-webkit-scrollbar {
 	width: 12px;
 }
-* {
+.anterior {
 	scrollbar-width: thin;
 	scrollbar-color: #f24f0f #040508;
 }
-*::-webkit-scrollbar-track {
+.anterior *::-webkit-scrollbar-track {
 	background: #040508;
 }
 
-*::-webkit-scrollbar-thumb {
+.anterior *::-webkit-scrollbar-thumb {
 	background-color: #f24f0f;
 	border-radius: 14px;
 	border: 3px solid #040508;
 }
 
-li {
+.anterior li {
 	color: #fff;
 }
 
 @layer components {
-	#img {
+	.anterior #img {
 		@apply object-cover rounded-lg h-full w-full duration-[1400ms] transition-all;
 	}
-	.div {
+	.anterior .div {
 		@apply overflow-hidden h-40 w-full relative;
 	}
-	#top {
+	.anterior #top {
 		@apply fixed bottom-10 right-6 z-20 bg-orange-700 p-2 rounded-full cursor-pointer;
 	}
-	#icons {
+	.anterior #icons {
 		@apply flex flex-wrap gap-6 items-center md:flex-nowrap;
 	}
 }
@@ -94,7 +108,10 @@ li {
      linea  — azul de plano. SOLO aparato de dibujo: cotas, reglas, ejes.
      marca  — lápiz rojo. Una corrección, una vez por página.
    --------------------------------------------------------------------- */
-.taller {
+/* Las variables viven en :root para que el body (fuera de .taller) las
+   tenga disponibles antes de que cualquier página monte — sin eso hay un
+   parpadeo al color por defecto del navegador en la primera pintura. */
+:root {
 	/* La mesa es fría y el papel cálido: ese contraste es lo que hace que
 	   una hoja parezca apoyada y no pintada. */
 	--mesa: 190 196 186;
@@ -104,7 +121,9 @@ li {
 	--texto-medio: 106 108 110;
 	--linea: 47 92 126;
 	--marca: 154 58 42;
+}
 
+.taller {
 	color-scheme: light;
 	background-color: rgb(var(--mesa));
 	color: rgb(var(--texto));
@@ -166,22 +185,15 @@ html:has(.taller) *::-webkit-scrollbar-thumb {
 }
 
 @layer base {
-	.taller button {
-		@apply px-0 py-0 bg-transparent rounded-none;
-	}
-
 	.taller h1,
 	.taller h2,
 	.taller h3,
 	.taller h4 {
 		font-family: theme("fontFamily.rotulo");
+		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.03em;
 		text-wrap: balance;
-	}
-
-	.taller li {
-		color: inherit;
 	}
 }
 
