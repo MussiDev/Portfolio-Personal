@@ -70,7 +70,7 @@ const portableTextComponents = {
 			<h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>
 		),
 		blockquote: ({ children }: any) => (
-			<blockquote className='my-6 max-w-[62ch] border-l-2 border-marca/60 pl-4 font-lapiz text-[23px] leading-snug text-texto-medio'>
+			<blockquote className='my-6 max-w-[62ch] border-l-2 border-marca/60 pl-4 font-nota text-xl italic leading-snug text-texto-medio'>
 				{children}
 			</blockquote>
 		),
@@ -215,7 +215,7 @@ async function PostContent({ slug }: { slug: string }) {
 							h1: ({ children }) => <h1 className='mb-4 mt-10 text-2xl md:text-3xl'>{children}</h1>,
 							h2: ({ children }) => <h2 className='mb-3 mt-10 text-xl md:text-2xl'>{children}</h2>,
 							h3: ({ children }) => <h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>,
-							blockquote: ({ children }) => <blockquote className='my-6 max-w-[62ch] border-l-2 border-marca/60 pl-4 font-lapiz text-[23px] leading-snug text-texto-medio'>{children}</blockquote>,
+							blockquote: ({ children }) => <blockquote className='my-6 max-w-[62ch] border-l-2 border-marca/60 pl-4 font-nota text-xl italic leading-snug text-texto-medio'>{children}</blockquote>,
 							ul: ({ children }) => <ul className='mb-5 max-w-[68ch] list-inside list-disc space-y-1 pl-5 font-nota text-lg leading-relaxed'>{children}</ul>,
 							ol: ({ children }) => <ol className='mb-5 max-w-[68ch] list-inside list-decimal space-y-1 pl-5 font-nota text-lg leading-relaxed'>{children}</ol>,
 							li: ({ children }) => <li className='break-words'>{children}</li>,

@@ -65,7 +65,7 @@ const ContactoPage = async ({
 					<div className='mb-8 flex flex-col gap-4'>
 						<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 							<h1 className='m-0 text-4xl leading-none md:text-5xl'>{c.titulo}</h1>
-							<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+							<span className='font-nota text-lg italic leading-none text-texto-medio'>
 								{c.glosa}
 							</span>
 						</div>

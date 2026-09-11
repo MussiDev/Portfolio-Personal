@@ -54,7 +54,7 @@ const RECOMENDACION_POR_EMPRESA: Record<string, number> = {
 
 const Cita = ({ rec, lang }: { rec: Recomendacion; lang: Idioma }) => (
 	<figure className='m-0 mt-3 flex max-w-[58ch] flex-col gap-2 border-l-2 border-marca/60 pl-4'>
-		<blockquote className='m-0 font-lapiz text-[23px] leading-snug text-texto'>
+		<blockquote className='m-0 font-nota text-xl italic leading-snug text-texto'>
 			“{t(rec.text, lang)}”
 		</blockquote>
 		<figcaption className='font-pieza text-[11px] text-texto-medio'>
@@ -85,7 +85,7 @@ const OficioPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) => 
 						<div className='flex flex-col gap-4'>
 							<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 								<h1 className='m-0 text-4xl leading-none md:text-5xl'>{d.oficio.titulo}</h1>
-								<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+								<span className='font-nota text-lg italic leading-none text-texto-medio'>
 									{d.oficio.glosa}
 								</span>
 							</div>
@@ -117,7 +117,7 @@ const OficioPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) => 
 					<section className='px-7 py-9 md:px-12 md:py-12'>
 						<div className='mb-8 flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 							<h2 className='m-0 text-2xl md:text-3xl'>{d.oficio.trayectoria}</h2>
-							<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+							<span className='font-nota text-lg italic leading-none text-texto-medio'>
 								{d.oficio.trayectoriaGlosa}
 							</span>
 						</div>
@@ -178,7 +178,7 @@ const OficioPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) => 
 							<h2 className='m-0 text-lg text-texto-medio md:text-xl'>
 								{d.oficio.credenciales}
 							</h2>
-							<span className='font-lapiz text-[20px] leading-none text-texto-medio'>
+							<span className='font-nota text-base italic leading-none text-texto-medio'>
 								{d.oficio.credencialesGlosa(certs.length)}
 							</span>
 						</div>

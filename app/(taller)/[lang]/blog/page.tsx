@@ -114,7 +114,7 @@ const BlogPage = async ({ params }: { params: Promise<{ lang: Idioma }> }) => {
 				<div className='flex flex-col gap-2 border-b-[1.5px] border-linea px-6 pb-6 pt-8 md:px-9'>
 					<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
 						<h1 className='m-0 text-3xl md:text-4xl'>{d.cuaderno.titulo}</h1>
-						<span className='font-lapiz text-[22px] leading-none text-texto-medio'>
+						<span className='font-nota text-lg italic leading-none text-texto-medio'>
 							{d.cuaderno.glosa}
 						</span>
 					</div>
