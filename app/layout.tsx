@@ -25,16 +25,19 @@ const nota = IBM_Plex_Serif({
 });
 
 // Lápiz: solo para lo anotado a mano sobre el dibujo, nunca para el dibujo.
+// Un solo peso: nada en el código pide "medium" de esta familia, y Next
+// precarga cada peso declarado exista o no un elemento que lo use.
 const lapiz = Caveat({
 	subsets: ["latin"],
-	weight: ["400", "500"],
+	weight: ["400"],
 	variable: "--font-lapiz",
 	display: "swap",
 });
 
+// Ídem: nada pide semibold ni medium de la mono. Un peso menos precargado.
 const pieza = IBM_Plex_Mono({
 	subsets: ["latin"],
-	weight: ["400", "500", "600"],
+	weight: ["400"],
 	variable: "--font-pieza",
 	display: "swap",
 });
@@ -129,13 +132,24 @@ const jsonLd = {
 	],
 };
 
+// Corrige `<html lang>` según la ruta ("/en" o "/en/...") sin volver
+// dinámico todo el sitio: leerlo en el servidor exigiría `headers()` en
+// el layout raíz, y eso saca cada página del prerender estático — un
+// costo que este sitio no puede pagar (regla 4 del concepto: el medio
+// no puede desmentir al mensaje de performance).
+const FIJAR_LANG = `document.documentElement.lang=location.pathname.match(/^\\/en(\\/|$)/)?"en":"es"`;
+
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<html
-			lang='en'
+			lang='es'
 			className={`${rotulo.variable} ${nota.variable} ${pieza.variable} ${lapiz.variable}`}
 		>
-			<body className='text-white bg-slate-800'>
+			{/* El taller es la base: mesa y texto por defecto viven en :root
+			    (globals.css). El sitio anterior trae los suyos propios con la
+			    clase .anterior. */}
+			<body className='bg-mesa text-texto'>
+				<script dangerouslySetInnerHTML={{ __html: FIJAR_LANG }} />
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

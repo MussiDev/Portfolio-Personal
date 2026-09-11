@@ -12,11 +12,13 @@ const Footer = dynamic(() => import("../src/components/Footer/Footer"), {
 
 const ClientLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<>
+		// El sitio anterior es la excepción, no la base: sus reglas globales
+		// (botones naranjas, scrollbar, etc.) viven solo bajo esta clase.
+		<div className='anterior'>
 			<Navbar />
 			{children}
 			<Footer />
-		</>
+		</div>
 	);
 };
 
