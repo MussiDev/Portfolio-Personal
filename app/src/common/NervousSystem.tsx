@@ -16,6 +16,7 @@ const NervousSystem = ({
 	backText,
 	stepsLabel,
 	scrollHintText,
+	navLabel,
 }: {
 	sections: Section[];
 	children: ReactNode;
@@ -25,6 +26,7 @@ const NervousSystem = ({
 	backText: string;
 	stepsLabel: string;
 	scrollHintText: string;
+	navLabel: string;
 }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const streamRef = useRef<SVGSVGElement>(null);
@@ -315,6 +317,7 @@ const NervousSystem = ({
 					anchorRef={anchorRef}
 					loadingText={loadingText}
 					activityText={activityText}
+					navLabel={navLabel}
 					onProgress={() => {}}
 					onReady={liftVeil}
 				/>
@@ -414,7 +417,7 @@ const NervousSystem = ({
 			</nav>
 
 			<div
-				className={`pointer-events-none fixed bottom-6 left-1/2 z-40 hidden -translate-x-1/2 items-center gap-6 transition-all duration-500 ease-impulso md:flex ${
+				className={`pointer-events-none fixed bottom-6 left-8 z-40 hidden items-center gap-6 transition-all duration-500 ease-impulso md:flex ${
 					active === null
 						? "translate-y-3 opacity-0"
 						: "translate-y-0 opacity-100"
@@ -445,7 +448,7 @@ const NervousSystem = ({
 			<button
 				type='button'
 				onClick={() => goToStep(1)}
-				className={`pointer-events-none fixed bottom-6 left-1/2 z-40 hidden -translate-x-1/2 flex-col items-center gap-1.5 transition-all duration-500 ease-impulso md:flex ${
+				className={`pointer-events-none fixed bottom-6 left-8 z-40 hidden flex-col items-center gap-1.5 transition-all duration-500 ease-impulso md:flex ${
 					active === null
 						? "pointer-events-auto translate-y-0 opacity-100"
 						: "translate-y-3 opacity-0"

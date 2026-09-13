@@ -40,6 +40,7 @@ const Brain3D = ({
 	anchorRef,
 	loadingText,
 	activityText,
+	navLabel,
 	onProgress,
 	onReady,
 }: {
@@ -51,6 +52,7 @@ const Brain3D = ({
 	anchorRef: MutableRefObject<{ x: number; y: number; ready: boolean }>;
 	loadingText: string;
 	activityText: string;
+	navLabel: string;
 	onProgress: (fraction: number) => void;
 	onReady: () => void;
 }) => {
@@ -400,8 +402,13 @@ const Brain3D = ({
 		let frame = 0;
 		let progress = 0;
 		let shift = 0;
+		let looping = false;
 		const animate = () => {
-			if (!alive || !isVisible()) return;
+			if (!alive || !isVisible()) {
+				looping = false;
+				return;
+			}
+			looping = true;
 			const activeNow = activeRef.current;
 
 			const target =
@@ -545,12 +552,16 @@ const Brain3D = ({
 			frame += 1;
 			requestAnimationFrame(animate);
 		};
-		animate();
+		const startLoop = () => {
+			if (looping) return;
+			animate();
+		};
+		startLoop();
 
 		const visibilityObserver = new IntersectionObserver(
 			([entry]) => {
 				intersecting = entry.isIntersecting;
-				if (isVisible()) animate();
+				if (isVisible()) startLoop();
 			},
 			{ threshold: 0 },
 		);
@@ -558,7 +569,7 @@ const Brain3D = ({
 
 		const onVisibilityChange = () => {
 			pageVisible = document.visibilityState !== "hidden";
-			if (isVisible()) animate();
+			if (isVisible()) startLoop();
 		};
 		document.addEventListener("visibilitychange", onVisibilityChange);
 
@@ -675,7 +686,8 @@ const Brain3D = ({
 				)}
 			</svg>
 
-			<div
+			<nav
+				aria-label={navLabel}
 				className={`absolute inset-0 z-10 hidden items-center justify-between px-8 transition-opacity duration-700 ease-impulso md:flex lg:px-14 ${
 					inHero ? "opacity-100" : "pointer-events-none opacity-0"
 				}`}
@@ -686,7 +698,7 @@ const Brain3D = ({
 				<div className='pointer-events-none flex flex-col gap-3'>
 					{columns[1].map((s, i) => renderLabel(s, i + half))}
 				</div>
-			</div>
+			</nav>
 
 			<div
 				className={`pointer-events-none absolute bottom-6 right-5 z-20 flex items-center gap-2 transition-opacity duration-500 ease-impulso md:right-10 ${
