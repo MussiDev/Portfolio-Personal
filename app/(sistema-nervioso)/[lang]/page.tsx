@@ -291,7 +291,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 								</span>
 								<span className='font-rotulo text-[13px] font-bold uppercase tracking-[.08em] text-senal'>
 									{s.label}
-									{s.external && " ↗"}
 								</span>
 								<span className='ml-auto font-pieza text-[9.5px] uppercase tracking-[.08em] text-mielina'>
 									{s.fact}
@@ -480,7 +479,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 									rel={e.externo ? "noreferrer" : undefined}
 									className='border-b border-impulso pb-0.5 font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
 								>
-									{t(e.etiqueta, lang)} ↗
+									{t(e.etiqueta, lang)}
 								</a>
 							))}
 						</div>
@@ -501,7 +500,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 									rel={e.externo ? "noreferrer" : undefined}
 									className='border-b border-impulso pb-0.5 font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
 								>
-									{t(e.etiqueta, lang)} ↗
+									{t(e.etiqueta, lang)}
 								</a>
 							))}
 						</div>
@@ -697,7 +696,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 									className='border-b border-sinapsis pb-0.5 font-rotulo text-sm font-bold uppercase tracking-[.1em] text-sinapsis transition-colors duration-200 ease-impulso hover:border-impulso hover:text-impulso'
 								>
 									{text}
-									{external && " ↗"}
 								</a>
 							))}
 						</div>
