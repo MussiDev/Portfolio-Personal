@@ -105,6 +105,7 @@ const NervousSystem = ({
 		if (!steps.length) return;
 
 		let requestId = 0;
+		let litBadge: HTMLElement | null = null;
 		const measure = () => {
 			requestId = 0;
 			const vh = window.innerHeight;
@@ -124,6 +125,18 @@ const NervousSystem = ({
 			const i = n === 0 ? null : sections.findIndex((section) => section.step === n);
 			setActiveStep(i);
 			if (i !== null) setHover(null);
+
+			const nextBadge =
+				i !== null && sections[i].step !== undefined
+					? document.querySelector<HTMLElement>(
+							`#paso-${sections[i].step} [data-drop-target]`,
+						)
+					: null;
+			if (nextBadge !== litBadge) {
+				litBadge?.classList.remove("animate-disparo");
+				nextBadge?.classList.add("animate-disparo");
+				litBadge = nextBadge;
+			}
 		};
 
 		const onScroll = () => {
@@ -134,6 +147,7 @@ const NervousSystem = ({
 		window.addEventListener("resize", onScroll);
 		return () => {
 			if (requestId) cancelAnimationFrame(requestId);
+			litBadge?.classList.remove("animate-disparo");
 			window.removeEventListener("scroll", onScroll);
 			window.removeEventListener("resize", onScroll);
 		};
@@ -336,11 +350,13 @@ const NervousSystem = ({
 			>
 				<path
 					ref={cordRef}
+					className='animate-conduccion'
 					fill='none'
 					stroke='rgb(255 106 58)'
 					strokeOpacity='0.28'
 					strokeWidth='1'
 					strokeDasharray='2 5'
+					strokeDashoffset='700'
 				/>
 				{Array.from({ length: PARTICLES }).map((_, k) => (
 					<circle
