@@ -4,17 +4,17 @@
 	"icons": [
 		{
 			"src": "/favicon.ico",
-			"type": "image/png",
-			"sizes": "512x512",
-			"purpose": "any maskable"
+			"type": "image/x-icon",
+			"sizes": "256x256",
+			"purpose": "any"
 		}
 	],
-	"lang": "en",
+	"lang": "es",
 	"start_url": "/",
 	"scope": "/",
-	"background_color": "#040508",
+	"background_color": "#05070d",
 	"display": "standalone",
-	"theme_color": "#F24F0F",
-	"description": "Joaquín Mussi - Software Engineer portfolio",
+	"theme_color": "#FF6A3A",
+	"description": "Joaquín Mussi - Frontend Engineer portfolio",
 	"orientation": "any"
 }
