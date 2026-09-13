@@ -245,6 +245,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 	const links: [string, string, boolean][] = [
 		["GitHub", "https://github.com/MussiDev", true],
 		["LinkedIn", "https://www.linkedin.com/in/joaquinmussi/", true],
+		["Email", "mailto:joakoomussi@gmail.com", false],
 		[d.nav.cv, "/pdf.pdf", true],
 	];
 
@@ -652,6 +653,11 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 					<div className='flex flex-col gap-6'>
 						<p className='m-0 max-w-[36ch] font-glosa text-[2rem] italic leading-[1.15] text-senal'>
 							{d.hero.secciones.contacto}
+						</p>
+
+						<p className='m-0 inline-flex w-fit items-center gap-2 border border-sinapsis/40 bg-sinapsis/5 px-3 py-1.5 font-pieza text-[11px] uppercase tracking-[.1em] text-sinapsis'>
+							<span aria-hidden='true' className='h-1.5 w-1.5 rounded-full bg-sinapsis' />
+							{d.disponibilidad}
 						</p>
 
 						<dl className='m-0 grid grid-cols-1 border-t border-sinapsis/30 sm:grid-cols-2'>

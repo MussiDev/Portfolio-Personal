@@ -5,6 +5,7 @@ const DICT = {
 		rol: "Frontend Engineer · Arquitectura frontend y performance",
 		presentacion:
 			"Hace más de cuatro años que trabajo en frontend, y lo que más me interesa es la parte que no se ve: las decisiones de arquitectura que definen si un sistema escala o se vuelve imposible de mantener.",
+		disponibilidad: "Abierto a conversar sobre proyectos interesantes.",
 		volverMesa: "Volver al cerebro",
 		volverCuaderno: "Volver al blog",
 		abrir: "Abrir",
@@ -97,7 +98,8 @@ const DICT = {
 	en: {
 		rol: "Frontend Engineer · Frontend architecture & web performance",
 		presentacion:
-			"I build and modernise web products, from the architecture to the implementation.",
+			"I've been working in frontend for over four years, and what interests me most is the part nobody sees: the architecture decisions that decide whether a system scales or becomes impossible to maintain.",
+		disponibilidad: "Open to talking about interesting projects.",
 		volverMesa: "Back to the brain",
 		volverCuaderno: "Back to the blog",
 		abrir: "Open",
