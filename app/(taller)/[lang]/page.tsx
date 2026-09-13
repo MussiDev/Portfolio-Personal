@@ -107,12 +107,14 @@ const Step = ({
 	title,
 	gloss,
 	fact,
+	wide,
 	children,
 }: {
 	n: number;
 	title: string;
 	gloss?: string;
 	fact?: string;
+	wide?: boolean;
 	children: ReactNode;
 }) => (
 	<section
@@ -122,7 +124,9 @@ const Step = ({
 	>
 		<div
 			data-revelar
-			className='pointer-events-auto ml-auto w-full max-w-[42rem] md:w-[54%]'
+			className={`pointer-events-auto ml-auto w-full ${
+				wide ? "max-w-[68rem] md:w-[86%]" : "max-w-[42rem] md:w-[54%]"
+			}`}
 		>
 			<header className='mb-7 flex items-start gap-3 sm:gap-4 md:mb-9'>
 				<span
@@ -305,37 +309,45 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 					fact={`${companiesCount} · ${projectsCount} · ${certificationList.length} ${isSpanish ? "cursos" : "courses"}`}
 				>
 					<div className='flex flex-col gap-4'>
-						{companies.map((e) => {
-							const { period, roles } = normalize(e);
-							return (
-								<Card key={e.company}>
-									<div className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-sinapsis/20 pb-3'>
-										<h3 className='m-0 text-lg md:text-xl'>{e.company}</h3>
-										<span className='font-pieza text-[10px] uppercase tracking-[.12em] text-sinapsis'>
-											{period}
-										</span>
-									</div>
-									{roles.map((r) => (
-										<div
-											key={r.position + r.time}
-											className='flex flex-col gap-1.5'
-										>
-											<div className='flex flex-wrap items-baseline gap-x-3'>
-												<h4 className='m-0 text-sm text-impulso'>
-													{r.position}
-												</h4>
-												<span className='font-pieza text-[10px] tabular-nums text-mielina'>
-													{r.time}
+						<div className='relative flex flex-col gap-6 border-l-2 border-sinapsis/25 pl-6 sm:pl-8'>
+							{companies.map((e) => {
+								const { period, roles } = normalize(e);
+								return (
+									<div key={e.company} className='relative'>
+										<span
+											aria-hidden='true'
+											className='absolute -left-[calc(1.5rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulso shadow-[0_0_0_3px_rgb(5_7_13)] sm:-left-[calc(2rem+5px)]'
+										/>
+										<Card>
+											<div className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-sinapsis/20 pb-3'>
+												<h3 className='m-0 text-lg md:text-xl'>{e.company}</h3>
+												<span className='font-pieza text-[10px] uppercase tracking-[.12em] text-sinapsis'>
+													{period}
 												</span>
 											</div>
-											<p className='m-0 font-nota text-[14px] leading-relaxed text-mielina'>
-												{r.description[lang] ?? r.description.es}
-											</p>
-										</div>
-									))}
-								</Card>
-							);
-						})}
+											{roles.map((r) => (
+												<div
+													key={r.position + r.time}
+													className='flex flex-col gap-1.5'
+												>
+													<div className='flex flex-wrap items-baseline gap-x-3'>
+														<h4 className='m-0 text-sm text-impulso'>
+															{r.position}
+														</h4>
+														<span className='font-pieza text-[10px] tabular-nums text-mielina'>
+															{r.time}
+														</span>
+													</div>
+													<p className='m-0 font-nota text-[14px] leading-relaxed text-mielina'>
+														{r.description[lang] ?? r.description.es}
+													</p>
+												</div>
+											))}
+										</Card>
+									</div>
+								);
+							})}
+						</div>
 
 						<details className='vermas membrana flex flex-col-reverse'>
 							<summary className='flex cursor-pointer list-none items-center gap-3 border-t border-sinapsis/20 px-6 py-3 font-rotulo text-[11px] font-semibold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'>
@@ -433,15 +445,54 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 				<Step
 					n={2}
+					wide
 					title={mainMachine.nombre}
 					gloss={t(mainMachine.contexto, lang)}
 					fact={`${STATUS_LABEL[mainMachine.estado][lang]} · ${mainMachine.stack.join(" · ")}`}
 				>
+					<div className='grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:items-start'>
 					<div className='flex flex-col gap-4'>
 						<p className='m-0 font-glosa text-2xl italic leading-snug text-senal'>
 							{t(mainMachine.resumen, lang)}
 						</p>
 
+						<div className='flex flex-wrap items-center gap-x-6 gap-y-2 lg:hidden'>
+							{mainMachine.enlaces?.map((e) => (
+								<a
+									key={e.href}
+									href={e.href}
+									target={e.externo ? "_blank" : undefined}
+									rel={e.externo ? "noreferrer" : undefined}
+									className='border-b border-impulso pb-0.5 font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
+								>
+									{t(e.etiqueta, lang)} ↗
+								</a>
+							))}
+						</div>
+
+						<OpenMachine
+							machine={mainMachine}
+							lang={lang}
+							unwritten={d.maquinas.sinEscribir}
+							unmeasured={d.maquinas.sinMedir}
+						/>
+
+						<div className='hidden flex-wrap items-center gap-x-6 gap-y-2 lg:flex'>
+							{mainMachine.enlaces?.map((e) => (
+								<a
+									key={e.href}
+									href={e.href}
+									target={e.externo ? "_blank" : undefined}
+									rel={e.externo ? "noreferrer" : undefined}
+									className='border-b border-impulso pb-0.5 font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
+								>
+									{t(e.etiqueta, lang)} ↗
+								</a>
+							))}
+						</div>
+					</div>
+
+					<div className='flex flex-col gap-4'>
 						<figure className='membrana m-0 flex flex-col gap-0 overflow-hidden p-1.5'>
 							<Image
 								src='/image/nortear/margen.jpg'
@@ -485,27 +536,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 								/>
 							</details>
 						</figure>
-
-						<OpenMachine
-							machine={mainMachine}
-							lang={lang}
-							unwritten={d.maquinas.sinEscribir}
-							unmeasured={d.maquinas.sinMedir}
-						/>
-
-						<div className='flex flex-wrap items-center gap-x-6 gap-y-2'>
-							{mainMachine.enlaces?.map((e) => (
-								<a
-									key={e.href}
-									href={e.href}
-									target={e.externo ? "_blank" : undefined}
-									rel={e.externo ? "noreferrer" : undefined}
-									className='border-b border-impulso pb-0.5 font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
-								>
-									{t(e.etiqueta, lang)} ↗
-								</a>
-							))}
-						</div>
+					</div>
 					</div>
 				</Step>
 
@@ -519,30 +550,53 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 					}
 					fact={recommendationsCount}
 				>
-					<div className='flex flex-col gap-4'>
-						{recommendationList.map((r) => (
-							<figure
-								key={r.id}
-								className='membrana m-0 flex flex-col gap-4 px-6 py-6'
-							>
+					<div className='flex flex-col gap-8'>
+						{recommendationList[0] && (
+							<figure className='m-0 flex flex-col gap-5 border-l-2 border-impulso pl-6'>
 								<blockquote className='m-0'>
-									<p className='m-0 font-glosa text-[19px] italic leading-relaxed text-senal'>
-										“{t(r.text, lang)}”
+									<p className='m-0 font-glosa text-[clamp(1.6rem,4vw,2.5rem)] italic leading-[1.2] text-senal'>
+										“{t(recommendationList[0].text, lang)}”
 									</p>
 								</blockquote>
-								<figcaption className='flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-sinapsis/20 pt-3'>
+								<figcaption className='flex flex-wrap items-baseline gap-x-3 gap-y-1'>
 									<span className='font-rotulo text-xs font-bold uppercase tracking-[.1em] text-impulso'>
-										{r.name}
+										{recommendationList[0].name}
 									</span>
 									<span className='font-pieza text-[10px] text-mielina'>
-										{r.role}
+										{recommendationList[0].role}
 									</span>
-									<span className='ml-auto font-pieza text-[10px] uppercase tracking-[.1em] text-sinapsis'>
-										{t(r.relation, lang)} · {r.date}
+									<span className='font-pieza text-[10px] uppercase tracking-[.1em] text-sinapsis'>
+										{t(recommendationList[0].relation, lang)} · {recommendationList[0].date}
 									</span>
 								</figcaption>
 							</figure>
-						))}
+						)}
+
+						<div className='flex flex-col gap-4'>
+							{recommendationList.slice(1).map((r) => (
+								<figure
+									key={r.id}
+									className='membrana m-0 flex flex-col gap-4 px-6 py-6'
+								>
+									<blockquote className='m-0'>
+										<p className='m-0 font-glosa text-[19px] italic leading-relaxed text-senal'>
+											“{t(r.text, lang)}”
+										</p>
+									</blockquote>
+									<figcaption className='flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-sinapsis/20 pt-3'>
+										<span className='font-rotulo text-xs font-bold uppercase tracking-[.1em] text-impulso'>
+											{r.name}
+										</span>
+										<span className='font-pieza text-[10px] text-mielina'>
+											{r.role}
+										</span>
+										<span className='ml-auto font-pieza text-[10px] uppercase tracking-[.1em] text-sinapsis'>
+											{t(r.relation, lang)} · {r.date}
+										</span>
+									</figcaption>
+								</figure>
+							))}
+						</div>
 					</div>
 				</Step>
 
