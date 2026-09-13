@@ -314,7 +314,7 @@ export default async function PostPage({ params }: PageProps) {
 						className='inline-flex w-fit items-center gap-2 font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
 					>
 						<FaArrowLeft size={11} />
-						{d.cuaderno.volver}
+						{d.blog.volver}
 					</Link>
 					<Link
 						href={localizedPath(lang, "/")}

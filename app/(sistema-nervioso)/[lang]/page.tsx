@@ -164,7 +164,6 @@ const Card = ({ children }: { children: ReactNode }) => (
 const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => {
 	const { lang } = await params;
 	const d = getDict(lang);
-	const isSpanish = lang === "es";
 
 	const mainProject = getProjects()[0];
 	let posts: Post[] = [];
@@ -183,14 +182,14 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 	const certificationList = certifications as Certification[];
 	const languageItems = languages as LanguageItem[];
 
-	const companiesCount = `${companies.length} ${isSpanish ? "empresas" : "companies"}`;
-	const projectsCount = `${projects.length} ${isSpanish ? "proyectos" : "projects"}`;
-	const postsCount = `${posts.length} ${isSpanish ? "notas" : "notes"}`;
-	const recommendationsCount = `${recommendationList.length} ${isSpanish ? "personas" : "people"}`;
+	const companiesCount = `${companies.length} ${d.ui.empresas}`;
+	const projectsCount = `${projects.length} ${d.ui.proyectos}`;
+	const postsCount = `${posts.length} ${d.ui.notas}`;
+	const recommendationsCount = `${recommendationList.length} ${d.ui.personas}`;
 
 	const sections = [
 		{
-			label: d.oficio.trayectoria,
+			label: d.sobreMi.trayectoria,
 			fact: `${companiesCount} · ${projectsCount}`,
 			summary: d.hero.secciones.experiencia,
 			href: "#paso-1",
@@ -199,7 +198,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 		},
 		{
 			label: mainProject.nombre,
-			fact: `${stagesWritten(mainProject)} / 6 ${isSpanish ? "tiempos" : "beats"}`,
+			fact: `${stagesWritten(mainProject)} / 6 ${d.ui.tiempos}`,
 			summary: d.hero.secciones.proyectos,
 			href: "#paso-2",
 			step: 2,
@@ -208,15 +207,13 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 		{
 			label: d.campos.recomendaciones,
 			fact: recommendationsCount,
-			summary: isSpanish
-				? "Lo que dijeron de trabajar conmigo quienes lo hicieron, con nombre, rol y relación."
-				: "What the people who actually worked with me said, with name, role and relation.",
+			summary: d.hero.secciones.recomendaciones,
 			href: "#paso-3",
 			step: 3,
 			anchor: [0, -0.12, 0.58] as [number, number, number],
 		},
 		{
-			label: d.nav.cuaderno,
+			label: d.nav.blog,
 			fact: postsCount,
 			summary: d.hero.secciones.blog,
 			href: "#paso-4",
@@ -225,7 +222,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 		},
 		{
 			label: d.nav.contacto,
-			fact: isSpanish ? "respuesta en 24 h" : "reply within 24 h",
+			fact: d.ui.respuesta24h,
 			summary: d.hero.secciones.contacto,
 			href: "#paso-5",
 			step: 5,
@@ -304,9 +301,9 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 				<Step
 					n={1}
-					title={d.oficio.trayectoria}
-					gloss={d.oficio.trayectoriaGlosa}
-					fact={`${companiesCount} · ${projectsCount} · ${certificationList.length} ${isSpanish ? "cursos" : "courses"}`}
+					title={d.sobreMi.trayectoria}
+					gloss={d.sobreMi.trayectoriaGlosa}
+					fact={`${companiesCount} · ${projectsCount} · ${certificationList.length} ${d.ui.cursos}`}
 				>
 					<div className='flex flex-col gap-4'>
 						<div className='relative flex flex-col gap-6 border-l-2 border-sinapsis/25 pl-6 sm:pl-8'>
@@ -351,12 +348,8 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 						<details className='vermas membrana flex flex-col-reverse'>
 							<summary className='flex cursor-pointer list-none items-center gap-3 border-t border-sinapsis/20 px-6 py-3 font-rotulo text-[11px] font-semibold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'>
-								<span className='mas'>
-									{isSpanish
-										? `Ver los ${projects.length} proyectos`
-										: `See the ${projects.length} projects`}
-								</span>
-								<span className='menos'>{isSpanish ? "Ver menos" : "See less"}</span>
+				<span className='mas'>{d.ui.verProyectos(projects.length)}</span>
+								<span className='menos'>{d.ui.verMenos}</span>
 							</summary>
 							<div className='flex flex-col'>
 								{projects.map((p, i) => (
@@ -393,7 +386,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 										{d.campos.educacion}
 									</h4>
 									<p className='m-0 max-w-[52ch] font-nota text-[13px] leading-relaxed text-mielina'>
-										{d.oficio.bio}
+										{d.sobreMi.bio}
 									</p>
 								</div>
 								<div className='flex flex-col gap-2'>
@@ -419,10 +412,10 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 						<details className='vermas membrana flex flex-col-reverse'>
 							<summary className='flex cursor-pointer list-none items-center gap-3 border-t border-sinapsis/20 px-6 py-3 font-rotulo text-[11px] font-semibold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'>
-								<span className='mas'>
-									{d.oficio.credenciales} · {certificationList.length}
+							<span className='mas'>
+									{d.sobreMi.credenciales} · {certificationList.length}
 								</span>
-								<span className='menos'>{isSpanish ? "Ver menos" : "See less"}</span>
+								<span className='menos'>{d.ui.verMenos}</span>
 							</summary>
 							<ul className='m-0 flex list-none flex-col p-0'>
 								{certificationList.map((c) => (
@@ -473,8 +466,8 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 						<OpenProject
 							project={mainProject}
 							lang={lang}
-							unwritten={d.maquinas.sinEscribir}
-							unmeasured={d.maquinas.sinMedir}
+							unwritten={d.proyectos.sinEscribir}
+							unmeasured={d.proyectos.sinMedir}
 						/>
 
 						<div className='hidden flex-wrap items-center gap-x-6 gap-y-2 lg:flex'>
@@ -494,41 +487,27 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 					<div className='flex flex-col gap-4'>
 						<figure className='membrana m-0 flex flex-col gap-0 overflow-hidden p-1.5'>
-							<Image
+						<Image
 								src='/image/nortear/margen.jpg'
-								alt={
-									isSpanish
-										? "Margen de hoy: $40.100, el 89%, con la línea que lo explica: $45.000 facturado menos $4.900 en insumos."
-										: "Margin today: $40,100, 89%, with the line that explains it: $45,000 invoiced minus $4,900 in supplies."
-								}
+								alt={d.ui.altMargen}
 								width={1337}
 								height={151}
 								sizes='(max-width: 768px) 100vw, 42rem'
 								className='h-auto w-full rounded-[2px]'
 							/>
 							<figcaption className='flex flex-wrap items-baseline gap-x-3 px-4 pb-3 pt-3 font-pieza text-[10px] uppercase tracking-[.12em] text-mielina'>
-								<span className='text-impulso'>
-									{isSpanish ? "Margen del día" : "Margin of the day"}
-								</span>
-								<span>
-									{isSpanish
-										? "$45.000 facturado − $4.900 en insumos = $40.100"
-										: "$45,000 invoiced − $4,900 supplies = $40,100"}
-								</span>
+								<span className='text-impulso'>{d.ui.margenDelDia}</span>
+								<span>{d.ui.formulaMargen}</span>
 							</figcaption>
 
 							<details className='tiempo border-t border-sinapsis/15'>
 								<summary className='flex cursor-pointer list-none items-center gap-3 px-4 py-2.5 font-rotulo text-[10px] font-semibold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'>
-									{isSpanish ? "Ver el panel completo" : "See the full panel"}
+									{d.ui.verPanelCompleto}
 									<span className='marcador font-pieza text-[11px]' />
 								</summary>
 								<Image
 									src='/image/nortear/dashboard.jpg'
-									alt={
-										isSpanish
-											? "Panel completo de NorteAR: caja del día, resumen del mes, ventas, turnos, alertas de stock y actividad reciente."
-											: "Full NorteAR panel: today's till, monthly summary, sales, appointments, stock alerts and recent activity."
-									}
+									alt={d.ui.altPanel}
 									width={1568}
 									height={703}
 									sizes='(max-width: 768px) 100vw, 42rem'
@@ -543,11 +522,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 				<Step
 					n={3}
 					title={d.campos.recomendaciones}
-					gloss={
-						isSpanish
-							? "lo que dijeron quienes trabajaron conmigo"
-							: "what the people who worked with me said"
-					}
+					gloss={d.ui.recomendacionesGlosa}
 					fact={recommendationsCount}
 				>
 					<div className='flex flex-col gap-8'>
@@ -602,19 +577,19 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 				<Step
 					n={4}
-					title={d.cuaderno.titulo}
-					gloss={d.cuaderno.glosa}
+					title={d.blog.titulo}
+					gloss={d.blog.glosa}
 					fact={postsCount}
 				>
 					<div className='flex flex-col gap-4'>
 						<p className='m-0 max-w-[60ch] font-nota text-[15px] leading-relaxed text-mielina'>
-							{d.cuaderno.bajada}
+							{d.blog.bajada}
 						</p>
 
 						<div className='membrana flex flex-col'>
 							{posts.length === 0 ? (
 								<p className='m-0 px-6 py-8 font-glosa text-[16px] italic text-mielina'>
-									{d.cuaderno.vacio}
+									{d.blog.vacio}
 								</p>
 							) : (
 								posts.map((post, i) => (
@@ -648,7 +623,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 					</div>
 				</Step>
 
-				<Step n={5} title={d.nav.contacto} gloss={isSpanish ? "en remoto" : "remote"}>
+				<Step n={5} title={d.nav.contacto} gloss={d.ui.enRemoto}>
 					<div className='flex flex-col gap-6'>
 						<p className='m-0 max-w-[36ch] font-glosa text-[2rem] italic leading-[1.15] text-senal'>
 							{d.hero.secciones.contacto}
@@ -664,7 +639,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 								[d.campos.rol, "Frontend Engineer"],
 								[d.campos.en, "La Mutual de AMR"],
 								[d.campos.desde, "2022"],
-								[d.campos.lugar, isSpanish ? "Remoto" : "Remote"],
+								[d.campos.lugar, d.ui.remoto],
 							].map(([k, v]) => (
 								<div
 									key={k}
@@ -706,10 +681,8 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 						</div>
 
 						<aside className='border-l-2 border-impulso/50 pl-5'>
-							<p className='m-0 font-rotulo text-[9px] uppercase tracking-[.16em] text-mielina'>
-								{isSpanish
-									? "Este sitio · lo que descarté"
-									: "This site · what I discarded"}
+						<p className='m-0 font-rotulo text-[9px] uppercase tracking-[.16em] text-mielina'>
+								{d.ui.descartes}
 							</p>
 							<p className='m-0 mt-2 max-w-[60ch] font-glosa text-[16px] italic leading-relaxed text-mielina'>
 								<span className='line-through decoration-impulso decoration-[1.5px]'>
