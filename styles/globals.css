@@ -295,6 +295,6 @@ html[data-js="si"] [data-revelar].visible {
 	}
 }
 
-.captcha {
-	max-width: 100%;
+.grecaptcha-badge {
+	visibility: hidden;
 }

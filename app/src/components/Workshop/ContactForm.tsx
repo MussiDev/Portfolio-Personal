@@ -1,21 +1,24 @@
 "use client";
 
-import React, {
-	Suspense,
-	lazy,
-	useActionState,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import emailjs from "@emailjs/browser";
+import Script from "next/script";
 
 import type { Language } from "../../../../entities/i18n";
 
-const ReCAPTCHA = lazy(() => import("react-google-recaptcha"));
-
 type State = { ok: boolean | null; message: string };
+
+declare global {
+	interface Window {
+		grecaptcha?: {
+			ready: (callback: () => void) => void;
+			execute: (siteKey: string, options: { action: string }) => Promise<string>;
+		};
+	}
+}
+
+const CAPTCHA_ACTION = "contact";
 
 const COPY = {
 	es: {
@@ -26,7 +29,12 @@ const COPY = {
 		sending: "Enviando…",
 		ok: "Llegó. Te respondo apenas lo lea — normalmente dentro de las 24 horas.",
 		error: "No se pudo enviar. Probá de nuevo, o escribime por LinkedIn.",
-		captcha: "Marcá el captcha antes de enviar.",
+		captcha: "No pudimos verificar que no sos un robot. Probá de nuevo.",
+		proteccion: "Este sitio está protegido por reCAPTCHA. Aplican la",
+		privacidad: "Política de privacidad",
+		y: "y los",
+		terminos: "Términos del servicio",
+		deGoogle: "de Google.",
 	},
 	en: {
 		name: "Name",
@@ -36,7 +44,12 @@ const COPY = {
 		sending: "Sending…",
 		ok: "It arrived. I answer as soon as I read it — usually within 24 hours.",
 		error: "It could not be sent. Try again, or write to me on LinkedIn.",
-		captcha: "Tick the captcha before sending.",
+		captcha: "We could not verify you are not a robot. Try again.",
+		proteccion: "This site is protected by reCAPTCHA. Google's",
+		privacidad: "Privacy Policy",
+		y: "and",
+		terminos: "Terms of Service",
+		deGoogle: "apply.",
 	},
 };
 
@@ -46,35 +59,46 @@ const fieldClass =
 const labelClass =
 	"font-rotulo text-[11px] uppercase tracking-[.14em] text-mielina";
 
+const linkClass = "underline decoration-sinapsis/50 hover:text-impulso";
+
+const getCaptchaToken = async (siteKey: string): Promise<string | null> => {
+	if (!window.grecaptcha) return null;
+	try {
+		return await new Promise<string>((resolve, reject) => {
+			window.grecaptcha!.ready(() => {
+				window.grecaptcha!
+					.execute(siteKey, { action: CAPTCHA_ACTION })
+					.then(resolve, reject);
+			});
+		});
+	} catch {
+		return null;
+	}
+};
+
+const verifyCaptcha = async (siteKey: string): Promise<boolean> => {
+	const token = await getCaptchaToken(siteKey);
+	if (!token) return false;
+
+	try {
+		const res = await fetch("/api/verify-captcha", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ token }),
+		});
+		if (!res.ok) return false;
+		const data = (await res.json()) as { success: boolean };
+		return data.success;
+	} catch {
+		return false;
+	}
+};
+
 const ContactForm = ({ lang }: { lang: Language }) => {
-	const [captchaOk, setCaptchaOk] = useState(false);
-	const [darkTheme, setDarkTheme] = useState(false);
-	const [mounted, setMounted] = useState(false);
 	const [wantsCaptcha, setWantsCaptcha] = useState(false);
-	const boxRef = useRef<HTMLDivElement>(null);
 	const formRef = useRef<HTMLFormElement>(null);
-	const [compact, setCompact] = useState(false);
 	const c = COPY[lang];
 	const sitekey = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
-
-	useEffect(() => {
-		const box = boxRef.current;
-		if (!box) return;
-		const decide = () => setCompact(box.clientWidth < 310);
-		decide();
-		const observer = new ResizeObserver(decide);
-		observer.observe(box);
-		return () => observer.disconnect();
-	}, []);
-
-	useEffect(() => {
-		setMounted(true);
-		const mq = window.matchMedia("(prefers-color-scheme: dark)");
-		setDarkTheme(mq.matches);
-		const onChange = (e: MediaQueryListEvent) => setDarkTheme(e.matches);
-		mq.addEventListener("change", onChange);
-		return () => mq.removeEventListener("change", onChange);
-	}, []);
 
 	useEffect(() => {
 		if (wantsCaptcha) return;
@@ -99,14 +123,17 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 		async (_prev, formData) => {
 			if (formData.get("lastName")) return { ok: true, message: c.ok };
 
-			if (sitekey && !captchaOk) return { ok: false, message: c.captcha };
-
 			const serviceId = process.env.NEXT_PUBLIC_SERVICE_ID;
 			const templateId = process.env.NEXT_PUBLIC_TEMPLATE_ID;
 			const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 
 			if (!serviceId || !templateId || !publicKey) {
 				return { ok: false, message: c.error };
+			}
+
+			if (sitekey) {
+				const verified = await verifyCaptcha(sitekey);
+				if (!verified) return { ok: false, message: c.captcha };
 			}
 
 			try {
@@ -120,7 +147,6 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 					},
 					publicKey,
 				);
-				setCaptchaOk(false);
 				return { ok: true, message: c.ok };
 			} catch {
 				return { ok: false, message: c.error };
@@ -136,6 +162,13 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 			onFocus={() => setWantsCaptcha(true)}
 			className='flex max-w-[54ch] flex-col gap-6 border border-sinapsis bg-membrana/40 px-7 py-7'
 		>
+			{sitekey && wantsCaptcha && (
+				<Script
+					src={`https://www.google.com/recaptcha/api.js?render=${sitekey}`}
+					strategy='lazyOnload'
+				/>
+			)}
+
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='name'>
 					{c.name}
@@ -186,37 +219,6 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 				className='absolute h-0 w-0 opacity-0'
 			/>
 
-			{sitekey && (
-				<div ref={boxRef} className='captcha'>
-					{mounted && wantsCaptcha ? (
-						<Suspense
-							fallback={
-								<div
-									className={`max-w-full bg-membrana-honda ${
-										compact ? "h-[144px] w-[164px]" : "h-[78px] w-[304px]"
-									}`}
-								/>
-							}
-						>
-							<ReCAPTCHA
-								key={`${darkTheme ? "dark" : "light"}-${compact ? "c" : "n"}`}
-								size={compact ? "compact" : "normal"}
-								sitekey={sitekey}
-								theme={darkTheme ? "dark" : "light"}
-								onChange={() => setCaptchaOk(true)}
-								onExpired={() => setCaptchaOk(false)}
-							/>
-						</Suspense>
-					) : (
-						<div
-							className={`max-w-full bg-membrana-honda ${
-								compact ? "h-[144px] w-[164px]" : "h-[78px] w-[304px]"
-							}`}
-						/>
-					)}
-				</div>
-			)}
-
 			<button
 				type='submit'
 				disabled={sending}
@@ -224,6 +226,30 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 			>
 				{sending ? c.sending : c.send}
 			</button>
+
+			{sitekey && (
+				<p className='m-0 font-pieza text-[10px] leading-relaxed text-mielina'>
+					{c.proteccion}{" "}
+					<a
+						href='https://policies.google.com/privacy'
+						target='_blank'
+						rel='noreferrer'
+						className={linkClass}
+					>
+						{c.privacidad}
+					</a>{" "}
+					{c.y}{" "}
+					<a
+						href='https://policies.google.com/terms'
+						target='_blank'
+						rel='noreferrer'
+						className={linkClass}
+					>
+						{c.terminos}
+					</a>{" "}
+					{c.deGoogle}
+				</p>
+			)}
 
 			{state.ok !== null && (
 				<p
