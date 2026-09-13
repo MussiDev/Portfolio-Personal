@@ -1,6 +1,6 @@
 import type { LocalizedText } from "./i18n";
 
-export type MachineStatus = "en-construccion" | "en-prueba" | "terminado";
+export type ProjectStatus = "en-construccion" | "en-prueba" | "terminado";
 
 export type ObjectType = "producto" | "maquina" | "en-obra";
 
@@ -24,22 +24,22 @@ export interface ResultStage extends Stage {
 	medidas: Measurement[];
 }
 
-export interface MachineLink {
+export interface ProjectLink {
 	etiqueta: LocalizedText;
 	href: string;
 	externo?: boolean;
 }
 
-export default interface Machine {
+export default interface Project {
 	slug: string;
 	nombre: string;
 	tipo: ObjectType;
-	estado: MachineStatus;
+	estado: ProjectStatus;
 	contexto: LocalizedText;
 	periodo: LocalizedText | null;
 	resumen: LocalizedText;
 	stack: string[];
-	enlaces: MachineLink[];
+	enlaces: ProjectLink[];
 	peso: number;
 	tiempos: {
 		problema: Stage;

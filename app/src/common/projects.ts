@@ -1,25 +1,20 @@
-import machines from "../../../api/machines.json";
+import projects from "../../../api/projects.json";
 import { DEFAULT_LANGUAGE, type Language } from "../../../entities/i18n";
-import Machine, { MachineStatus } from "../../../entities/machine";
+import Project, { ProjectStatus } from "../../../entities/project";
 
-export const getMachines = (): Machine[] =>
-	(machines as Machine[]).slice().sort((a, b) => a.peso - b.peso);
+export const getProjects = (): Project[] =>
+	(projects as Project[]).slice().sort((a, b) => a.peso - b.peso);
 
-export const getMachine = (slug: string): Machine | undefined =>
-	(machines as Machine[]).find((m) => m.slug === slug);
+export const getProject = (slug: string): Project | undefined =>
+	(projects as Project[]).find((m) => m.slug === slug);
 
-export const STATUS_LABEL: Record<MachineStatus, Record<Language, string>> = {
+export const STATUS_LABEL: Record<ProjectStatus, Record<Language, string>> = {
 	"en-construccion": { es: "En construcción", en: "Under construction" },
 	"en-prueba": { es: "En prueba", en: "In testing" },
 	terminado: { es: "Terminado", en: "Finished" },
 };
 
-export const statusClass = (status: MachineStatus): string =>
-	status === "terminado"
-		? "border-sinapsis text-sinapsis"
-		: "border-impulso text-impulso";
-
-type Stage = Machine["tiempos"][keyof Machine["tiempos"]];
+type Stage = Project["tiempos"][keyof Project["tiempos"]];
 
 export const stageHasContent = (stage: Stage): boolean => {
 	if ((stage.parrafos[DEFAULT_LANGUAGE] ?? []).length > 0) return true;
@@ -30,7 +25,7 @@ export const stageHasContent = (stage: Stage): boolean => {
 	return false;
 };
 
-export const stagesWritten = (m: Machine): number =>
+export const stagesWritten = (m: Project): number =>
 	Object.values(m.tiempos).filter(stageHasContent).length;
 
 export const paragraphs = (stage: { parrafos: Record<string, string[]> }, lang: Language) =>

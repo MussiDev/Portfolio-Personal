@@ -1,10 +1,10 @@
 import type { Language } from "../../../entities/i18n";
 import { t } from "../../../entities/i18n";
-import type Machine from "../../../entities/machine";
-import type { Measurement } from "../../../entities/machine";
+import type Project from "../../../entities/project";
+import type { Measurement } from "../../../entities/project";
 import Pending from "./Pending";
 import BlueprintDiagram from "./BlueprintDiagram";
-import { STAGES, paragraphs, stageHasContent } from "./workshop";
+import { STAGES, paragraphs, stageHasContent } from "./projects";
 
 const Flow = ({ steps }: { steps: string[] }) => (
 	<ol className='flex list-none flex-col items-start gap-0 p-0 sm:flex-row sm:flex-wrap sm:items-stretch'>
@@ -69,20 +69,20 @@ const Measurements = ({
 	</dl>
 );
 
-const OpenMachine = ({
-	machine,
+const OpenProject = ({
+	project,
 	lang,
 	unwritten,
 	unmeasured,
 }: {
-	machine: Machine;
+	project: Project;
 	lang: Language;
 	unwritten: string;
 	unmeasured: string;
 }) => (
 	<div className='membrana flex flex-col'>
 		{STAGES.map(({ key, label }, i) => {
-			const stage = machine.tiempos[key];
+			const stage = project.tiempos[key];
 			const body = paragraphs(stage, lang);
 			const hasContent = stageHasContent(stage);
 
@@ -153,4 +153,4 @@ const OpenMachine = ({
 	</div>
 );
 
-export default OpenMachine;
+export default OpenProject;

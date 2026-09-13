@@ -14,11 +14,11 @@ import { postsQuery } from "../../../sanity/lib/queries";
 import certifications from "../../../api/certifications.json";
 import experienceItems from "../../../api/experienceItems.json";
 import languages from "../../../api/languages.json";
-import discardedData from "../../../api/mesa.json";
+import discardedData from "../../../api/descartes.json";
 import recommendations from "../../../api/recommendations.json";
 import workProjects from "../../../api/workProjects.json";
-import { STATUS_LABEL, getMachines, stagesWritten } from "../../src/common/workshop";
-import OpenMachine from "../../src/common/OpenMachine";
+import { STATUS_LABEL, getProjects, stagesWritten } from "../../src/common/projects";
+import OpenProject from "../../src/common/OpenProject";
 import NervousSystem from "../../src/common/NervousSystem";
 import ContactForm from "../../src/components/Workshop/ContactForm";
 
@@ -166,8 +166,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 	const d = getDict(lang);
 	const isSpanish = lang === "es";
 
-	const machines = getMachines();
-	const mainMachine = machines[0];
+	const mainProject = getProjects()[0];
 	let posts: Post[] = [];
 	try {
 		posts = await client.fetch<Post[]>(
@@ -199,8 +198,8 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			anchor: [0, 0.8, 0.02] as [number, number, number],
 		},
 		{
-			label: mainMachine.nombre,
-			fact: `${stagesWritten(mainMachine)} / 6 ${isSpanish ? "tiempos" : "beats"}`,
+			label: mainProject.nombre,
+			fact: `${stagesWritten(mainProject)} / 6 ${isSpanish ? "tiempos" : "beats"}`,
 			summary: d.hero.secciones.proyectos,
 			href: "#paso-2",
 			step: 2,
@@ -447,18 +446,18 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 				<Step
 					n={2}
 					wide
-					title={mainMachine.nombre}
-					gloss={t(mainMachine.contexto, lang)}
-					fact={`${STATUS_LABEL[mainMachine.estado][lang]} · ${mainMachine.stack.join(" · ")}`}
+					title={mainProject.nombre}
+					gloss={t(mainProject.contexto, lang)}
+					fact={`${STATUS_LABEL[mainProject.estado][lang]} · ${mainProject.stack.join(" · ")}`}
 				>
 					<div className='grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:items-start'>
 					<div className='flex flex-col gap-4'>
 						<p className='m-0 font-glosa text-2xl italic leading-snug text-senal'>
-							{t(mainMachine.resumen, lang)}
+							{t(mainProject.resumen, lang)}
 						</p>
 
 						<div className='flex flex-wrap items-center gap-x-6 gap-y-2 lg:hidden'>
-							{mainMachine.enlaces?.map((e) => (
+							{mainProject.enlaces?.map((e) => (
 								<a
 									key={e.href}
 									href={e.href}
@@ -471,15 +470,15 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 							))}
 						</div>
 
-						<OpenMachine
-							machine={mainMachine}
+						<OpenProject
+							project={mainProject}
 							lang={lang}
 							unwritten={d.maquinas.sinEscribir}
 							unmeasured={d.maquinas.sinMedir}
 						/>
 
 						<div className='hidden flex-wrap items-center gap-x-6 gap-y-2 lg:flex'>
-							{mainMachine.enlaces?.map((e) => (
+							{mainProject.enlaces?.map((e) => (
 								<a
 									key={e.href}
 									href={e.href}
