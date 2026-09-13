@@ -142,6 +142,12 @@ const WorkshopLayout = async ({
 			className={`${label.variable} ${display.variable} ${mono.variable}`}
 		>
 			<body className='bg-tejido text-senal'>
+				<a
+					href='#paso-1'
+					className='sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-impulso focus:px-4 focus:py-2 focus:font-rotulo focus:text-xs focus:font-bold focus:uppercase focus:tracking-[.12em] focus:text-tejido'
+				>
+					Ir al contenido
+				</a>
 				<script dangerouslySetInnerHTML={{ __html: BOOTSTRAP_SCRIPT }} />
 				<script
 					type='application/ld+json'

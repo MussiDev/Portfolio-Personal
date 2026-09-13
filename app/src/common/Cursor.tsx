@@ -10,13 +10,14 @@ const Cursor = () => {
 		const fine = window.matchMedia("(pointer: fine)");
 		if (!fine.matches) return;
 
-		const ring = ringRef.current;
-		const dot = dotRef.current;
-		if (!ring || !dot) return;
-
 		const reducedMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
+		if (reducedMotion) return;
+
+		const ring = ringRef.current;
+		const dot = dotRef.current;
+		if (!ring || !dot) return;
 
 		document.documentElement.classList.add("cursor-propio");
 
@@ -52,9 +53,8 @@ const Cursor = () => {
 		let alive = true;
 		const draw = () => {
 			if (!alive) return;
-			const k = reducedMotion ? 1 : 0.22;
-			ax += (x - ax) * k;
-			ay += (y - ay) * k;
+			ax += (x - ax) * 0.22;
+			ay += (y - ay) * 0.22;
 			const scale = active ? 1.7 : 1;
 			ring.style.transform = `translate3d(${ax}px, ${ay}px, 0) translate(-50%, -50%) scale(${scale})`;
 			dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;

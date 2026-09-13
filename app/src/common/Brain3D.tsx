@@ -56,7 +56,7 @@ const Brain3D = ({
 }) => {
 	const mountRef = useRef<HTMLDivElement>(null);
 	const svgRef = useRef<SVGSVGElement>(null);
-	const labelsRef = useRef<(HTMLButtonElement | null)[]>([]);
+	const labelsRef = useRef<(HTMLAnchorElement | null)[]>([]);
 	const calloutsRef = useRef<(SVGPolylineElement | null)[]>([]);
 	const targetsRef = useRef<(SVGCircleElement | null)[]>([]);
 	const pulseRef = useRef<SVGCircleElement>(null);
@@ -584,13 +584,21 @@ const Brain3D = ({
 		const lit = active === i;
 		const isLeft = i < half;
 		return (
-			<button
+			<a
 				key={section.href + section.label}
-				type='button'
 				ref={(n) => {
 					labelsRef.current[i] = n;
 				}}
-				onClick={() => onGo(i)}
+				href={section.href}
+				target={section.external ? "_blank" : undefined}
+				rel={section.external ? "noopener noreferrer" : undefined}
+				onClick={(e) => {
+					if (section.external || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
+						return;
+					}
+					e.preventDefault();
+					onGo(i);
+				}}
 				onMouseEnter={() => onActive(i)}
 				onFocus={() => onActive(i)}
 				onMouseLeave={() => onActive(null)}
@@ -620,13 +628,13 @@ const Brain3D = ({
 				<span className='font-pieza text-[10px] uppercase tracking-[.1em] text-mielina'>
 					{section.fact}
 				</span>
-			</button>
+			</a>
 		);
 	};
 
 	return (
 		<>
-			<div ref={mountRef} className='absolute inset-0' />
+			<div ref={mountRef} aria-hidden='true' className='absolute inset-0' />
 
 			<svg
 				ref={svgRef}

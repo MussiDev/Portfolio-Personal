@@ -191,6 +191,12 @@ const NervousSystem = ({
 			) {
 				return;
 			}
+			const container = containerRef.current;
+			const withinScope =
+				target === document.body ||
+				(!!container && (target === container || container.contains(target)));
+			if (!withinScope) return;
+
 			const i = activeRef.current;
 			if (e.key === "Enter" && i !== null && !e.metaKey && !e.ctrlKey) {
 				if (target?.closest("a, button")) return;
@@ -198,7 +204,7 @@ const NervousSystem = ({
 				const s = sections[i];
 				window.open(s.href, s.external ? "_blank" : "_self");
 			}
-			if (e.key === "Backspace" || e.key === "Escape") {
+			if (e.key === "Backspace") {
 				e.preventDefault();
 				setHover(null);
 				goToStep(0);
@@ -398,6 +404,7 @@ const NervousSystem = ({
 							type='button'
 							onClick={() => section.step !== undefined && goToStep(section.step)}
 							title={section.label}
+							aria-label={section.label}
 							aria-current={here ? "step" : undefined}
 							className='pointer-events-auto flex h-4 w-4 items-center justify-center'
 						>
