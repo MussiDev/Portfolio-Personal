@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
 
 export type Section = {
 	label: string;
@@ -29,7 +30,6 @@ const TISSUE = new THREE.Color(0x7c98be);
 const IMPULSE = new THREE.Color(0xff6a3a);
 
 const SPONTANEOUS = 120;
-const HEADER_SIZE = 32;
 
 const Brain3D = ({
 	sections,
@@ -160,17 +160,17 @@ const Brain3D = ({
 				chunks.push(value);
 				read += value.length;
 
-				if (!total && read >= HEADER_SIZE) {
-					const headerBytes = new Uint8Array(HEADER_SIZE);
+				if (!total && read >= BIN_HEADER_SIZE) {
+					const headerBytes = new Uint8Array(BIN_HEADER_SIZE);
 					let written = 0;
 					for (const c of chunks) {
-						const count = Math.min(c.length, HEADER_SIZE - written);
+						const count = Math.min(c.length, BIN_HEADER_SIZE - written);
 						headerBytes.set(c.subarray(0, count), written);
 						written += count;
-						if (written >= HEADER_SIZE) break;
+						if (written >= BIN_HEADER_SIZE) break;
 					}
 					const headerView = new DataView(headerBytes.buffer);
-					total = HEADER_SIZE + (headerView.getUint32(4, true) + headerView.getUint32(8, true)) * 3 * 2;
+					total = BIN_HEADER_SIZE + (headerView.getUint32(4, true) + headerView.getUint32(8, true)) * 3 * 2;
 				}
 				if (total) callbacksRef.current.onProgress(Math.min(1, read / total));
 			}
@@ -189,29 +189,11 @@ const Brain3D = ({
 			.then((buffer) => {
 				if (!alive || !buffer) return;
 
-				const view = new DataView(buffer);
-				if (String.fromCharCode(...new Uint8Array(buffer, 0, 4)) !== "CRB1") {
-					throw new Error("cerebro.bin has an unknown format");
-				}
-				const pointCount = view.getUint32(4, true);
-				const edgeCount = view.getUint32(8, true);
-				const min = [
-					view.getFloat32(12, true),
-					view.getFloat32(16, true),
-					view.getFloat32(20, true),
-				];
-				const range = view.getFloat32(24, true);
-				const raw = new Uint16Array(buffer, HEADER_SIZE);
+				const { pointCount, edgeCount, min, range } = parseBinHeader(buffer);
+				const raw = new Uint16Array(buffer, BIN_HEADER_SIZE);
 
-				const unpack = (offset: number, count: number) => {
-					const out = new Float32Array(count * 3);
-					for (let i = 0; i < out.length; i += 1) {
-						out[i] = min[i % 3] + (raw[offset + i] / 65535) * range;
-					}
-					return out;
-				};
-				const positions = unpack(0, pointCount);
-				const edges = unpack(pointCount * 3, edgeCount);
+				const positions = unpackVectors(raw, 0, pointCount, min, range);
+				const edges = unpackVectors(raw, pointCount * 3, edgeCount, min, range);
 
 				snapAnchorsToTissue(positions);
 

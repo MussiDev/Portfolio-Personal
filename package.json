@@ -10,7 +10,8 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"brain": "node scripts/prepare-brain.mjs"
+		"brain": "node scripts/prepare-brain.mjs",
+		"test": "node --experimental-strip-types --test entities/i18n.test.ts app/src/common/binFormat.test.ts app/src/components/Blog/excerpt.test.ts"
 	},
 	"dependencies": {
 		"@emailjs/browser": "^4.2.0",

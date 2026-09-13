@@ -21,6 +21,10 @@ import { postBySlugQuery } from "../../../../../sanity/lib/queries";
 import { urlFor } from "../../../../../sanity/lib/image";
 import type { SanityImageObject } from "@sanity/image-url";
 import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
+import {
+	extractExcerpt,
+	type PortableTextBlock,
+} from "../../../../src/components/Blog/excerpt";
 
 const MermaidDiagram = dynamic(
 	() => import("../../../../src/components/Blog/MermaidDiagram"),
@@ -29,17 +33,6 @@ const MermaidDiagram = dynamic(
 
 interface CoverImage extends SanityImageObject {
 	alt?: string;
-}
-
-interface PortableTextSpan {
-	_type: "span";
-	text: string;
-}
-
-interface PortableTextBlock {
-	_type: string;
-	style?: string;
-	children?: PortableTextSpan[];
 }
 
 interface Post {
@@ -56,33 +49,10 @@ interface PageProps {
 }
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
-const EXCERPT_LENGTH = 155;
 
 const getPost = cache(
 	(slug: string): Promise<Post | null> => client.fetch(postBySlugQuery, { slug }),
 );
-
-function extractExcerpt(post: Pick<Post, "body" | "markdownBody">): string {
-	let raw = post.markdownBody ?? "";
-	if (!raw) {
-		if (!Array.isArray(post.body)) return "";
-		const firstParagraph = post.body.find(
-			(block) => block._type === "block" && block.style === "normal",
-		);
-		raw = firstParagraph?.children?.map((child) => child.text ?? "").join("") ?? "";
-	}
-
-	const clean = raw
-		.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-		.replace(/[#*`>]/g, "")
-		.replace(/\s+/g, " ")
-		.trim();
-
-	if (clean.length <= EXCERPT_LENGTH) return clean;
-	const cut = clean.slice(0, EXCERPT_LENGTH);
-	const lastSpace = cut.lastIndexOf(" ");
-	return `${cut.slice(0, lastSpace > 0 ? lastSpace : EXCERPT_LENGTH)}…`;
-}
 
 interface MermaidBlockValue {
 	_type: "mermaidBlock";
