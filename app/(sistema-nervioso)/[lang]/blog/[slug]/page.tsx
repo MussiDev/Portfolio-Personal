@@ -1,7 +1,12 @@
 import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
-import { PortableText } from "@portabletext/react";
+import {
+	PortableText,
+	type PortableTextComponents,
+	type PortableTextMarkComponentProps,
+	type PortableTextTypeComponentProps,
+} from "@portabletext/react";
 import ReactMarkdown from "react-markdown";
 import { Suspense, cache } from "react";
 import { client } from "../../../../../sanity/lib/client";
@@ -14,6 +19,7 @@ import { es } from "date-fns/locale";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../../sanity/lib/queries";
 import { urlFor } from "../../../../../sanity/lib/image";
+import type { SanityImageObject } from "@sanity/image-url";
 import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
 
 const MermaidDiagram = dynamic(
@@ -21,11 +27,26 @@ const MermaidDiagram = dynamic(
 	{ ssr: true },
 );
 
+interface CoverImage extends SanityImageObject {
+	alt?: string;
+}
+
+interface PortableTextSpan {
+	_type: "span";
+	text: string;
+}
+
+interface PortableTextBlock {
+	_type: string;
+	style?: string;
+	children?: PortableTextSpan[];
+}
+
 interface Post {
 	title: string;
 	publishedAt: string;
-	coverImage?: any;
-	body?: any;
+	coverImage?: CoverImage;
+	body?: PortableTextBlock[];
 	markdownBody?: string;
 	tags?: string[];
 }
@@ -46,9 +67,9 @@ function extractExcerpt(post: Pick<Post, "body" | "markdownBody">): string {
 	if (!raw) {
 		if (!Array.isArray(post.body)) return "";
 		const firstParagraph = post.body.find(
-			(block: any) => block._type === "block" && block.style === "normal",
+			(block) => block._type === "block" && block.style === "normal",
 		);
-		raw = firstParagraph?.children?.map((child: any) => child.text ?? "").join("") ?? "";
+		raw = firstParagraph?.children?.map((child) => child.text ?? "").join("") ?? "";
 	}
 
 	const clean = raw
@@ -63,58 +84,69 @@ function extractExcerpt(post: Pick<Post, "body" | "markdownBody">): string {
 	return `${cut.slice(0, lastSpace > 0 ? lastSpace : EXCERPT_LENGTH)}…`;
 }
 
-const portableTextComponents = {
+interface MermaidBlockValue {
+	_type: "mermaidBlock";
+	_key: string;
+	code: string;
+}
+
+const portableTextComponents: PortableTextComponents = {
 	types: {
-		mermaidBlock: ({ value }: any) => <MermaidDiagram code={value.code} />,
+		mermaidBlock: ({ value }: PortableTextTypeComponentProps<MermaidBlockValue>) => (
+			<MermaidDiagram code={value.code} />
+		),
 	},
 	block: {
-		normal: ({ children }: any) => (
+		normal: ({ children }) => (
 			<p className='m-0 mb-5 max-w-[68ch] break-words font-nota text-lg leading-relaxed'>
 				{children}
 			</p>
 		),
-		h1: ({ children }: any) => (
+		h1: ({ children }) => (
 			<h1 className='mb-4 mt-10 text-2xl md:text-3xl'>{children}</h1>
 		),
-		h2: ({ children }: any) => (
+		h2: ({ children }) => (
 			<h2 className='mb-3 mt-10 text-xl md:text-2xl'>{children}</h2>
 		),
-		h3: ({ children }: any) => (
+		h3: ({ children }) => (
 			<h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>
 		),
-		blockquote: ({ children }: any) => (
+		blockquote: ({ children }) => (
 			<blockquote className='my-6 max-w-[62ch] border-l-2 border-impulso/60 pl-4 font-glosa text-xl italic leading-snug text-mielina'>
 				{children}
 			</blockquote>
 		),
 	},
 	list: {
-		bullet: ({ children }: any) => (
+		bullet: ({ children }) => (
 			<ul className='mb-5 max-w-[68ch] list-inside list-disc space-y-1 pl-5 font-nota text-lg leading-relaxed'>
 				{children}
 			</ul>
 		),
-		number: ({ children }: any) => (
+		number: ({ children }) => (
 			<ol className='mb-5 max-w-[68ch] list-inside list-decimal space-y-1 pl-5 font-nota text-lg leading-relaxed'>
 				{children}
 			</ol>
 		),
 	},
 	listItem: {
-		bullet: ({ children }: any) => <li className='break-words'>{children}</li>,
-		number: ({ children }: any) => <li className='break-words'>{children}</li>,
+		bullet: ({ children }) => <li className='break-words'>{children}</li>,
+		number: ({ children }) => <li className='break-words'>{children}</li>,
 	},
 	marks: {
-		strong: ({ children }: any) => (
+		strong: ({ children }) => (
 			<strong className='font-medium text-senal'>{children}</strong>
 		),
-		em: ({ children }: any) => <em className='italic'>{children}</em>,
-		code: ({ children }: any) => (
+		em: ({ children }) => <em className='italic'>{children}</em>,
+		code: ({ children }) => (
 			<code className='bg-membrana-honda px-1.5 py-0.5 font-pieza text-[.9em] text-sinapsis'>
 				{children}
 			</code>
 		),
-		link: ({ children, value }: any) => (
+		link: ({
+			children,
+			value,
+		}: PortableTextMarkComponentProps<{ _type: "link"; href?: string }>) => (
 			<a
 				href={value?.href}
 				target='_blank'
@@ -251,7 +283,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 						{post.markdownBody}
 					</ReactMarkdown>
 				) : (
-					<PortableText value={post.body} components={portableTextComponents} />
+					<PortableText value={post.body ?? []} components={portableTextComponents} />
 				)}
 			</div>
 
