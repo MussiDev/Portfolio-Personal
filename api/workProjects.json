@@ -115,5 +115,60 @@
 			"React.js",
 			"Zustand"
 		]
+	},
+	{
+		"id": 7,
+		"name": {
+			"en": "Company-wide UI component library",
+			"es": "Librería de componentes UI para toda la empresa"
+		},
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": {
+			"en": "Reusable UI component library adopted across every product in the company, unifying design and eliminating duplicated UI code between teams.",
+			"es": "Librería de componentes UI reutilizables adoptada en todos los productos de la empresa, unificando el diseño y eliminando el código de UI duplicado entre equipos."
+		},
+		"skills": [
+			"Next.js",
+			"TypeScript",
+			"React.js"
+		]
+	},
+	{
+		"id": 8,
+		"name": {
+			"en": "Investment portfolio tool (vibecoding, SDD + TDD)",
+			"es": "Herramienta de carteras de inversión (vibecoding, SDD + TDD)"
+		},
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": {
+			"en": "Investment portfolio management tool built with a vibecoding workflow, following spec-driven development (SDD) and test-driven development (TDD).",
+			"es": "Herramienta de gestión de carteras de inversión construida con un flujo de vibecoding, siguiendo desarrollo guiado por especificaciones (SDD) y desarrollo guiado por tests (TDD)."
+		},
+		"skills": [
+			"Next.js",
+			"TypeScript",
+			"SDD",
+			"TDD"
+		]
+	},
+	{
+		"id": 9,
+		"name": {
+			"en": "E-commerce migration from Razor to Next.js",
+			"es": "Migración de ecommerce de Razor a Next.js"
+		},
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": {
+			"en": "Migrated an e-commerce platform from ASP.NET Razor (CSHTML) to Next.js, modernizing the frontend architecture and improving maintainability.",
+			"es": "Migré una plataforma de ecommerce de ASP.NET Razor (CSHTML) a Next.js, modernizando la arquitectura frontend y mejorando la mantenibilidad."
+		},
+		"skills": [
+			"Next.js",
+			"ASP.NET",
+			"React.js"
+		]
 	}
 ]
