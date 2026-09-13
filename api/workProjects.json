@@ -1,22 +1,21 @@
 [
 	{
-		"id": 1,
+		"id": 8,
 		"name": {
-			"en": "Fitness management platform",
-			"es": "Plataforma de gestión fitness"
+			"en": "Investment portfolio tool (vibecoding, SDD + TDD)",
+			"es": "Herramienta de carteras de inversión (vibecoding, SDD + TDD)"
 		},
-		"company": "Independent",
-		"period": "Nov 2023 – Feb 2024",
+		"company": "La Mutual de AMR",
+		"period": "",
 		"description": {
-			"en": "Fitness user management platform facilitating communication between trainers and clients. Built frontend architecture and backend integration using Next.js 13, Zustand for state management, Tailwind CSS and NextAuth for authentication.",
-			"es": "Plataforma de gestión de usuarios fitness que facilita la comunicación entre entrenadores y clientes. Construí la arquitectura frontend y la integración con el backend usando Next.js 13, Zustand para el manejo de estado, Tailwind CSS y NextAuth para autenticación."
+			"en": "Investment portfolio management tool built with a vibecoding workflow: every feature starts from a clear specification (SDD) and is validated with tests before merging (TDD), enabling fast iteration without sacrificing the reliability of the financial calculations.",
+			"es": "Herramienta de gestión de carteras de inversión desarrollada con un flujo de vibecoding: cada funcionalidad parte de una especificación clara (SDD) y se valida con tests antes de integrarse (TDD), lo que permitió iterar rápido sin resignar confiabilidad en los cálculos financieros."
 		},
 		"skills": [
 			"Next.js",
-			"Tailwind CSS",
-			"Zustand",
-			"Axios",
-			"React.js"
+			"TypeScript",
+			"SDD",
+			"TDD"
 		]
 	},
 	{
@@ -65,7 +64,7 @@
 		"period": "",
 		"description": {
 			"en": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
-			"es": "Aplicación web para procesamiento y visualización masiva de datos. Desarrollé el login con validación de formularios usando ChakraUI, conecté las APIs del backend para la visualización de datos y garanticé la responsividad en todos los dispositivos."
+			"es": "Aplicación web para procesamiento y visualización masiva de datos. Desarrollé el login con validación de formularios usando ChakraUI, conecté las APIs del backend para la visualización de datos y adapté la interfaz a cualquier dispositivo."
 		},
 		"skills": [
 			"ChakraUI",
@@ -132,25 +131,6 @@
 			"Next.js",
 			"TypeScript",
 			"React.js"
-		]
-	},
-	{
-		"id": 8,
-		"name": {
-			"en": "Investment portfolio tool (vibecoding, SDD + TDD)",
-			"es": "Herramienta de carteras de inversión (vibecoding, SDD + TDD)"
-		},
-		"company": "La Mutual de AMR",
-		"period": "",
-		"description": {
-			"en": "Investment portfolio management tool built with a vibecoding workflow, following spec-driven development (SDD) and test-driven development (TDD).",
-			"es": "Herramienta de gestión de carteras de inversión construida con un flujo de vibecoding, siguiendo desarrollo guiado por especificaciones (SDD) y desarrollo guiado por tests (TDD)."
-		},
-		"skills": [
-			"Next.js",
-			"TypeScript",
-			"SDD",
-			"TDD"
 		]
 	},
 	{
