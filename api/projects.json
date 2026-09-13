@@ -1,0 +1,144 @@
+[
+	{
+		"slug": "nortear",
+		"nombre": "NorteAR",
+		"tipo": "producto",
+		"estado": "en-construccion",
+		"contexto": {
+			"es": "Producto propio",
+			"en": "Own product"
+		},
+		"periodo": null,
+		"resumen": {
+			"es": "Sistema de gestión para pymes de servicio que mide el margen real, no la facturación.",
+			"en": "Management system for service SMEs that measures real margin, not revenue."
+		},
+		"stack": [
+			"Next.js",
+			"TypeScript"
+		],
+		"enlaces": [
+			{
+				"etiqueta": {
+					"es": "Ver el producto",
+					"en": "See the product"
+				},
+				"href": "https://nortear.app/",
+				"externo": true
+			}
+		],
+		"peso": 1,
+		"tiempos": {
+			"problema": {
+				"parrafos": {
+					"es": [
+						"Un negocio de servicios factura bien y a fin de mes no le queda nada. El sistema le muestra ventas; lo que no le muestra es cuánto insumo se consumió para producir cada una de esas ventas — el pomo de color que rinde unas pocas aplicaciones, el producto que se descartó, el turno que salió más caro de lo que se cobró.",
+						"Casi todos los sistemas de gestión miden lo que entra. Muy pocos miden lo que se gastó para que entrara. Y sin eso, «vendimos más» y «ganamos más» son la misma frase — hasta que dejan de serlo."
+					],
+					"en": [
+						"A service business invoices well and by month's end there is nothing left. The system shows sales; what it does not show is how much stock was consumed to produce each of those sales — the tube of colour that yields a few applications, the product that was thrown out, the appointment that cost more than it charged.",
+						"Almost every management system measures what comes in. Very few measure what was spent so it could come in. And without that, \"we sold more\" and \"we earned more\" are the same sentence — until they stop being."
+					]
+				}
+			},
+			"decision": {
+				"parrafos": {
+					"es": [
+						"El margen es la métrica central, no un reporte más en un menú: es la cifra que el sistema devuelve por defecto. Si la métrica principal es la facturación, el usuario sigue mirando lo que ya miraba.",
+						"Servicios, no retail. Un comercio que revende conoce su costo unitario. Un negocio de servicios no: el insumo se consume de a fracciones y nadie las anota. Ese es el hueco.",
+						"Multi-tenant desde el modelo de datos, no como capa encima: cada tabla filtra por empresa. La alternativa — una base por cliente — escala peor apenas hay que tocar todas a la vez, y acá el negocio es justamente medir y comparar, no aislar."
+					],
+					"en": [
+						"Margin is the headline metric, not one more report in a menu: it is the figure the system returns by default. If the main number is revenue, the user keeps looking at what they already looked at.",
+						"Services, not retail. A shop that resells knows its unit cost. A service business does not: stock is consumed in fractions and nobody writes them down. That is the gap.",
+						"Multi-tenant from the data model, not as a layer on top: every table filters by company. The alternative — one database per client — scales worse the moment you need to touch all of them at once, and here the business is precisely measuring and comparing, not isolating."
+					]
+				}
+			},
+			"mecanismo": {
+				"parrafos": {
+					"es": [
+						"El problema difícil no es contable, es de modelado: cómo saber cuánto insumo consumió un servicio si nadie lo pesa. La respuesta fue atar cada servicio a sus insumos y descontar contra el stock real."
+					],
+					"en": [
+						"The hard problem is not accounting, it is modelling: how to know how much stock a service consumed if nobody weighs it. The answer was to tie each service to its supplies and draw down against real stock."
+					]
+				},
+				"flujo": {
+					"es": [
+						"Turno",
+						"Insumos",
+						"Stock",
+						"Margen"
+					],
+					"en": [
+						"Appointment",
+						"Supplies",
+						"Stock",
+						"Margin"
+					]
+				},
+				"codigo": "// Every service carries its supplies (serviceSupplies): what it consumes and\n// how much of each. Selling it draws down real stock, not an estimate.\nconst consumptions = serviceItems.flatMap((item) => {\n  const service = services.find((s) => s.id === item.serviceId)!;\n\n  // quantityNeeded counts service uses; convert to base-unit stock consumption.\n  return service.serviceSupplies.map((ss) => ({\n    supplyId: ss.supplyId,\n    consumed:\n      unitsPerUse(ss.packageContent, ss.servingsPerPackage) *\n      Number(ss.quantityNeeded) *\n      item.quantity,\n  }));\n});\n\nconst stockDelta = new Map<string, number>();\nfor (const { supplyId, consumed } of consumptions) {\n  stockDelta.set(supplyId, (stockDelta.get(supplyId) ?? 0) + consumed);\n}",
+				"diagrama": "flowchart LR\n    subgraph EMP[Empresa - scope en cada tabla]\n        direction LR\n        TUR[Turno] -->|serviceItems| SER[Servicio]\n        SER -->|serviceSupplies| INS[Insumo]\n        INS -->|descuenta| STK[Stock real]\n        TUR --> MAR[Margen]\n        STK --> MAR\n    end"
+			},
+			"tradeoff": {
+				"parrafos": {
+					"es": [
+						"Cargar los insumos es trabajo del usuario, y ese trabajo es la barrera de entrada del producto: sin insumos cargados no hay margen, y con el sistema vacío no se ve el valor. Todo lo demás se subordina a bajar ese costo inicial.",
+						"Lo que quedó afuera a propósito: facturación electrónica (AFIP/ARCA no existe en el schema), multi-sucursal y app nativa. Alcance corto por decisión, no por límite técnico — el producto está pensado para un tipo de negocio, no para todos."
+					],
+					"en": [
+						"Loading the supplies is the user's work, and that work is the product's barrier to entry: without supplies loaded there is no margin, and with an empty system the value is invisible. Everything else is subordinate to lowering that initial cost.",
+						"What was left out on purpose: electronic invoicing (AFIP/ARCA does not exist in the schema), multi-branch and a native app. Narrow scope by decision, not by technical limit — the product is built for one kind of business, not for everyone."
+					]
+				}
+			},
+			"resultado": {
+				"parrafos": {
+					"es": [],
+					"en": []
+				},
+				"medidas": [
+					{
+						"etiqueta": {
+							"es": "Negocios activos",
+							"en": "Active businesses"
+						},
+						"valor": "2"
+					},
+					{
+						"etiqueta": {
+							"es": "Trial → pago",
+							"en": "Trial → paid"
+						},
+						"valor": "2"
+					},
+					{
+						"etiqueta": {
+							"es": "Retención 3 meses",
+							"en": "3-month retention"
+						},
+						"valor": "2/2"
+					},
+					{
+						"etiqueta": {
+							"es": "En producción desde",
+							"en": "In production since"
+						},
+						"valor": "Junio 2026"
+					}
+				]
+			},
+			"despues": {
+				"parrafos": {
+					"es": [
+						"Si arrancara de nuevo, no alargaría el alcance desde el principio. Fui sumando complejización — multi-sucursal, roles, reportes por profesional — para un uso que, en esta primera instancia, es un puñado de clientes conocidos. Esa complejidad se paga en tiempo de desarrollo que no vuelve, y el producto todavía no la necesitaba para probar si funcionaba."
+					],
+					"en": [
+						"If I started over, I would not stretch the scope from day one. I kept adding complexity — multi-branch, roles, per-professional reports — for what, at this first stage, is a handful of known clients. That complexity costs development time that does not come back, and the product did not need it yet to prove it worked."
+					]
+				}
+			}
+		}
+	}
+]
