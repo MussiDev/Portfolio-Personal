@@ -7,8 +7,24 @@
 				"position": "Software Engineer",
 				"time": "NOV 2023 - PRESENT",
 				"description": {
-					"en": "Redesigned core web architecture, reducing application load times by 35%. Defined frontend architecture and technology stack across products. Built full-stack features integrating Next.js, React, TypeScript and .NET APIs. Established code review standards and mentored junior developers.",
-					"es": "Rediseñé la arquitectura web central y bajé los tiempos de carga un 35%. Definí la arquitectura de frontend y el stack de todos los productos, construí funcionalidades full-stack integrando Next.js, React, TypeScript y APIs .NET, establecí estándares de code review y acompañé a desarrolladores junior."
+					"en": "Leading frontend architecture for internal platforms used by thousands of people, across insurance, healthcare and investment products.",
+					"es": "Liderando la arquitectura frontend de plataformas internas que usan miles de personas, en productos de seguros, salud e inversiones."
+				},
+				"highlights": {
+					"en": [
+						"Redesigned the core web architecture, cutting load times by 35%",
+						"Defined the technology stack and engineering standards across frontend and .NET APIs",
+						"Built full-stack applications with Next.js, React, TypeScript and .NET",
+						"Introduced reusable component systems that eliminated duplicated UI code across products",
+						"Established code review standards and mentored junior developers on architecture and best practices"
+					],
+					"es": [
+						"Rediseñé la arquitectura web principal, reduciendo un 35% los tiempos de carga",
+						"Definí el stack tecnológico y los estándares de ingeniería entre frontend y APIs .NET",
+						"Construí aplicaciones full stack con Next.js, React, TypeScript y .NET",
+						"Introduje sistemas de componentes reutilizables que eliminaron código de UI duplicado entre productos",
+						"Establecí estándares de code review y mentoreé desarrolladores junior en arquitectura y buenas prácticas"
+					]
 				},
 				"icons": [
 					{

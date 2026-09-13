@@ -48,6 +48,7 @@ type Role = {
 	position: string;
 	time: string;
 	description: Record<string, string>;
+	highlights?: Record<string, string[]>;
 };
 type Company = {
 	company: string;
@@ -339,6 +340,21 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 													<p className='m-0 font-nota text-[14px] leading-relaxed text-mielina'>
 														{r.description[lang] ?? r.description.es}
 													</p>
+													{r.highlights && (
+														<ul className='m-0 flex list-none flex-col gap-1 pl-0'>
+															{(r.highlights[lang] ?? r.highlights.es).map((h) => (
+																<li
+																	key={h}
+																	className='flex gap-2 font-nota text-[14px] leading-relaxed text-mielina'
+																>
+																	<span aria-hidden='true' className='text-impulso'>
+																		·
+																	</span>
+																	{h}
+																</li>
+															))}
+														</ul>
+													)}
 												</div>
 											))}
 										</Card>
@@ -382,13 +398,18 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 
 						<Card>
 							<div className='grid gap-x-10 gap-y-5 sm:grid-cols-[1.6fr_1fr]'>
-								<div className='flex flex-col gap-2'>
+								<div className='flex flex-col gap-3'>
 									<h4 className='m-0 font-rotulo text-[9px] uppercase tracking-[.16em] text-mielina'>
-										{d.campos.educacion}
+										{d.sobreMi.titulo}
 									</h4>
-									<p className='m-0 max-w-[52ch] font-nota text-[13px] leading-relaxed text-mielina'>
-										{d.sobreMi.bio}
-									</p>
+									{d.sobreMi.bio.map((p) => (
+										<p
+											key={p.slice(0, 40)}
+											className='m-0 max-w-[52ch] font-nota text-[13px] leading-relaxed text-mielina'
+										>
+											{p}
+										</p>
+									))}
 								</div>
 								<div className='flex flex-col gap-2'>
 									<h4 className='m-0 font-rotulo text-[9px] uppercase tracking-[.16em] text-mielina'>
