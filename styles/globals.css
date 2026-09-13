@@ -112,10 +112,6 @@ html:has(.sistema) *::-webkit-scrollbar-thumb {
 		letter-spacing: 0.005em;
 		text-wrap: balance;
 	}
-
-	.sistema .rotulo-chico {
-		font-variation-settings: "wdth" 96;
-	}
 }
 
 @media (prefers-reduced-motion: reduce) {
