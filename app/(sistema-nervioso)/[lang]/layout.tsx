@@ -125,7 +125,7 @@ const jsonLd = (lang: Language) => ({
 
 const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si"`;
 
-const WorkshopLayout = async ({
+const NervousSystemLayout = async ({
 	children,
 	params,
 }: {
@@ -160,4 +160,4 @@ const WorkshopLayout = async ({
 	);
 };
 
-export default WorkshopLayout;
+export default NervousSystemLayout;

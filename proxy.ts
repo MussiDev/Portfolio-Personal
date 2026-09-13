@@ -4,16 +4,7 @@ import { DEFAULT_LANGUAGE, LANGUAGES } from "./entities/i18n";
 const COOKIE_NAME = "studio_auth";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
-const OUTSIDE_WORKSHOP = [
-	"/anterior",
-	"/studio",
-	"/api",
-	"/_next",
-	"/opengraph-image",
-	"/twitter-image",
-	"/icon",
-	"/apple-icon",
-];
+const OUTSIDE_LOCALE_ROUTING = ["/studio", "/api", "/_next"];
 
 const studio = (req: NextRequest) => {
 	const { searchParams } = req.nextUrl;
@@ -45,7 +36,7 @@ export function proxy(req: NextRequest) {
 
 	if (pathname.startsWith("/studio")) return studio(req);
 
-	if (OUTSIDE_WORKSHOP.some((p) => pathname.startsWith(p)) || pathname.includes(".")) {
+	if (OUTSIDE_LOCALE_ROUTING.some((p) => pathname.startsWith(p)) || pathname.includes(".")) {
 		return NextResponse.next();
 	}
 
