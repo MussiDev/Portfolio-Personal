@@ -253,6 +253,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 				openText={d.hero.abrir}
 				backText={d.hero.volver}
 				stepsLabel={d.hero.pasos}
+				scrollHintText={d.hero.bajar}
 			>
 				<section
 					id='paso-0'

@@ -15,6 +15,7 @@ const NervousSystem = ({
 	openText,
 	backText,
 	stepsLabel,
+	scrollHintText,
 }: {
 	sections: Section[];
 	children: ReactNode;
@@ -23,6 +24,7 @@ const NervousSystem = ({
 	openText: string;
 	backText: string;
 	stepsLabel: string;
+	scrollHintText: string;
 }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const streamRef = useRef<SVGSVGElement>(null);
@@ -305,12 +307,12 @@ const NervousSystem = ({
 
 				<div
 					className={`absolute bottom-0 left-0 z-20 hidden max-w-[22rem] px-8 pb-10 transition-all duration-700 ease-impulso md:block lg:px-14 ${
-						inHero || active === null
-							? "pointer-events-none translate-y-2 opacity-0"
-							: "translate-y-0 opacity-100"
+						inHero && active !== null
+							? "translate-y-0 opacity-100"
+							: "pointer-events-none translate-y-2 opacity-0"
 					}`}
 				>
-					{active !== null && (
+					{inHero && active !== null && (
 						<div className='border-l-2 border-impulso pl-4'>
 							<p className='m-0 flex items-baseline gap-2 font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso'>
 								<span className='font-pieza tabular-nums'>
@@ -407,9 +409,11 @@ const NervousSystem = ({
 						{active !== null && sections[active].label}
 					</span>
 					<span className='h-4 w-px bg-sinapsis/30' />
-					<LiveKey face='enter' tone='impulso' onTrigger={() => active !== null && go(active)}>
-						{openText}
-					</LiveKey>
+					{inHero && (
+						<LiveKey face='enter' tone='impulso' onTrigger={() => active !== null && go(active)}>
+							{openText}
+						</LiveKey>
+					)}
 					<LiveKey
 						face='backspace'
 						onTrigger={() => {
@@ -421,6 +425,23 @@ const NervousSystem = ({
 					</LiveKey>
 				</span>
 			</div>
+
+			<button
+				type='button'
+				onClick={() => goToStep(1)}
+				className={`pointer-events-none fixed bottom-6 left-1/2 z-40 hidden -translate-x-1/2 flex-col items-center gap-1.5 transition-all duration-500 ease-impulso md:flex ${
+					active === null
+						? "pointer-events-auto translate-y-0 opacity-100"
+						: "translate-y-3 opacity-0"
+				}`}
+			>
+				<span className='font-pieza text-[10px] uppercase tracking-[.14em] text-mielina'>
+					{scrollHintText}
+				</span>
+				<span aria-hidden='true' className='animate-respirar text-sinapsis'>
+					⌄
+				</span>
+			</button>
 		</div>
 	);
 };
