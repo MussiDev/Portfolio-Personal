@@ -36,7 +36,6 @@ const ReadingProgress = ({ targetId }: { targetId: string }) => {
 	return (
 		<div
 			className='fixed left-0 top-0 z-40 h-[2px] w-full bg-membrana-honda'
-			role='progressbar'
 			aria-hidden='true'
 		>
 			<div
