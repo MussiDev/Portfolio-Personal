@@ -50,7 +50,9 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 	const [captchaOk, setCaptchaOk] = useState(false);
 	const [darkTheme, setDarkTheme] = useState(false);
 	const [mounted, setMounted] = useState(false);
+	const [wantsCaptcha, setWantsCaptcha] = useState(false);
 	const boxRef = useRef<HTMLDivElement>(null);
+	const formRef = useRef<HTMLFormElement>(null);
 	const [compact, setCompact] = useState(false);
 	const c = COPY[lang];
 	const sitekey = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
@@ -73,6 +75,25 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 		mq.addEventListener("change", onChange);
 		return () => mq.removeEventListener("change", onChange);
 	}, []);
+
+	useEffect(() => {
+		if (wantsCaptcha) return;
+		const form = formRef.current;
+		if (!form || typeof IntersectionObserver === "undefined") {
+			setWantsCaptcha(true);
+			return;
+		}
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (!entry.isIntersecting) return;
+				setWantsCaptcha(true);
+				observer.disconnect();
+			},
+			{ rootMargin: "200px" },
+		);
+		observer.observe(form);
+		return () => observer.disconnect();
+	}, [wantsCaptcha]);
 
 	const [state, send, sending] = useActionState<State, FormData>(
 		async (_prev, formData) => {
@@ -110,7 +131,9 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 
 	return (
 		<form
+			ref={formRef}
 			action={send}
+			onFocus={() => setWantsCaptcha(true)}
 			className='flex max-w-[54ch] flex-col gap-6 border border-sinapsis bg-membrana/40 px-7 py-7'
 		>
 			<div className='flex flex-col gap-1.5'>
@@ -165,7 +188,7 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 
 			{sitekey && (
 				<div ref={boxRef} className='captcha'>
-					{mounted ? (
+					{mounted && wantsCaptcha ? (
 						<Suspense
 							fallback={
 								<div

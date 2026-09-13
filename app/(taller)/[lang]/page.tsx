@@ -452,7 +452,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 								width={1337}
 								height={151}
 								sizes='(max-width: 768px) 100vw, 42rem'
-								priority
 								className='h-auto w-full rounded-[2px]'
 							/>
 							<figcaption className='flex flex-wrap items-baseline gap-x-3 px-4 pb-3 pt-3 font-pieza text-[10px] uppercase tracking-[.12em] text-mielina'>

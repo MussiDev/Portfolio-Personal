@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import mermaid from "mermaid";
 
 let idCounter = 0;
 
@@ -10,14 +9,24 @@ export default function MermaidDiagram({ code }: { code: string }) {
 
 	useEffect(() => {
 		if (!ref.current || !code) return;
+		let cancelled = false;
 
-		mermaid.initialize({ startOnLoad: false, theme: "dark" });
+		import("mermaid").then(async ({ default: mermaid }) => {
+			mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict" });
 
-		const id = `mermaid-${++idCounter}`;
+			const id = `mermaid-${++idCounter}`;
 
-		mermaid.render(id, code).then(({ svg }) => {
-			if (ref.current) ref.current.innerHTML = svg;
+			try {
+				const { svg } = await mermaid.render(id, code);
+				if (!cancelled && ref.current) ref.current.innerHTML = svg;
+			} catch {
+				if (!cancelled && ref.current) ref.current.textContent = "";
+			}
 		});
+
+		return () => {
+			cancelled = true;
+		};
 	}, [code]);
 
 	return (
