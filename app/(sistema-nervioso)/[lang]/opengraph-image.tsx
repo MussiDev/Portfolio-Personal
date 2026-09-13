@@ -1,9 +1,26 @@
 import { ImageResponse } from "next/og";
+import { isLanguage, LANGUAGES, type Language } from "../../../entities/i18n";
 
-export const runtime = "edge";
+export const generateStaticParams = () => LANGUAGES.map((lang) => ({ lang }));
+
 export const alt = "Joaquín Mussi - Frontend Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const COPY: Record<Language, { tagline: string; fields: string; role: string; stack: string }> = {
+	es: {
+		tagline: "Arquitectura frontend y performance",
+		fields: "ROL  Frontend Engineer   STACK  Next.js · React · TypeScript · APIs .NET",
+		role: "Frontend Engineer",
+		stack: "Next.js · React · TypeScript · APIs .NET",
+	},
+	en: {
+		tagline: "Frontend architecture and performance",
+		fields: "ROLE  Frontend Engineer   STACK  Next.js · React · TypeScript · .NET APIs",
+		role: "Frontend Engineer",
+		stack: "Next.js · React · TypeScript · .NET APIs",
+	},
+};
 
 const TISSUE = "#05070d";
 const SIGNAL = "#e8edf5";
@@ -24,10 +41,11 @@ const loadFont = async (query: string, text: string): Promise<ArrayBuffer | null
 	}
 };
 
-export default async function Image() {
+export default async function Image({ params }: { params: Promise<{ lang: string }> }) {
+	const { lang } = await params;
+	const l: Language = isLanguage(lang) ? lang : "es";
+	const { tagline: TAGLINE, fields: FIELDS, role: ROLE, stack: STACK } = COPY[l];
 	const TITLE = "JOAQUÍN MUSSI";
-	const TAGLINE = "Arquitectura frontend y performance";
-	const FIELDS = "ROL  Frontend Engineer   STACK  Next.js · React · TypeScript · APIs .NET";
 
 	const [label, prose, mono] = await Promise.all([
 		loadFont("IBM+Plex+Sans+Condensed:wght@700", TITLE + FIELDS),
@@ -111,15 +129,15 @@ export default async function Image() {
 				>
 					<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
 						<span style={{ fontFamily: "label", fontSize: 13, letterSpacing: 2, color: MYELIN }}>
-							ROL
+							{l === "es" ? "ROL" : "ROLE"}
 						</span>
-						<span style={{ fontSize: 20, color: SYNAPSE }}>Frontend Engineer</span>
+						<span style={{ fontSize: 20, color: SYNAPSE }}>{ROLE}</span>
 					</div>
 					<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
 						<span style={{ fontFamily: "label", fontSize: 13, letterSpacing: 2, color: MYELIN }}>
 							STACK
 						</span>
-						<span style={{ fontSize: 20, color: SYNAPSE }}>Next.js · React · TypeScript · APIs .NET</span>
+						<span style={{ fontSize: 20, color: SYNAPSE }}>{STACK}</span>
 					</div>
 					<div style={{ display: "flex", flexDirection: "column", gap: 6, marginLeft: "auto" }}>
 						<span style={{ fontFamily: "label", fontSize: 13, letterSpacing: 2, color: MYELIN }}>
