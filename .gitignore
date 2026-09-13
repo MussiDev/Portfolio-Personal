@@ -47,3 +47,6 @@ email.env
 
 # node_modules anidado (instalacion accidental dentro de app/)
 app/node_modules/
+
+# assets fuente del cerebro 3D (el .glb no se sirve en runtime, solo cerebro.bin)
+/assets/

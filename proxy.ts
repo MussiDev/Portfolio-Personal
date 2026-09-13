@@ -40,7 +40,7 @@ const studio = (req: NextRequest) => {
 	return new NextResponse("Unauthorized.", { status: 401 });
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
 	const { pathname } = req.nextUrl;
 
 	if (pathname.startsWith("/studio")) return studio(req);
