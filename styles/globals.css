@@ -228,14 +228,6 @@ html:has(.sistema) *::-webkit-scrollbar-thumb {
 	}
 }
 
-.velo {
-	display: none;
-}
-
-html[data-js="si"] .velo {
-	display: flex;
-}
-
 html[data-js="si"] .entra {
 	opacity: 0;
 	animation: entrar 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;

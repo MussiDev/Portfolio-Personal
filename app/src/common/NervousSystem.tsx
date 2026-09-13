@@ -11,7 +11,6 @@ const NervousSystem = ({
 	sections,
 	children,
 	loadingText,
-	drawingText,
 	activityText,
 	openText,
 	backText,
@@ -20,7 +19,6 @@ const NervousSystem = ({
 	sections: Section[];
 	children: ReactNode;
 	loadingText: string;
-	drawingText: string;
 	activityText: string;
 	openText: string;
 	backText: string;
@@ -32,10 +30,7 @@ const NervousSystem = ({
 	const particlesRef = useRef<(SVGCircleElement | null)[]>([]);
 	const anchorRef = useRef({ x: 0, y: 0, ready: false });
 
-	const [veil, setVeil] = useState<"loading" | "leaving" | "gone">(
-		"loading",
-	);
-	const [progress, setProgress] = useState(0);
+	const [ready, setReady] = useState(false);
 
 	const [activeStep, setActiveStep] = useState<number | null>(null);
 	const [hover, setHover] = useState<number | null>(null);
@@ -279,15 +274,7 @@ const NervousSystem = ({
 		};
 	}, [sections]);
 
-	const liftVeil = useCallback(() => {
-		setVeil((phase) => (phase === "loading" ? "leaving" : phase));
-	}, []);
-
-	useEffect(() => {
-		if (veil !== "leaving") return;
-		const t = setTimeout(() => setVeil("gone"), 520);
-		return () => clearTimeout(t);
-	}, [veil]);
+	const liftVeil = useCallback(() => setReady(true), []);
 
 	useEffect(() => {
 		const t = setTimeout(liftVeil, 8000);
@@ -296,31 +283,11 @@ const NervousSystem = ({
 
 	return (
 		<div ref={containerRef} className='relative'>
-			{veil !== "gone" && (
-				<div
-					className={`velo fixed inset-0 z-50 flex-col items-center justify-center gap-5 bg-tejido transition-opacity duration-500 ease-impulso ${
-						veil === "leaving" ? "pointer-events-none opacity-0" : "opacity-100"
-					}`}
-					role='status'
-					aria-live='polite'
-				>
-					<p className='m-0 font-pieza text-[10px] uppercase tracking-[.22em] text-mielina'>
-						{progress < 1 ? loadingText : drawingText}
-					</p>
-					<div className='h-px w-40 overflow-hidden bg-membrana-honda sm:w-56'>
-						<div
-							className={`h-full bg-impulso transition-[width] duration-200 ease-linear ${
-								progress === 0 || progress === 1 ? "animate-respirar" : ""
-							}`}
-							style={{ width: `${Math.max(4, progress * 100)}%` }}
-						/>
-					</div>
-					<p className='m-0 font-pieza text-[10px] tabular-nums text-sinapsis'>
-						{progress < 1 ? `${Math.round(progress * 100)}%` : "···"}
-					</p>
-				</div>
-			)}
-			<div className='barrido pointer-events-none sticky top-0 z-0 h-[100svh] overflow-hidden opacity-40 md:opacity-100'>
+			<div
+				className={`barrido pointer-events-none sticky top-0 z-0 h-[100svh] overflow-hidden opacity-40 transition-opacity duration-700 ease-impulso md:opacity-100 ${
+					ready ? "" : "!opacity-0"
+				}`}
+			>
 				<BrainCanvas
 					sections={sections}
 					active={active}
@@ -330,7 +297,7 @@ const NervousSystem = ({
 					anchorRef={anchorRef}
 					loadingText={loadingText}
 					activityText={activityText}
-					onProgress={setProgress}
+					onProgress={() => {}}
 					onReady={liftVeil}
 				/>
 

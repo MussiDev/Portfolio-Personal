@@ -249,7 +249,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			<NervousSystem
 				sections={sections}
 				loadingText={d.hero.cargando}
-				drawingText={d.hero.dibujando}
 				activityText={d.hero.actividad}
 				openText={d.hero.abrir}
 				backText={d.hero.volver}
