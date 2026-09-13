@@ -215,6 +215,7 @@ const NervousSystem = ({
 		).matches;
 
 		let alive = true;
+		let idleTimer = 0;
 		let t = 0;
 		const draw = () => {
 			if (!alive) return;
@@ -232,7 +233,7 @@ const NervousSystem = ({
 
 			if (!stream || !cord || !anchor.ready || !dropTarget) {
 				stream?.setAttribute("opacity", "0");
-				requestAnimationFrame(draw);
+				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
 				return;
 			}
 
@@ -241,7 +242,7 @@ const NervousSystem = ({
 			const hy = r.top + r.height / 2;
 			if (hy < -40 || hy > window.innerHeight + 40) {
 				stream.setAttribute("opacity", "0");
-				requestAnimationFrame(draw);
+				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
 				return;
 			}
 			stream.setAttribute("opacity", "1");
@@ -271,6 +272,7 @@ const NervousSystem = ({
 		draw();
 		return () => {
 			alive = false;
+			window.clearTimeout(idleTimer);
 		};
 	}, [sections]);
 

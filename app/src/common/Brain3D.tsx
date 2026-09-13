@@ -136,6 +136,10 @@ const Brain3D = ({
 		let sparks: THREE.Points | null = null;
 		let phases: number[] = [];
 
+		let intersecting = true;
+		let pageVisible = document.visibilityState !== "hidden";
+		const isVisible = () => intersecting && pageVisible;
+
 		const loadTissue = async (): Promise<ArrayBuffer | null> => {
 			const response = await fetch("/image/cerebro.bin");
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -415,7 +419,7 @@ const Brain3D = ({
 		let progress = 0;
 		let shift = 0;
 		const animate = () => {
-			if (!alive) return;
+			if (!alive || !isVisible()) return;
 			const activeNow = activeRef.current;
 
 			const target =
@@ -554,15 +558,32 @@ const Brain3D = ({
 
 			composer.render();
 			const rect = mount.getBoundingClientRect();
-			drawCallouts(rect);
+			if (inHeroRef.current) drawCallouts(rect);
 			if (weight > 0.001 || choosing) publishAnchor(rect, anchorWorld);
 			frame += 1;
 			requestAnimationFrame(animate);
 		};
 		animate();
 
+		const visibilityObserver = new IntersectionObserver(
+			([entry]) => {
+				intersecting = entry.isIntersecting;
+				if (isVisible()) animate();
+			},
+			{ threshold: 0 },
+		);
+		visibilityObserver.observe(mount);
+
+		const onVisibilityChange = () => {
+			pageVisible = document.visibilityState !== "hidden";
+			if (isVisible()) animate();
+		};
+		document.addEventListener("visibilitychange", onVisibilityChange);
+
 		return () => {
 			alive = false;
+			visibilityObserver.disconnect();
+			document.removeEventListener("visibilitychange", onVisibilityChange);
 			resizeObserver.disconnect();
 			composer.dispose();
 			renderer.dispose();
