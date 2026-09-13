@@ -8,8 +8,8 @@
 		"company": "La Mutual de AMR",
 		"period": "",
 		"description": {
-			"en": "Investment portfolio management tool built with a vibecoding workflow: every feature starts from a clear specification (SDD) and is validated with tests before merging (TDD), enabling fast iteration without sacrificing the reliability of the financial calculations.",
-			"es": "Herramienta de gestión de carteras de inversión desarrollada con un flujo de vibecoding: cada funcionalidad parte de una especificación clara (SDD) y se valida con tests antes de integrarse (TDD), lo que permitió iterar rápido sin resignar confiabilidad en los cálculos financieros."
+			"en": "I designed and drove the full development process of an investment portfolio tool combining generative AI with real engineering rigor: specification first (SDD), tests as a contract before implementation (TDD). This isn't “just prompting a chatbot” — it's a pipeline where every line of code comes from a verified requirement and gets validated before touching production, non-negotiable when what's on the line are financial calculations.",
+			"es": "Diseñé y llevé adelante el proceso de desarrollo de una herramienta de carteras de inversión combinando IA generativa con rigor de ingeniería: especificación primero (SDD), tests como contrato antes de implementar (TDD). No es “escribirle a un chat” — es un pipeline donde cada línea de código nace de un requisito verificado y se valida antes de tocar producción, algo no negociable cuando lo que está en juego son cálculos financieros."
 		},
 		"skills": [
 			"Next.js",
