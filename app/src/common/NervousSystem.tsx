@@ -323,7 +323,7 @@ const NervousSystem = ({
 				/>
 
 				<div
-					className={`absolute bottom-0 left-0 z-20 hidden max-w-[22rem] px-8 pb-10 transition-all duration-700 ease-impulso md:block lg:px-14 ${
+					className={`absolute bottom-20 left-0 z-20 hidden max-w-[22rem] px-8 transition-all duration-700 ease-impulso md:block lg:px-14 ${
 						inHero && active !== null
 							? "translate-y-0 opacity-100"
 							: "pointer-events-none translate-y-2 opacity-0"
