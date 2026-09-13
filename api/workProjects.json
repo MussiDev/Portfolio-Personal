@@ -1,10 +1,16 @@
 [
 	{
 		"id": 1,
-		"name": "Fitness management platform",
+		"name": {
+			"en": "Fitness management platform",
+			"es": "Plataforma de gestión fitness"
+		},
 		"company": "Independent",
 		"period": "Nov 2023 – Feb 2024",
-		"description": "Fitness user management platform facilitating communication between trainers and clients. Built frontend architecture and backend integration using Next.js 13, Zustand for state management, Tailwind CSS and NextAuth for authentication.",
+		"description": {
+			"en": "Fitness user management platform facilitating communication between trainers and clients. Built frontend architecture and backend integration using Next.js 13, Zustand for state management, Tailwind CSS and NextAuth for authentication.",
+			"es": "Plataforma de gestión de usuarios fitness que facilita la comunicación entre entrenadores y clientes. Construí la arquitectura frontend y la integración con el backend usando Next.js 13, Zustand para el manejo de estado, Tailwind CSS y NextAuth para autenticación."
+		},
 		"skills": [
 			"Next.js",
 			"Tailwind CSS",
@@ -15,10 +21,16 @@
 	},
 	{
 		"id": 2,
-		"name": "Web3 payments platform",
+		"name": {
+			"en": "Web3 payments platform",
+			"es": "Plataforma de pagos Web3"
+		},
 		"company": "It-techgroup",
 		"period": "Feb 2022 – Jul 2022",
-		"description": "Web3 platform with cryptocurrency payments. Built pixel-perfect UI with Styled Components based on Figma designs and integrated game interaction logic.",
+		"description": {
+			"en": "Web3 platform with cryptocurrency payments. Built pixel-perfect UI with Styled Components based on Figma designs and integrated game interaction logic.",
+			"es": "Plataforma Web3 con pagos en criptomonedas. Construí una UI pixel-perfect con Styled Components a partir de diseños de Figma e integré la lógica de interacción del juego."
+		},
 		"skills": [
 			"Styled Components",
 			"React.js",
@@ -27,10 +39,16 @@
 	},
 	{
 		"id": 3,
-		"name": "Booking platform",
+		"name": {
+			"en": "Booking platform",
+			"es": "Plataforma de reservas"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Web platform for cabin reservations. Served as technical lead, responsible for architecture selection, supporting trainees, and leading frontend migration from Angular to Next.js 15 with Bootstrap styling.",
+		"description": {
+			"en": "Web platform for cabin reservations. Served as technical lead, responsible for architecture selection, supporting trainees, and leading frontend migration from Angular to Next.js 15 with Bootstrap styling.",
+			"es": "Plataforma web para reservas de cabañas. Me desempeñé como líder técnico, a cargo de la selección de arquitectura, el acompañamiento de trainees y la migración del frontend de Angular a Next.js 15 con estilos en Bootstrap."
+		},
 		"skills": [
 			"Next.js",
 			"Bootstrap",
@@ -39,10 +57,16 @@
 	},
 	{
 		"id": 4,
-		"name": "Financial data platform",
+		"name": {
+			"en": "Financial data platform",
+			"es": "Plataforma de datos financieros"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
+		"description": {
+			"en": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
+			"es": "Aplicación web para procesamiento y visualización masiva de datos. Desarrollé el login con validación de formularios usando ChakraUI, conecté las APIs del backend para la visualización de datos y garanticé la responsividad en todos los dispositivos."
+		},
 		"skills": [
 			"ChakraUI",
 			"React.js",
@@ -52,10 +76,16 @@
 	},
 	{
 		"id": 5,
-		"name": "Digital wallet",
+		"name": {
+			"en": "Digital wallet",
+			"es": "Billetera digital"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Virtual wallet web project. Led architecture selection, frontend development and backend integration with Zustand, Next.js 14, Sass, and NextAuth. Also led backend migration from ASP.NET Core to a RESTful .NET API.",
+		"description": {
+			"en": "Virtual wallet web project. Led architecture selection, frontend development and backend integration with Zustand, Next.js 14, Sass, and NextAuth. Also led backend migration from ASP.NET Core to a RESTful .NET API.",
+			"es": "Proyecto web de billetera virtual. Lideré la selección de arquitectura, el desarrollo frontend y la integración con el backend usando Zustand, Next.js 14, Sass y NextAuth. También lideré la migración del backend de ASP.NET Core a una API RESTful en .NET."
+		},
 		"skills": [
 			"ASP.NET",
 			"Next.js",
@@ -68,10 +98,16 @@
 	},
 	{
 		"id": 6,
-		"name": "Investment platform",
+		"name": {
+			"en": "Investment platform",
+			"es": "Plataforma de inversiones"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Web platform for investment management. Created reusable components, adapted the site to multiple devices, consumed backend APIs, styled with SASS, and contributed to backend changes with C# and .NET.",
+		"description": {
+			"en": "Web platform for investment management. Created reusable components, adapted the site to multiple devices, consumed backend APIs, styled with SASS, and contributed to backend changes with C# and .NET.",
+			"es": "Plataforma web para la gestión de inversiones. Creé componentes reutilizables, adapté el sitio a múltiples dispositivos, consumí APIs del backend, apliqué estilos con SASS y contribuí a cambios en el backend con C# y .NET."
+		},
 		"skills": [
 			"ASP.NET",
 			"Next.js",

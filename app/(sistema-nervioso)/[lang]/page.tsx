@@ -71,10 +71,10 @@ const normalize = (e: Company): { period: string; roles: Role[] } => ({
 });
 type Project = {
 	id: number;
-	name: string;
+	name: LocalizedText;
 	company: string;
 	period: string;
-	description: string;
+	description: LocalizedText;
 	skills: string[];
 };
 type Recommendation = {
@@ -379,13 +379,13 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 										</span>
 										<div className='flex flex-col gap-1'>
 											<div className='flex flex-wrap items-baseline gap-x-3'>
-												<h4 className='m-0 text-sm'>{p.name}</h4>
+												<h4 className='m-0 text-sm'>{t(p.name, lang)}</h4>
 												<span className='font-pieza text-[10px] text-mielina'>
 													{p.company} · {p.period}
 												</span>
 											</div>
 											<p className='m-0 font-nota text-[13px] leading-relaxed text-mielina'>
-												{p.description}
+												{t(p.description, lang)}
 											</p>
 											<p className='m-0 font-pieza text-[10px] text-sinapsis'>
 												{p.skills.join(" · ")}
