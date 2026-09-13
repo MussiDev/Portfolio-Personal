@@ -14,6 +14,7 @@ import { es } from "date-fns/locale";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../../sanity/lib/queries";
 import { urlFor } from "../../../../../sanity/lib/image";
+import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
 
 const MermaidDiagram = dynamic(
 	() => import("../../../../src/components/Blog/MermaidDiagram"),
@@ -195,7 +196,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 	};
 
 	return (
-		<article className='membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
+		<article id='post-article' className='membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
 			<script
 				type='application/ld+json'
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -305,6 +306,7 @@ export default async function PostPage({ params }: PageProps) {
 
 	return (
 		<main className='sistema min-h-screen px-5 py-12 md:px-16 md:py-16'>
+			<ReadingProgress targetId='post-article' />
 			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
 				<div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
 					<Link

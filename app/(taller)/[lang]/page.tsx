@@ -591,12 +591,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 								))
 							)}
 						</div>
-
-						<div className='membrana rayado flex min-h-[7rem] flex-col justify-start px-6 pb-6 pt-5'>
-							<span className='font-glosa text-[16px] italic leading-none text-mielina'>
-								{d.mesa.experimento}
-							</span>
-						</div>
 					</div>
 				</Step>
 

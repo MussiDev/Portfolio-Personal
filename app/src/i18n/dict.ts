@@ -71,7 +71,6 @@ const DICT = {
 			desdeAnio: "desde 2022",
 		},
 		mesa: {
-			experimento: "Experimento — hipótesis, prueba, resultado",
 			bancoVacio: "[ Banco vacío ]",
 			delCuaderno: "del blog",
 			leer: "leer",
@@ -165,7 +164,6 @@ const DICT = {
 			desdeAnio: "since 2022",
 		},
 		mesa: {
-			experimento: "Experiment — hypothesis, test, result",
 			bancoVacio: "[ Empty bench ]",
 			delCuaderno: "from the blog",
 			leer: "read",
