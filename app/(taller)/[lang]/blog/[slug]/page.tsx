@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import ReactMarkdown from "react-markdown";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import { client } from "../../../../../sanity/lib/client";
 import dynamic from "next/dynamic";
 import { format } from "date-fns";
@@ -34,21 +34,32 @@ interface PageProps {
 }
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
+const EXCERPT_LENGTH = 155;
+
+const getPost = cache(
+	(slug: string): Promise<Post | null> => client.fetch(postBySlugQuery, { slug }),
+);
 
 function extractExcerpt(post: Pick<Post, "body" | "markdownBody">): string {
-	if (post.markdownBody) {
-		return post.markdownBody.replace(/[#*`>\[\]]/g, "").slice(0, 160);
+	let raw = post.markdownBody ?? "";
+	if (!raw) {
+		if (!Array.isArray(post.body)) return "";
+		const firstParagraph = post.body.find(
+			(block: any) => block._type === "block" && block.style === "normal",
+		);
+		raw = firstParagraph?.children?.map((child: any) => child.text ?? "").join("") ?? "";
 	}
-	if (!Array.isArray(post.body)) return "";
-	const firstParagraph = post.body.find(
-		(block: any) => block._type === "block" && block.style === "normal",
-	);
-	return (
-		firstParagraph?.children
-			?.map((child: any) => child.text ?? "")
-			.join("")
-			.slice(0, 160) ?? ""
-	);
+
+	const clean = raw
+		.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+		.replace(/[#*`>]/g, "")
+		.replace(/\s+/g, " ")
+		.trim();
+
+	if (clean.length <= EXCERPT_LENGTH) return clean;
+	const cut = clean.slice(0, EXCERPT_LENGTH);
+	const lastSpace = cut.lastIndexOf(" ");
+	return `${cut.slice(0, lastSpace > 0 ? lastSpace : EXCERPT_LENGTH)}…`;
 }
 
 const portableTextComponents = {
@@ -124,7 +135,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps) {
 	const { slug, lang } = await params;
-	const post: Post | null = await client.fetch(postBySlugQuery, { slug });
+	const post = await getPost(slug);
 	if (!post) return { title: "Post not found" };
 
 	const description = extractExcerpt(post);
@@ -155,7 +166,7 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
-	const post: Post | null = await client.fetch(postBySlugQuery, { slug });
+	const post = await getPost(slug);
 
 	if (!post) return notFound();
 
@@ -174,8 +185,10 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 			name: "Joaquín Mussi",
 			url: BASE_URL,
 		},
-		url: `${BASE_URL}/blog/${slug}`,
+		url: `${BASE_URL}${localizedPath(lang, `/blog/${slug}`)}`,
 		datePublished: post.publishedAt ?? undefined,
+		dateModified: post.publishedAt ?? undefined,
+		inLanguage: lang,
 		...(post.coverImage && {
 			image: urlFor(post.coverImage).width(1200).height(630).url(),
 		}),

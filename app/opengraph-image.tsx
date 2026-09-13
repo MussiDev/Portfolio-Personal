@@ -11,13 +11,17 @@ const MYELIN = "#9eacc1";
 const SYNAPSE = "#7c98be";
 const IMPULSE = "#ff6a3a";
 
-const loadFont = async (query: string, text: string) => {
-	const css = await fetch(
-		`https://fonts.googleapis.com/css2?family=${query}&text=${encodeURIComponent(text)}`,
-	).then((r) => r.text());
-	const url = css.match(/src: url\(([^)]+)\)/)?.[1];
-	if (!url) throw new Error(`Could not find a font for "${query}"`);
-	return fetch(url).then((r) => r.arrayBuffer());
+const loadFont = async (query: string, text: string): Promise<ArrayBuffer | null> => {
+	try {
+		const css = await fetch(
+			`https://fonts.googleapis.com/css2?family=${query}&text=${encodeURIComponent(text)}`,
+		).then((r) => r.text());
+		const url = css.match(/src: url\(([^)]+)\)/)?.[1];
+		if (!url) return null;
+		return await fetch(url).then((r) => r.arrayBuffer());
+	} catch {
+		return null;
+	}
 };
 
 export default async function Image() {
@@ -129,10 +133,10 @@ export default async function Image() {
 		{
 			...size,
 			fonts: [
-				{ name: "label", data: label, weight: 700, style: "normal" },
-				{ name: "prose", data: prose, weight: 400, style: "italic" },
-				{ name: "mono", data: mono, weight: 500, style: "normal" },
-			],
+				label && { name: "label", data: label, weight: 700 as const, style: "normal" as const },
+				prose && { name: "prose", data: prose, weight: 400 as const, style: "italic" as const },
+				mono && { name: "mono", data: mono, weight: 500 as const, style: "normal" as const },
+			].filter((f): f is Exclude<typeof f, false | null> => Boolean(f)),
 		},
 	);
 }
