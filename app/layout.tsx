@@ -2,42 +2,27 @@ import "../styles/globals.css";
 
 import type { Metadata } from "next";
 import React from "react";
-import {
-	Caveat,
-	IBM_Plex_Mono,
-	IBM_Plex_Sans_Condensed,
-	IBM_Plex_Serif,
-} from "next/font/google";
 
-const rotulo = IBM_Plex_Sans_Condensed({
+import Cursor from "./src/common/Cursor";
+import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+
+const label = Archivo({
 	subsets: ["latin"],
-	weight: ["500", "600", "700"],
+	axes: ["wdth"],
 	variable: "--font-rotulo",
 	display: "swap",
 });
 
-const nota = IBM_Plex_Serif({
+const display = Instrument_Serif({
 	subsets: ["latin"],
-	weight: ["400", "500"],
+	weight: ["400"],
 	style: ["normal", "italic"],
-	variable: "--font-nota",
+	variable: "--font-glosa",
 	display: "swap",
 });
 
-// Lápiz: solo para lo anotado a mano sobre el dibujo, nunca para el dibujo.
-// Un solo peso: nada en el código pide "medium" de esta familia, y Next
-// precarga cada peso declarado exista o no un elemento que lo use.
-const lapiz = Caveat({
+const mono = JetBrains_Mono({
 	subsets: ["latin"],
-	weight: ["400"],
-	variable: "--font-lapiz",
-	display: "swap",
-});
-
-// Ídem: nada pide semibold ni medium de la mono. Un peso menos precargado.
-const pieza = IBM_Plex_Mono({
-	subsets: ["latin"],
-	weight: ["400"],
 	variable: "--font-pieza",
 	display: "swap",
 });
@@ -46,13 +31,16 @@ const BASE_URL = "https://joaquinmussi.vercel.app";
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
-	title: "Joaquín Mussi - Software Engineer | Full Stack Developer",
+	title: "Joaquín Mussi - Frontend Engineer | Frontend Architecture & Web Performance",
 	description:
-		"Joaquín Mussi — Software Engineer with 3+ years of experience building high-performance web applications. Next.js, React, TypeScript, .NET, C#, Clean Architecture, Team Leadership.",
+		"Joaquín Mussi — Frontend Engineer with 4+ years of experience. Frontend architecture and web performance for internal platforms used by thousands. Next.js, React, TypeScript, .NET APIs, Clean Architecture.",
 	keywords: [
 		"joaquin mussi",
 		"software engineer",
-		"full stack developer",
+		"frontend engineer",
+		"frontend architect",
+		"frontend architecture",
+		"web performance",
 		"next.js",
 		"react",
 		"typescript",
@@ -79,21 +67,21 @@ export const metadata: Metadata = {
 	openGraph: {
 		type: "website",
 		url: BASE_URL,
-		title: "Joaquín Mussi - Software Engineer | Full Stack Developer",
+		title: "Joaquín Mussi - Frontend Engineer | Frontend Architecture & Web Performance",
 		description:
-			"Software Engineer with 3+ years of experience. Next.js · React · TypeScript · .NET · C# · Clean Architecture · Team Leadership.",
+			"Frontend Engineer with 4+ years of experience. Frontend architecture · Web performance · Next.js · React · TypeScript · .NET APIs.",
 		siteName: "Joaquín Mussi Portfolio",
 		locale: "en_US",
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Joaquín Mussi - Software Engineer | Full Stack Developer",
+		title: "Joaquín Mussi - Frontend Engineer | Frontend Architecture & Web Performance",
 		description:
-			"Software Engineer with 3+ years of experience. Next.js · React · TypeScript · .NET · C# · Clean Architecture.",
+			"Frontend Engineer with 4+ years of experience. Frontend architecture · Web performance · Next.js · React · TypeScript.",
 	},
 	appleWebApp: {
 		capable: true,
-		title: "Joaquín Mussi - Dev",
+		title: "Joaquín Mussi - Frontend",
 		statusBarStyle: "black",
 	},
 	other: {
@@ -108,7 +96,7 @@ const jsonLd = {
 	"@type": "Person",
 	name: "Joaquín Mussi",
 	url: BASE_URL,
-	jobTitle: "Software Engineer | Full Stack Developer",
+	jobTitle: "Frontend Engineer | Frontend Architecture & Web Performance",
 	sameAs: [
 		"https://github.com/MussiDev",
 		"https://www.linkedin.com/in/joaquinmussi/",
@@ -132,29 +120,23 @@ const jsonLd = {
 	],
 };
 
-// Corrige `<html lang>` según la ruta ("/en" o "/en/...") sin volver
-// dinámico todo el sitio: leerlo en el servidor exigiría `headers()` en
-// el layout raíz, y eso saca cada página del prerender estático — un
-// costo que este sitio no puede pagar (regla 4 del concepto: el medio
-// no puede desmentir al mensaje de performance).
-const FIJAR_LANG = `document.documentElement.lang=location.pathname.match(/^\\/en(\\/|$)/)?"en":"es"`;
+const BOOTSTRAP_SCRIPT = `document.documentElement.lang=location.pathname.match(/^\\/en(\\/|$)/)?"en":"es";document.documentElement.dataset.js="si"`;
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<html
 			lang='es'
-			className={`${rotulo.variable} ${nota.variable} ${pieza.variable} ${lapiz.variable}`}
+			suppressHydrationWarning
+			className={`${label.variable} ${display.variable} ${mono.variable}`}
 		>
-			{/* El taller es la base: mesa y texto por defecto viven en :root
-			    (globals.css). El sitio anterior trae los suyos propios con la
-			    clase .anterior. */}
-			<body className='bg-mesa text-texto'>
-				<script dangerouslySetInnerHTML={{ __html: FIJAR_LANG }} />
+			<body className='bg-tejido text-senal'>
+				<script dangerouslySetInnerHTML={{ __html: BOOTSTRAP_SCRIPT }} />
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
 				/>
 				{children}
+				<Cursor />
 			</body>
 		</html>
 	);

@@ -1,12 +1,12 @@
 {
 	"descartado": {
 		"titulo": {
-			"es": "Three.js como base",
-			"en": "Three.js as the foundation"
+			"es": "Cargar el modelo en el navegador",
+			"en": "Loading the model in the browser"
 		},
 		"motivo": {
-			"es": "350 KB antes del primer modelo, para una metáfora que se resolvía con CSS. El sitio habla de performance: no puede desmentirse solo.",
-			"en": "350 KB before the first model, for a metaphor that CSS could carry. The site talks about performance: it cannot contradict itself."
+			"es": "El escaneo pesaba 3 MB y no traía una sola textura: eran normales y dos juegos de UV que este sitio nunca lee. Ahora la nube de puntos y las aristas se calculan en build y viajan como un binario de 223 KB, y el navegador se ahorra parsear un GLTF y recorrer 94.716 triángulos en el hilo principal. Un sitio que habla de performance no puede desmentirse solo.",
+			"en": "The scan weighed 3 MB and carried no textures at all: it was normals and two sets of UVs this site never reads. The point cloud and the edges are now computed at build time and travel as a 223 KB binary, sparing the browser a GLTF parse and a walk over 94,716 triangles on the main thread. A site that talks about performance cannot contradict itself."
 		}
 	},
 	"experimento": null

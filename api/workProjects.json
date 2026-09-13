@@ -1,39 +1,58 @@
 [
 	{
 		"id": 1,
-		"name": "CommuniFit",
+		"name": "Fitness management platform",
 		"company": "Independent",
 		"period": "Nov 2023 – Feb 2024",
 		"description": "Fitness user management platform facilitating communication between trainers and clients. Built frontend architecture and backend integration using Next.js 13, Zustand for state management, Tailwind CSS and NextAuth for authentication.",
-		"skills": ["Next.js", "Tailwind CSS", "Zustand", "Axios", "React.js"]
+		"skills": [
+			"Next.js",
+			"Tailwind CSS",
+			"Zustand",
+			"Axios",
+			"React.js"
+		]
 	},
 	{
 		"id": 2,
-		"name": "CRYPTGO",
+		"name": "Web3 payments platform",
 		"company": "It-techgroup",
 		"period": "Feb 2022 – Jul 2022",
 		"description": "Web3 platform with cryptocurrency payments. Built pixel-perfect UI with Styled Components based on Figma designs and integrated game interaction logic.",
-		"skills": ["Styled Components", "React.js", "Axios"]
+		"skills": [
+			"Styled Components",
+			"React.js",
+			"Axios"
+		]
 	},
 	{
 		"id": 3,
-		"name": "Cras",
+		"name": "Booking platform",
 		"company": "La Mutual de AMR",
 		"period": "",
 		"description": "Web platform for cabin reservations. Served as technical lead, responsible for architecture selection, supporting trainees, and leading frontend migration from Angular to Next.js 15 with Bootstrap styling.",
-		"skills": ["Next.js", "Bootstrap", "React.js"]
+		"skills": [
+			"Next.js",
+			"Bootstrap",
+			"React.js"
+		]
 	},
 	{
 		"id": 4,
-		"name": "Mutual Data",
+		"name": "Financial data platform",
 		"company": "La Mutual de AMR",
 		"period": "",
 		"description": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
-		"skills": ["ChakraUI", "React.js", "Next.js", "GraphQL"]
+		"skills": [
+			"ChakraUI",
+			"React.js",
+			"Next.js",
+			"GraphQL"
+		]
 	},
 	{
 		"id": 5,
-		"name": "Mutual Pago",
+		"name": "Digital wallet",
 		"company": "La Mutual de AMR",
 		"period": "",
 		"description": "Virtual wallet web project. Led architecture selection, frontend development and backend integration with Zustand, Next.js 14, Sass, and NextAuth. Also led backend migration from ASP.NET Core to a RESTful .NET API.",
@@ -49,10 +68,16 @@
 	},
 	{
 		"id": 6,
-		"name": "Tus Cuentas",
+		"name": "Investment platform",
 		"company": "La Mutual de AMR",
 		"period": "",
 		"description": "Web platform for investment management. Created reusable components, adapted the site to multiple devices, consumed backend APIs, styled with SASS, and contributed to backend changes with C# and .NET.",
-		"skills": ["ASP.NET", "Next.js", "Sass", "React.js", "Zustand"]
+		"skills": [
+			"ASP.NET",
+			"Next.js",
+			"Sass",
+			"React.js",
+			"Zustand"
+		]
 	}
 ]

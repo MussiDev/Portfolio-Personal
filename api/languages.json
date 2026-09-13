@@ -1,0 +1,24 @@
+[
+	{
+		"id": 1,
+		"nombre": {
+			"es": "Español",
+			"en": "Spanish"
+		},
+		"nivel": {
+			"es": "Nativo",
+			"en": "Native or bilingual"
+		}
+	},
+	{
+		"id": 2,
+		"nombre": {
+			"es": "Inglés",
+			"en": "English"
+		},
+		"nivel": {
+			"es": "Profesional completo",
+			"en": "Full professional"
+		}
+	}
+]

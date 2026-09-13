@@ -32,8 +32,8 @@
 				"position": "FullStack Engineer",
 				"time": "AUG 2022 - NOV 2023",
 				"description": {
-					"en": "Built MutualData, a platform for large-scale financial data processing and visualization. Architected component systems and API integrations for Tus Cuentas, an investment platform. Migrated e-commerce platform from CSHTML to Next.js, improving maintainability. Modernized legacy Angular applications to Next.js architecture.",
-					"es": "Construí Mutual Data, una plataforma de procesamiento y visualización de datos financieros a escala. Diseñé el sistema de componentes y las integraciones de API de Tus Cuentas, una plataforma de inversiones. Migré el ecommerce de CSHTML a Next.js y modernicé aplicaciones Angular heredadas."
+					"en": "Built a platform for large-scale financial data processing and visualization. Architected component systems and API integrations for an investment product. Migrated e-commerce platform from CSHTML to Next.js, improving maintainability. Modernized legacy Angular applications to Next.js architecture.",
+					"es": "Construí una plataforma de procesamiento y visualización de datos financieros a escala. Diseñé el sistema de componentes y las integraciones de API de un producto de inversiones. Migré el ecommerce de CSHTML a Next.js y modernicé aplicaciones Angular heredadas."
 				},
 				"icons": [
 					{
@@ -57,8 +57,8 @@
 				"position": "Frontend Engineer",
 				"time": "JUN 2022 - AUG 2022",
 				"description": {
-					"en": "Built responsive UIs for WSLaMedica, Mis Inversiones and MutualData. Implemented component systems with Next.js, TypeScript, Chakra UI and SASS.",
-					"es": "Interfaces responsive para WSLaMedica, Mis Inversiones y Mutual Data. Sistemas de componentes con Next.js, TypeScript, Chakra UI y SASS."
+					"en": "Built responsive UIs across three internal products. Implemented component systems with Next.js, TypeScript, Chakra UI and SASS.",
+					"es": "Interfaces responsive para tres productos internos. Sistemas de componentes con Next.js, TypeScript, Chakra UI y SASS."
 				},
 				"icons": [
 					{
@@ -99,5 +99,14 @@
 				"name": "SiFramer"
 			}
 		]
+	},
+	{
+		"company": "Universidad del Gran Rosario",
+		"position": "IT Technician",
+		"time": "APRIL 2021 - JUNE 2022 · FUNES, SANTA FE",
+		"description": {
+			"en": "Hardware and network maintenance, diagnostics and technical support.",
+			"es": "Mantenimiento de hardware y redes, diagnóstico y soporte técnico."
+		}
 	}
 ]

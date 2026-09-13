@@ -1,50 +1,31 @@
-/**
- * Una máquina: un proyecto contado en seis tiempos.
- *
- * El contrato es deliberadamente estricto en un punto: `pendiente` y los
- * `valor: null` son la forma de decir "esto todavía no está escrito". Una
- * máquina puede publicarse incompleta, pero nunca puede disimularlo.
- */
+import type { LocalizedText } from "./i18n";
 
-import type { Texto } from "./i18n";
+export type MachineStatus = "en-construccion" | "en-prueba" | "terminado";
 
-export type EstadoMaquina = "en-construccion" | "en-prueba" | "terminado";
+export type ObjectType = "producto" | "maquina" | "en-obra";
 
-export type TipoObjeto = "producto" | "maquina" | "en-obra";
-
-export interface Tiempo {
-	/** Párrafos ya escritos, por idioma. Vacío mientras el tiempo no exista. */
+export interface Stage {
 	parrafos: Record<string, string[]>;
-	/** Qué falta escribir. Se renderiza como hueco marcado, no se oculta. */
-	pendiente?: Texto;
+	pendiente?: LocalizedText;
 }
 
-export interface Medida {
-	etiqueta: Texto;
-	/** null = todavía sin medir. Nunca se inventa un número. */
+export interface Measurement {
+	etiqueta: LocalizedText;
 	valor: string | null;
 }
 
-export interface TiempoMecanismo extends Tiempo {
-	/** Pasos del modelo de dominio, en orden y por idioma. */
+export interface MechanismStage extends Stage {
 	flujo?: Record<string, string[]>;
-	/** Fragmento de código. null mientras no se eligió cuál mostrar. */
 	codigo?: string | null;
-	/**
-	 * Un plano: diagrama Mermaid del mecanismo (arquitectura, modelo de
-	 * datos, flujo real). El `flujo` de arriba es la cinta de pasos; esto
-	 * es la vista de conjunto cuando el mecanismo tiene forma de sistema,
-	 * no solo de secuencia.
-	 */
 	diagrama?: string;
 }
 
-export interface TiempoResultado extends Tiempo {
-	medidas: Medida[];
+export interface ResultStage extends Stage {
+	medidas: Measurement[];
 }
 
-export interface Enlace {
-	etiqueta: Texto;
+export interface MachineLink {
+	etiqueta: LocalizedText;
 	href: string;
 	externo?: boolean;
 }
@@ -52,23 +33,20 @@ export interface Enlace {
 export default interface Machine {
 	slug: string;
 	nombre: string;
-	tipo: TipoObjeto;
-	estado: EstadoMaquina;
-	/** Dónde se construyó: "Producto propio", "La Mutual de AMR", ... */
-	contexto: Texto;
-	periodo: Texto | null;
-	/** Una frase. Es lo que se lee en la mesa. */
-	resumen: Texto;
+	tipo: ObjectType;
+	estado: MachineStatus;
+	contexto: LocalizedText;
+	periodo: LocalizedText | null;
+	resumen: LocalizedText;
 	stack: string[];
-	enlaces: Enlace[];
-	/** Orden en la mesa. 1 es el objeto principal. */
+	enlaces: MachineLink[];
 	peso: number;
 	tiempos: {
-		problema: Tiempo;
-		decision: Tiempo;
-		mecanismo: TiempoMecanismo;
-		tradeoff: Tiempo;
-		resultado: TiempoResultado;
-		despues: Tiempo;
+		problema: Stage;
+		decision: Stage;
+		mecanismo: MechanismStage;
+		tradeoff: Stage;
+		resultado: ResultStage;
+		despues: Stage;
 	};
 }

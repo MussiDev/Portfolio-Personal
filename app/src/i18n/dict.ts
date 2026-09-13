@@ -1,21 +1,17 @@
-import type { Idioma } from "../../../entities/i18n";
+import type { Language } from "../../../entities/i18n";
 
-/**
- * Los textos de la interfaz. El contenido vive en los JSON; acá está solo
- * lo que el taller dice de sí mismo.
- */
 const DICT = {
 	es: {
-		rol: "Software Engineer · FullStack en La Mutual de AMR · Rosario, AR",
+		rol: "Frontend Engineer · Arquitectura frontend y performance",
 		presentacion:
-			"Construyo y modernizo productos web, desde la arquitectura hasta la implementación.",
-		volverMesa: "Volver a la mesa",
-		volverCuaderno: "Volver al cuaderno",
+			"Hace más de cuatro años que trabajo en frontend, y lo que más me interesa es la parte que no se ve: las decisiones de arquitectura que definen si un sistema escala o se vuelve imposible de mantener.",
+		volverMesa: "Volver al cerebro",
+		volverCuaderno: "Volver al blog",
 		abrir: "Abrir",
 		nav: {
-			maquinas: "Máquinas",
-			cuaderno: "Cuaderno",
-			oficio: "El oficio",
+			maquinas: "Proyectos",
+			cuaderno: "Blog",
+			oficio: "Sobre mí",
 			contacto: "Contacto",
 			cv: "CV",
 		},
@@ -29,7 +25,7 @@ const DICT = {
 			periodo: "Período",
 			estado: "Estado",
 			documento: "Documento",
-			maquinas: "Máquinas",
+			maquinas: "Proyectos",
 			actualizado: "Actualizado",
 			autor: "Autor",
 			numero: "N.º",
@@ -42,9 +38,11 @@ const DICT = {
 			empresas: "Empresas",
 			certificaciones: "Certificaciones",
 			recomendaciones: "Recomendaciones",
+			idiomas: "Idiomas",
+			educacion: "Educación",
 		},
 		maquinas: {
-			titulo: "Máquinas",
+			titulo: "Proyectos",
 			glosa: "sistemas que construí o modernicé",
 			bajada:
 				"Cada una se abre en seis tiempos: problema, decisión, mecanismo, trade-off, resultado y qué haría distinto hoy.",
@@ -54,18 +52,19 @@ const DICT = {
 			escritos: (n: number) => `${n} / 6 escritos`,
 		},
 		cuaderno: {
-			titulo: "Cuaderno",
+			titulo: "Blog",
 			glosa: "notas de laboratorio",
 			bajada:
 				"Hipótesis, experimento y resultado. Lo que aprendí probando, no lo que leí.",
-			vacio: "El cuaderno todavía está en blanco.",
+			vacio: "El blog todavía está en blanco.",
+			volver: "Volver al cuaderno",
 		},
 		oficio: {
-			titulo: "El oficio",
+			titulo: "Sobre mí",
 			glosa: "quién trabaja acá",
 			bio: "Empecé Ingeniería en Sistemas en 2020 y la dejé en 2021. No fue abandono: fue una decisión sobre cómo quería aprender. Desde entonces me formo por mi cuenta y contra problemas reales — que es exactamente lo que hago en el trabajo todos los días.",
 			trayectoria: "Trayectoria",
-			trayectoriaGlosa: "las mismas máquinas, ordenadas por tiempo",
+			trayectoriaGlosa: "los mismos proyectos, ordenados por tiempo",
 			credenciales: "Credenciales",
 			credencialesGlosa: (n: number) => `${n} cursos, para quien los necesite`,
 			autodidacta: "Autodidacta",
@@ -74,22 +73,40 @@ const DICT = {
 		mesa: {
 			experimento: "Experimento — hipótesis, prueba, resultado",
 			bancoVacio: "[ Banco vacío ]",
-			delCuaderno: "del cuaderno",
+			delCuaderno: "del blog",
 			leer: "leer",
-			verAnterior: "versión anterior",
+		},
+		hero: {
+			rol: "Frontend Engineer · Arquitectura y performance · Remoto",
+			abrir: "Abrir",
+			volver: "Volver",
+			cargando: "Cargando tejido",
+			dibujando: "Dibujando el tejido",
+			actividad: "regiones activas",
+			indice: "Índice completo",
+			bajar: "Bajar al registro",
+			pasos: "Progreso del recorrido",
+			secciones: {
+				proyectos: "Sistemas que construí o modernicé, abiertos en seis tiempos: problema, decisión, mecanismo, trade-off, resultado y qué haría distinto.",
+				experiencia: "Dónde trabajé y qué construí ahí, ordenado por tiempo.",
+				credenciales: "Formación por cuenta propia y contra problemas reales, con los cursos que la respaldan.",
+				blog: "Notas de laboratorio: hipótesis, experimento y resultado. Lo que aprendí probando.",
+				contacto: "Para hablar de un puesto, un proyecto o una consulta puntual.",
+				cv: "El currículum en PDF, por si necesitás el formato de siempre.",
+			},
 		},
 	},
 	en: {
-		rol: "Software Engineer · FullStack at La Mutual de AMR · Rosario, AR",
+		rol: "Frontend Engineer · Frontend architecture & web performance",
 		presentacion:
 			"I build and modernise web products, from the architecture to the implementation.",
-		volverMesa: "Back to the bench",
-		volverCuaderno: "Back to the notebook",
+		volverMesa: "Back to the brain",
+		volverCuaderno: "Back to the blog",
 		abrir: "Open",
 		nav: {
-			maquinas: "Machines",
-			cuaderno: "Notebook",
-			oficio: "The trade",
+			maquinas: "Projects",
+			cuaderno: "Blog",
+			oficio: "About",
 			contacto: "Contact",
 			cv: "CV",
 		},
@@ -103,7 +120,7 @@ const DICT = {
 			periodo: "Period",
 			estado: "Status",
 			documento: "Document",
-			maquinas: "Machines",
+			maquinas: "Projects",
 			actualizado: "Updated",
 			autor: "Author",
 			numero: "No.",
@@ -116,9 +133,11 @@ const DICT = {
 			empresas: "Companies",
 			certificaciones: "Certifications",
 			recomendaciones: "Recommendations",
+			idiomas: "Languages",
+			educacion: "Education",
 		},
 		maquinas: {
-			titulo: "Machines",
+			titulo: "Projects",
 			glosa: "systems I built or modernised",
 			bajada:
 				"Each one opens in six beats: problem, decision, mechanism, trade-off, result and what I would do differently today.",
@@ -128,18 +147,19 @@ const DICT = {
 			escritos: (n: number) => `${n} / 6 written`,
 		},
 		cuaderno: {
-			titulo: "Notebook",
+			titulo: "Blog",
 			glosa: "lab notes",
 			bajada:
 				"Hypothesis, experiment and result. What I learned by trying, not by reading.",
-			vacio: "The notebook is still blank.",
+			vacio: "The blog is still blank.",
+			volver: "Back to the notebook",
 		},
 		oficio: {
-			titulo: "The trade",
+			titulo: "About",
 			glosa: "who works here",
 			bio: "I started Systems Engineering in 2020 and left in 2021. It was not giving up: it was a decision about how I wanted to learn. Since then I have taught myself against real problems — which is exactly what I do at work every day.",
 			trayectoria: "Career",
-			trayectoriaGlosa: "the same machines, ordered by time",
+			trayectoriaGlosa: "the same projects, ordered by time",
 			credenciales: "Credentials",
 			credencialesGlosa: (n: number) => `${n} courses, for whoever needs them`,
 			autodidacta: "Self-taught",
@@ -148,13 +168,31 @@ const DICT = {
 		mesa: {
 			experimento: "Experiment — hypothesis, test, result",
 			bancoVacio: "[ Empty bench ]",
-			delCuaderno: "from the notebook",
+			delCuaderno: "from the blog",
 			leer: "read",
-			verAnterior: "previous version",
+		},
+		hero: {
+			rol: "Frontend Engineer · Architecture & performance · Remote",
+			abrir: "Open",
+			volver: "Back",
+			cargando: "Loading tissue",
+			dibujando: "Drawing the tissue",
+			actividad: "active regions",
+			indice: "Full index",
+			bajar: "Down to the record",
+			pasos: "Walkthrough progress",
+			secciones: {
+				proyectos: "Systems I built or modernised, opened in six beats: problem, decision, mechanism, trade-off, result and what I would do differently.",
+				experiencia: "Where I worked and what I built there, ordered by time.",
+				credenciales: "Self-taught against real problems, with the courses that back it up.",
+				blog: "Lab notes: hypothesis, experiment and result. What I learned by trying.",
+				contacto: "To talk about a role, a project or a specific question.",
+				cv: "The résumé as a PDF, in case you need the usual format.",
+			},
 		},
 	},
 };
 
 export type Dict = (typeof DICT)["es"];
 
-export const getDict = (lang: Idioma): Dict => DICT[lang];
+export const getDict = (lang: Language): Dict => DICT[lang];

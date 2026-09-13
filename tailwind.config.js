@@ -11,33 +11,44 @@ module.exports = {
 				"3xl": "1px 3px 29px -8px rgba(242,79,15,1)",
 			},
 			fontFamily: {
-				// Rótulos: títulos, etiquetas, encabezados de tabla.
 				rotulo: ["var(--font-rotulo)", "Helvetica Neue", "Arial", "sans-serif"],
-				// Notas: prosa larga.
-				nota: ["var(--font-nota)", "Georgia", "Times New Roman", "serif"],
-				// Piezas: datos, medidas, código.
+				nota: ["var(--font-rotulo)", "Helvetica Neue", "Arial", "sans-serif"],
+				glosa: ["var(--font-glosa)", "Georgia", "Times New Roman", "serif"],
 				pieza: ["var(--font-pieza)", "SFMono-Regular", "Consolas", "monospace"],
-				// Lápiz: anotaciones a mano. Nunca prosa, títulos ni datos.
-				lapiz: ["var(--font-lapiz)", "Segoe Script", "Bradley Hand", "cursive"],
 			},
 			transitionTimingFunction: {
-				// Arranca rápido y frena, como algo con masa.
-				mecanico: "cubic-bezier(.2, .8, .2, 1)",
+				impulso: "cubic-bezier(.16, 1, .3, 1)",
+			},
+			keyframes: {
+				disparo: {
+					"0%, 100%": { opacity: ".25", transform: "scale(1)" },
+					"8%": { opacity: "1", transform: "scale(1.9)" },
+					"30%": { opacity: ".35", transform: "scale(1)" },
+				},
+				conduccion: {
+					to: { strokeDashoffset: "0" },
+				},
+				respirar: {
+					"0%, 100%": { opacity: ".45" },
+					"50%": { opacity: "1" },
+				},
+			},
+			animation: {
+				disparo: "disparo 4s cubic-bezier(.16,1,.3,1) infinite",
+				conduccion: "conduccion 2.4s linear infinite",
+				respirar: "respirar 3.2s ease-in-out infinite",
 			},
 		},
 		colors: {
-			// --- Taller: materiales ----------------------------------------
-			mesa: "rgb(var(--mesa) / <alpha-value>)",
-			hoja: "rgb(var(--hoja) / <alpha-value>)",
-			"hoja-honda": "rgb(var(--hoja-honda) / <alpha-value>)",
-			texto: "rgb(var(--texto) / <alpha-value>)",
-			"texto-medio": "rgb(var(--texto-medio) / <alpha-value>)",
-			linea: "rgb(var(--linea) / <alpha-value>)",
-			marca: "rgb(var(--marca) / <alpha-value>)",
+			tejido: "rgb(var(--tejido) / <alpha-value>)",
+			"tejido-hondo": "rgb(var(--tejido-hondo) / <alpha-value>)",
+			membrana: "rgb(var(--membrana) / <alpha-value>)",
+			"membrana-honda": "rgb(var(--membrana-honda) / <alpha-value>)",
+			senal: "rgb(var(--senal) / <alpha-value>)",
+			mielina: "rgb(var(--mielina) / <alpha-value>)",
+			sinapsis: "rgb(var(--sinapsis) / <alpha-value>)",
+			impulso: "rgb(var(--impulso) / <alpha-value>)",
 
-			// --- Legado --------------------------------------------------
-			// Paleta del sitio anterior. Se mantiene mientras quedan secciones
-			// sin migrar al taller; se elimina cuando la última salga.
 			"slate-800": "#040508",
 			"orange-700": "#F24F0F",
 			"cyan-500": "#06b6d4",

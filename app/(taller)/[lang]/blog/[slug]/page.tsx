@@ -7,8 +7,9 @@ import { Suspense } from "react";
 import { client } from "../../../../../sanity/lib/client";
 import dynamic from "next/dynamic";
 import { format } from "date-fns";
-import { ruta, type Idioma } from "../../../../../entities/i18n";
-import { alternativas } from "../../../../src/i18n/meta";
+import { localizedPath, type Language } from "../../../../../entities/i18n";
+import { getDict } from "../../../../src/i18n/dict";
+import { alternates } from "../../../../src/i18n/meta";
 import { es } from "date-fns/locale";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../../sanity/lib/queries";
@@ -29,7 +30,7 @@ interface Post {
 }
 
 interface PageProps {
-	params: Promise<{ slug: string; lang: Idioma }>;
+	params: Promise<{ slug: string; lang: Language }>;
 }
 
 const BASE_URL = "https://joaquinmussi.vercel.app";
@@ -70,7 +71,7 @@ const portableTextComponents = {
 			<h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>
 		),
 		blockquote: ({ children }: any) => (
-			<blockquote className='my-6 max-w-[62ch] border-l-2 border-marca/60 pl-4 font-nota text-xl italic leading-snug text-texto-medio'>
+			<blockquote className='my-6 max-w-[62ch] border-l-2 border-impulso/60 pl-4 font-glosa text-xl italic leading-snug text-mielina'>
 				{children}
 			</blockquote>
 		),
@@ -93,11 +94,11 @@ const portableTextComponents = {
 	},
 	marks: {
 		strong: ({ children }: any) => (
-			<strong className='font-medium text-texto'>{children}</strong>
+			<strong className='font-medium text-senal'>{children}</strong>
 		),
 		em: ({ children }: any) => <em className='italic'>{children}</em>,
 		code: ({ children }: any) => (
-			<code className='bg-hoja-honda px-1.5 py-0.5 font-pieza text-[.9em] text-linea'>
+			<code className='bg-membrana-honda px-1.5 py-0.5 font-pieza text-[.9em] text-sinapsis'>
 				{children}
 			</code>
 		),
@@ -106,7 +107,7 @@ const portableTextComponents = {
 				href={value?.href}
 				target='_blank'
 				rel='noopener noreferrer'
-				className='text-linea underline decoration-linea/40 underline-offset-4 hover:text-marca'
+				className='text-sinapsis underline decoration-sinapsis/40 underline-offset-4 hover:text-impulso'
 			>
 				{children}
 			</a>
@@ -134,11 +135,11 @@ export async function generateMetadata({ params }: PageProps) {
 	return {
 		title: `${post.title} — Joaquín Mussi`,
 		description,
-		alternates: alternativas(lang, `/blog/${slug}`),
+		alternates: alternates(lang, `/blog/${slug}`),
 		openGraph: {
 			title: post.title,
 			description,
-			url: `${BASE_URL}${ruta(lang, `/blog/${slug}`)}`,
+			url: `${BASE_URL}${localizedPath(lang, `/blog/${slug}`)}`,
 			type: "article",
 			publishedTime: post.publishedAt,
 			authors: ["Joaquín Mussi"],
@@ -153,7 +154,7 @@ export async function generateMetadata({ params }: PageProps) {
 	};
 }
 
-async function PostContent({ slug }: { slug: string }) {
+async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 	const post: Post | null = await client.fetch(postBySlugQuery, { slug });
 
 	if (!post) return notFound();
@@ -181,7 +182,7 @@ async function PostContent({ slug }: { slug: string }) {
 	};
 
 	return (
-		<article className='hoja marcas relative px-7 py-9 md:px-14 md:py-14'>
+		<article className='membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
 			<script
 				type='application/ld+json'
 				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -191,13 +192,17 @@ async function PostContent({ slug }: { slug: string }) {
 			</h1>
 
 			{post.publishedAt && (
-				<p className='m-0 mb-8 font-pieza text-xs text-linea'>
-					{format(new Date(post.publishedAt), "d 'de' MMMM 'de' yyyy", { locale: es })}
+				<p className='m-0 mb-8 font-pieza text-xs text-sinapsis'>
+					{lang === "en"
+						? format(new Date(post.publishedAt), "MMMM d, yyyy")
+						: format(new Date(post.publishedAt), "d 'de' MMMM 'de' yyyy", {
+								locale: es,
+							})}
 				</p>
 			)}
 
 			{post.coverImage && (
-				<div className='relative mb-10 h-64 w-full overflow-hidden border border-linea/30 md:h-96'>
+				<div className='relative mb-10 h-64 w-full overflow-hidden border border-sinapsis/30 md:h-96'>
 					<Image
 						src={urlFor(post.coverImage).width(1200).height(600).url()}
 						alt={post.coverImage.alt || post.title}
@@ -215,18 +220,18 @@ async function PostContent({ slug }: { slug: string }) {
 							h1: ({ children }) => <h1 className='mb-4 mt-10 text-2xl md:text-3xl'>{children}</h1>,
 							h2: ({ children }) => <h2 className='mb-3 mt-10 text-xl md:text-2xl'>{children}</h2>,
 							h3: ({ children }) => <h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>,
-							blockquote: ({ children }) => <blockquote className='my-6 max-w-[62ch] border-l-2 border-marca/60 pl-4 font-nota text-xl italic leading-snug text-texto-medio'>{children}</blockquote>,
+							blockquote: ({ children }) => <blockquote className='my-6 max-w-[62ch] border-l-2 border-impulso/60 pl-4 font-glosa text-xl italic leading-snug text-mielina'>{children}</blockquote>,
 							ul: ({ children }) => <ul className='mb-5 max-w-[68ch] list-inside list-disc space-y-1 pl-5 font-nota text-lg leading-relaxed'>{children}</ul>,
 							ol: ({ children }) => <ol className='mb-5 max-w-[68ch] list-inside list-decimal space-y-1 pl-5 font-nota text-lg leading-relaxed'>{children}</ol>,
 							li: ({ children }) => <li className='break-words'>{children}</li>,
-							strong: ({ children }) => <strong className='font-medium text-texto'>{children}</strong>,
+							strong: ({ children }) => <strong className='font-medium text-senal'>{children}</strong>,
 							em: ({ children }) => <em className='italic'>{children}</em>,
 							code: ({ className, children }) => {
 								const lang = /language-(\w+)/.exec(className ?? "")?.[1];
 								if (lang === "mermaid") return <MermaidDiagram code={String(children).trim()} />;
-								return <code className='bg-hoja-honda px-1.5 py-0.5 font-pieza text-[.9em] text-linea'>{children}</code>;
+								return <code className='bg-membrana-honda px-1.5 py-0.5 font-pieza text-[.9em] text-sinapsis'>{children}</code>;
 							},
-							a: ({ children, href }) => <a href={href} target='_blank' rel='noopener noreferrer' className='text-linea underline decoration-linea/40 underline-offset-4 hover:text-marca'>{children}</a>,
+							a: ({ children, href }) => <a href={href} target='_blank' rel='noopener noreferrer' className='text-sinapsis underline decoration-sinapsis/40 underline-offset-4 hover:text-impulso'>{children}</a>,
 						}}
 					>
 						{post.markdownBody}
@@ -241,7 +246,7 @@ async function PostContent({ slug }: { slug: string }) {
 					{post.tags.map((tag) => (
 						<span
 							key={tag}
-							className='border border-linea/50 px-2.5 py-1 font-pieza text-[11px] text-linea'
+							className='border border-sinapsis/50 px-2.5 py-1 font-pieza text-[11px] text-sinapsis'
 						>
 							{tag}
 						</span>
@@ -254,28 +259,28 @@ async function PostContent({ slug }: { slug: string }) {
 
 function PostSkeleton() {
 	return (
-		<div className='hoja px-7 py-9 md:px-14 md:py-14'>
-			<div className='h-8 w-2/3 bg-linea/15 mb-3' />
-			<div className='h-8 w-1/2 bg-linea/15 mb-3' />
-			<div className='h-3 w-36 bg-linea/15 mb-8' />
-			<div className='w-full h-64 md:h-96 bg-linea/15 mb-10' />
+		<div className='membrana px-7 py-9 md:px-14 md:py-14'>
+			<div className='h-8 w-2/3 bg-sinapsis/15 mb-3' />
+			<div className='h-8 w-1/2 bg-sinapsis/15 mb-3' />
+			<div className='h-3 w-36 bg-sinapsis/15 mb-8' />
+			<div className='w-full h-64 md:h-96 bg-sinapsis/15 mb-10' />
 			<div className='max-w-3xl flex flex-col gap-3'>
 				{Array.from({ length: 5 }).map((_, i) => (
 					<div
 						key={i}
-						className={`h-4 bg-linea/15 ${i % 4 === 3 ? "w-2/3" : "w-full"}`}
+						className={`h-4 bg-sinapsis/15 ${i % 4 === 3 ? "w-2/3" : "w-full"}`}
 					/>
 				))}
 				<div className='mt-6 flex flex-col gap-3'>
-					<div className='h-4 w-full bg-linea/15' />
-					<div className='h-4 w-5/6 bg-linea/15' />
-					<div className='h-4 w-11/12 bg-linea/15' />
-					<div className='h-4 w-3/4 bg-linea/15' />
+					<div className='h-4 w-full bg-sinapsis/15' />
+					<div className='h-4 w-5/6 bg-sinapsis/15' />
+					<div className='h-4 w-11/12 bg-sinapsis/15' />
+					<div className='h-4 w-3/4 bg-sinapsis/15' />
 				</div>
 			</div>
 			<div className='mt-10 flex gap-2'>
-				<div className='h-6 w-16 bg-linea/15' />
-				<div className='h-6 w-20 bg-linea/15' />
+				<div className='h-6 w-16 bg-sinapsis/15' />
+				<div className='h-6 w-20 bg-sinapsis/15' />
 			</div>
 		</div>
 	);
@@ -283,21 +288,29 @@ function PostSkeleton() {
 
 export default async function PostPage({ params }: PageProps) {
 	const { slug, lang } = await params;
+	const d = getDict(lang);
 
 	return (
-		<main className='taller min-h-screen px-5 py-12 md:px-16 md:py-16'>
-			{/* Una nota se lee: la hoja es más angosta que el registro. */}
-			<div className='mx-auto flex max-w-[880px] flex-col gap-8'>
-				<Link
-					href={ruta(lang, '/blog')}
-					className='inline-flex w-fit items-center gap-2 font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-linea hover:text-marca'
-				>
-					<FaArrowLeft size={11} />
-					Volver al cuaderno
-				</Link>
+		<main className='sistema min-h-screen px-5 py-12 md:px-16 md:py-16'>
+			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
+				<div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
+					<Link
+						href={localizedPath(lang, "/#paso-4")}
+						className='inline-flex w-fit items-center gap-2 font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
+					>
+						<FaArrowLeft size={11} />
+						{d.cuaderno.volver}
+					</Link>
+					<Link
+						href={localizedPath(lang, "/")}
+						className='font-pieza text-[10px] uppercase tracking-[.18em] text-mielina transition-colors duration-200 ease-impulso hover:text-impulso'
+					>
+						Joaquín Mussi
+					</Link>
+				</div>
 
 				<Suspense fallback={<PostSkeleton />}>
-					<PostContent slug={slug} />
+					<PostContent slug={slug} lang={lang} />
 				</Suspense>
 			</div>
 		</main>
