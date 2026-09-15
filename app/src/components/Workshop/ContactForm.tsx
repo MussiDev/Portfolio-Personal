@@ -12,6 +12,7 @@ import React, {
 import emailjs from "@emailjs/browser";
 
 import type { Language } from "../../../../entities/i18n";
+import { shouldBlockSubmission } from "./captchaGate";
 
 const ReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
@@ -99,7 +100,9 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 		async (_prev, formData) => {
 			if (formData.get("lastName")) return { ok: true, message: c.ok };
 
-			if (sitekey && !captchaOk) return { ok: false, message: c.captcha };
+			if (shouldBlockSubmission(sitekey, captchaOk)) {
+				return { ok: false, message: c.captcha };
+			}
 
 			const serviceId = process.env.NEXT_PUBLIC_SERVICE_ID;
 			const templateId = process.env.NEXT_PUBLIC_TEMPLATE_ID;

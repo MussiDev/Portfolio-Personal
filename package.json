@@ -11,7 +11,8 @@
 		"start": "next start",
 		"lint": "next lint",
 		"brain": "node scripts/prepare-brain.mjs",
-		"test": "node --experimental-strip-types --test entities/i18n.test.ts app/src/common/binFormat.test.ts app/src/components/Blog/excerpt.test.ts"
+		"test": "node --experimental-strip-types --test entities/i18n.test.ts app/src/common/binFormat.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Workshop/captchaGate.test.ts",
+		"smoke": "node scripts/smoke-test.mjs"
 	},
 	"dependencies": {
 		"@emailjs/browser": "^4.2.0",
