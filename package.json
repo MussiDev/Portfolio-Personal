@@ -11,7 +11,7 @@
 		"start": "next start",
 		"lint": "eslint .",
 		"brain": "node --experimental-strip-types scripts/prepare-brain.mjs",
-		"test": "node --experimental-strip-types --test entities/i18n.test.ts entities/jsonLd.test.ts app/src/common/binFormat.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Blog/postDate.test.ts app/src/components/Workshop/captchaGate.test.ts",
+		"test": "node --experimental-strip-types --test entities/i18n.test.ts entities/jsonLd.test.ts entities/schemas.test.ts app/src/common/binFormat.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Blog/postDate.test.ts app/src/components/Workshop/captchaGate.test.ts",
 		"smoke": "node scripts/smoke-test.mjs"
 	},
 	"dependencies": {
@@ -30,7 +30,8 @@
 		"sanity": "^5.11.0",
 		"sanity-plugin-markdown": "^8.0.5",
 		"three": "^0.186.0",
-		"typescript": "5.3.3"
+		"typescript": "5.3.3",
+		"zod": "^4.6.5"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.3.7",

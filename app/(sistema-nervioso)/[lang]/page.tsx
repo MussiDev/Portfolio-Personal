@@ -3,8 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { t, type Language, type LocalizedText } from "../../../entities/i18n";
+import { t, type Language } from "../../../entities/i18n";
 import { localizedPath } from "../../../entities/i18n";
+import {
+	CertificationsSchema,
+	CompaniesSchema,
+	DescartesSchema,
+	LanguageItemsSchema,
+	RecommendationsSchema,
+	WorkProjectsSchema,
+	type Company,
+	type Role,
+} from "../../../entities/schemas";
 import LanguageSwitch from "../../src/common/LanguageSwitch";
 import { alternates } from "../../src/i18n/meta";
 import { getDict } from "../../src/i18n/dict";
@@ -14,7 +24,7 @@ import { postsQuery } from "../../../sanity/lib/queries";
 import certifications from "../../../api/certifications.json";
 import experienceItems from "../../../api/experienceItems.json";
 import languages from "../../../api/languages.json";
-import discardedData from "../../../api/descartes.json";
+import discardedDataRaw from "../../../api/descartes.json";
 import recommendations from "../../../api/recommendations.json";
 import workProjects from "../../../api/workProjects.json";
 import { STATUS_LABEL, getProjects, stagesWritten } from "../../src/common/projects";
@@ -44,20 +54,6 @@ type Post = {
 	publishedAt: string;
 	tags?: string[];
 };
-type Role = {
-	position: string;
-	time: string;
-	description: Record<string, string>;
-	highlights?: Record<string, string[]>;
-};
-type Company = {
-	company: string;
-	totalTime?: string;
-	time?: string;
-	position?: string;
-	description?: Record<string, string>;
-	roles?: Role[];
-};
 
 const normalize = (e: Company): { period: string; roles: Role[] } => ({
 	period: e.totalTime ?? e.time ?? "",
@@ -69,29 +65,8 @@ const normalize = (e: Company): { period: string; roles: Role[] } => ({
 		},
 	],
 });
-type Project = {
-	id: number;
-	name: string;
-	company: string;
-	period: string;
-	description: string;
-	skills: string[];
-};
-type Recommendation = {
-	id: number;
-	name: string;
-	role: string;
-	relation: LocalizedText;
-	date: string;
-	text: LocalizedText;
-};
-type Certification = {
-	id: number;
-	platform: string;
-	name: string;
-	date: string;
-};
-type LanguageItem = { id: number; nombre: LocalizedText; nivel: LocalizedText };
+
+const discardedData = DescartesSchema.parse(discardedDataRaw);
 
 const STACK = [
 	"Next.js",
@@ -177,11 +152,11 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 	} catch {
 		posts = [];
 	}
-	const companies = experienceItems as Company[];
-	const projects = workProjects as Project[];
-	const recommendationList = recommendations as Recommendation[];
-	const certificationList = certifications as Certification[];
-	const languageItems = languages as LanguageItem[];
+	const companies = CompaniesSchema.parse(experienceItems);
+	const projects = WorkProjectsSchema.parse(workProjects);
+	const recommendationList = RecommendationsSchema.parse(recommendations);
+	const certificationList = CertificationsSchema.parse(certifications);
+	const languageItems = LanguageItemsSchema.parse(languages);
 
 	const companiesCount = `${companies.length} ${d.ui.empresas}`;
 	const projectsCount = `${projects.length} ${d.ui.proyectos}`;
