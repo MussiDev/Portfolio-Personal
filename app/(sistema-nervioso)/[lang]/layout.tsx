@@ -8,6 +8,7 @@ import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import Cursor from "../../src/common/Cursor";
 import { getDict } from "../../src/i18n/dict";
 import { LANGUAGES, isLanguage, type Language } from "../../../entities/i18n";
+import { SITE_URL } from "../../../entities/site";
 
 const label = Archivo({
 	subsets: ["latin"],
@@ -30,7 +31,7 @@ const mono = JetBrains_Mono({
 	display: "swap",
 });
 
-const BASE_URL = "https://joaquinmussi.vercel.app";
+const BASE_URL = SITE_URL;
 const OG_LOCALE: Record<Language, string> = { es: "es_AR", en: "en_US" };
 
 export const generateStaticParams = () => LANGUAGES.map((lang) => ({ lang }));
@@ -134,6 +135,7 @@ const NervousSystemLayout = async ({
 }) => {
 	const { lang } = await params;
 	if (!isLanguage(lang)) notFound();
+	const d = getDict(lang);
 
 	return (
 		<html
@@ -146,7 +148,7 @@ const NervousSystemLayout = async ({
 					href='#paso-1'
 					className='sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-impulso focus:px-4 focus:py-2 focus:font-rotulo focus:text-xs focus:font-bold focus:uppercase focus:tracking-[.12em] focus:text-tejido'
 				>
-					Ir al contenido
+					{d.irAlContenido}
 				</a>
 				<script dangerouslySetInnerHTML={{ __html: BOOTSTRAP_SCRIPT }} />
 				<script

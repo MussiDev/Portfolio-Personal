@@ -59,6 +59,9 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 Crear un `.env.local` en la raíz:
 
 ```env
+# Sitio
+NEXT_PUBLIC_SITE_URL=https://joaquinmussi.com.ar
+
 # Sanity
 NEXT_PUBLIC_SANITY_PROJECT_ID=tu_project_id
 NEXT_PUBLIC_SANITY_DATASET=production
@@ -72,6 +75,8 @@ NEXT_PUBLIC_PUBLIC_KEY=tu_public_key
 # Google reCAPTCHA
 NEXT_PUBLIC_FIRSTCAPTCHA=tu_site_key
 ```
+
+`NEXT_PUBLIC_SITE_URL` define el dominio canónico usado en metadata, sitemap, robots y OG images (`entities/site.ts`). Si no está seteada, cae a `https://joaquinmussi.com.ar`. **Tiene que estar seteada en Railway** con el dominio de producción real — si apunta a un dominio que no resuelve, el canonical, el sitemap y las OG images quedan rotos en producción.
 
 `NEXT_PUBLIC_SANITY_PROJECT_ID` y `NEXT_PUBLIC_SANITY_DATASET` también deben cargarse como **Secrets** del repositorio en GitHub (Settings → Secrets and variables → Actions) para que el paso de build del CI pueda leer el contenido de Sanity.
 
