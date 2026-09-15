@@ -9,6 +9,7 @@ import Cursor from "../../src/common/Cursor";
 import { getDict } from "../../src/i18n/dict";
 import { LANGUAGES, isLanguage, type Language } from "../../../entities/i18n";
 import { SITE_URL } from "../../../entities/site";
+import { toJsonLdScript } from "../../../entities/jsonLd";
 
 const label = Archivo({
 	subsets: ["latin"],
@@ -153,7 +154,7 @@ const NervousSystemLayout = async ({
 				<script dangerouslySetInnerHTML={{ __html: BOOTSTRAP_SCRIPT }} />
 				<script
 					type='application/ld+json'
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(lang)) }}
+					dangerouslySetInnerHTML={{ __html: toJsonLdScript(jsonLd(lang)) }}
 				/>
 				{children}
 				<Cursor />

@@ -1,4 +1,3 @@
-import { FaArrowLeft } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -11,16 +10,16 @@ import ReactMarkdown from "react-markdown";
 import { Suspense, cache } from "react";
 import { client } from "../../../../../sanity/lib/client";
 import dynamic from "next/dynamic";
-import { format } from "date-fns";
 import {
 	DEFAULT_LANGUAGE,
 	localizedPath,
 	type Language,
 } from "../../../../../entities/i18n";
 import { SITE_URL } from "../../../../../entities/site";
+import { toJsonLdScript } from "../../../../../entities/jsonLd";
+import { formatPostDate } from "../../../../src/components/Blog/postDate";
 import { getDict } from "../../../../src/i18n/dict";
 import { alternates } from "../../../../src/i18n/meta";
-import { es } from "date-fns/locale";
 import { notFound } from "next/navigation";
 import { postBySlugQuery } from "../../../../../sanity/lib/queries";
 import { urlFor } from "../../../../../sanity/lib/image";
@@ -209,7 +208,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 		<article id='post-article' className='membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
 			<script
 				type='application/ld+json'
-				dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				dangerouslySetInnerHTML={{ __html: toJsonLdScript(jsonLd) }}
 			/>
 			<h1 className='m-0 mb-4 text-3xl leading-tight md:text-5xl'>
 				{post.title}
@@ -217,11 +216,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 
 			{post.publishedAt && (
 				<p className='m-0 mb-8 font-pieza text-xs text-sinapsis'>
-					{lang === "en"
-						? format(new Date(post.publishedAt), "MMMM d, yyyy")
-						: format(new Date(post.publishedAt), "d 'de' MMMM 'de' yyyy", {
-								locale: es,
-							})}
+					{formatPostDate(post.publishedAt, lang)}
 				</p>
 			)}
 
@@ -323,7 +318,15 @@ export default async function PostPage({ params }: PageProps) {
 						href={localizedPath(lang, "/#paso-4")}
 						className='inline-flex w-fit items-center gap-2 font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
 					>
-						<FaArrowLeft size={11} />
+						<svg
+							width='11'
+							height='11'
+							viewBox='0 0 448 512'
+							fill='currentColor'
+							aria-hidden='true'
+						>
+							<path d='M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z' />
+						</svg>
 						{d.blog.volver}
 					</Link>
 					<Link
