@@ -231,10 +231,19 @@ const NervousSystem = ({
 		const reducedMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
+		// El cordón (streamRef) es `hidden md:block`: en mobile no existe
+		// visualmente, así que no tiene sentido recorrer el DOM y mutar
+		// atributos SVG por él en cada frame.
+		const desktopMQ = window.matchMedia("(min-width: 768px)");
 
 		let alive = true;
 		let idleTimer = 0;
 		let t = 0;
+		// document.querySelector solo se re-resuelve cuando cambia la sección
+		// activa, no en cada frame — la sección activa cambia con el scroll,
+		// no a 60fps.
+		let cachedFor: number | null | undefined;
+		let cachedDropTarget: HTMLElement | null = null;
 		const draw = () => {
 			if (!alive) return;
 			const stream = streamRef.current;
@@ -242,12 +251,22 @@ const NervousSystem = ({
 			const i = activeRef.current;
 			const anchor = anchorRef.current;
 
-			const dropTarget =
-				i !== null && sections[i].step !== undefined
-					? document.querySelector<HTMLElement>(
-							`#paso-${sections[i].step} [data-drop-target]`,
-						)
-					: null;
+			if (!desktopMQ.matches) {
+				stream?.setAttribute("opacity", "0");
+				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
+				return;
+			}
+
+			if (cachedFor !== i) {
+				cachedFor = i;
+				cachedDropTarget =
+					i !== null && sections[i].step !== undefined
+						? document.querySelector<HTMLElement>(
+								`#paso-${sections[i].step} [data-drop-target]`,
+							)
+						: null;
+			}
+			const dropTarget = cachedDropTarget;
 
 			if (!stream || !cord || !anchor.ready || !dropTarget) {
 				stream?.setAttribute("opacity", "0");

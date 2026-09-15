@@ -28,6 +28,17 @@ const Cursor = () => {
 		let inside = false;
 		let active = false;
 
+		// El lerp converge en pocos frames; una vez que ax/ay alcanzan a x/y
+		// no hay nada que redibujar. En vez de escribir el mismo transform a
+		// 60fps para siempre, el loop se detiene al asentarse y el próximo
+		// pointermove lo despierta.
+		const SETTLE_EPS = 0.05;
+		let raf = 0;
+
+		const wake = () => {
+			if (!raf) raf = requestAnimationFrame(draw);
+		};
+
 		const onMove = (e: PointerEvent) => {
 			x = e.clientX;
 			y = e.clientY;
@@ -42,6 +53,7 @@ const Cursor = () => {
 			active = !!target?.closest?.(
 				"a, button, summary, input, textarea, select, [role='button']",
 			);
+			wake();
 		};
 
 		const onLeave = () => {
@@ -51,7 +63,7 @@ const Cursor = () => {
 		};
 
 		let alive = true;
-		const draw = () => {
+		const draw = (): void => {
 			if (!alive) return;
 			ax += (x - ax) * 0.22;
 			ay += (y - ay) * 0.22;
@@ -60,7 +72,9 @@ const Cursor = () => {
 			dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
 			ring.dataset.activo = active ? "si" : "no";
 			dot.dataset.activo = active ? "si" : "no";
-			requestAnimationFrame(draw);
+
+			const settled = Math.abs(x - ax) < SETTLE_EPS && Math.abs(y - ay) < SETTLE_EPS;
+			raf = settled ? 0 : requestAnimationFrame(draw);
 		};
 		draw();
 
@@ -70,6 +84,7 @@ const Cursor = () => {
 
 		return () => {
 			alive = false;
+			if (raf) cancelAnimationFrame(raf);
 			document.documentElement.classList.remove("cursor-propio");
 			window.removeEventListener("pointermove", onMove);
 			document.removeEventListener("pointerleave", onLeave);
