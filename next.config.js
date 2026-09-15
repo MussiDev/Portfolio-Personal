@@ -22,16 +22,26 @@ const CSP = [
 	"img-src 'self' data: https://cdn.sanity.io",
 	"connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://api.emailjs.com https://www.google.com https://fonts.googleapis.com",
 	"frame-src https://www.google.com",
+	"frame-ancestors 'none'",
+	"object-src 'none'",
 	"base-uri 'self'",
 	"form-action 'self'",
+	"upgrade-insecure-requests",
 ].join("; ");
 
-const securityHeaders = [
-	{ key: "Content-Security-Policy", value: CSP },
+// Headers sin relación con qué puede cargar la página (a diferencia de la
+// CSP, que sí depende de eso): seguras de aplicar también a /studio, que
+// antes quedaba con CERO headers de seguridad — incluido Referrer-Policy,
+// justo la ruta donde el secret viaja en la query string.
+const baseSecurityHeaders = [
+	{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 	{ key: "X-Content-Type-Options", value: "nosniff" },
 	{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
 	{ key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+	{ key: "X-Frame-Options", value: "DENY" },
 ];
+
+const securityHeaders = [{ key: "Content-Security-Policy", value: CSP }, ...baseSecurityHeaders];
 
 const nextConfig = {
 	reactStrictMode: true,
@@ -53,6 +63,12 @@ const nextConfig = {
 	async headers() {
 		return [
 			{ source: "/((?!studio).*)", headers: securityHeaders },
+			// /studio no lleva la CSP completa (Sanity Studio necesita cargar
+			// scripts/estilos/conexiones propias que no verifiqué una por una),
+			// pero sí el resto: sin esto, /studio quedaba sin Referrer-Policy
+			// justo en la ruta que autentica por query string (?secret=).
+			{ source: "/studio", headers: baseSecurityHeaders },
+			{ source: "/studio/:path*", headers: baseSecurityHeaders },
 			{
 				// Nombre hasheado por contenido (scripts/prepare-brain.mjs): un
 				// cambio de modelo siempre produce un nombre nuevo, así que
