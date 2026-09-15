@@ -131,6 +131,7 @@ const Brain3D = ({
 		const resizeObserver = new ResizeObserver(() => {
 			measure();
 			mapSteps();
+			measureLayout();
 		});
 		resizeObserver.observe(mount);
 
@@ -348,6 +349,32 @@ const Brain3D = ({
 			});
 		};
 		mapSteps();
+
+		// Layout cacheado, refrescado solo en scroll/resize en vez de leído
+		// con getBoundingClientRect() en cada frame de animate(): eso forzaba
+		// hasta ~12 reflows sincrónicos por frame (uno por step visible, uno
+		// por el mount, uno por cada botón de región) incluso con la página
+		// completamente quieta.
+		let mountRect: DOMRect = mount.getBoundingClientRect();
+		let stepRects: { index: number; rect: DOMRect }[] = [];
+		let buttonRects: (DOMRect | null)[] = [];
+		const measureLayout = () => {
+			mountRect = mount.getBoundingClientRect();
+			stepRects = steps.map(({ index, el }) => ({ index, rect: el.getBoundingClientRect() }));
+			buttonRects = sections.map((_section, i) => labelsRef.current[i]?.getBoundingClientRect() ?? null);
+		};
+		measureLayout();
+
+		let scrollRequestId = 0;
+		const onScroll = () => {
+			if (scrollRequestId) return;
+			scrollRequestId = requestAnimationFrame(() => {
+				scrollRequestId = 0;
+				measureLayout();
+			});
+		};
+		window.addEventListener("scroll", onScroll, { passive: true });
+
 		const targetCamera = new THREE.Vector3();
 		const targetLookAt = new THREE.Vector3();
 		const currentLookAt = new THREE.Vector3(0, 0, 0);
@@ -357,8 +384,8 @@ const Brain3D = ({
 			sections.forEach((_section, i) => {
 				const line = calloutsRef.current[i];
 				const target = targetsRef.current[i];
-				const button = labelsRef.current[i];
-				if (!line || !target || !button) return;
+				const b = buttonRects[i];
+				if (!line || !target || !b) return;
 
 				vector
 					.copy(anchors[i])
@@ -367,7 +394,6 @@ const Brain3D = ({
 				const ax = (vector.x * 0.5 + 0.5) * rect.width;
 				const ay = (-vector.y * 0.5 + 0.5) * rect.height;
 
-				const b = button.getBoundingClientRect();
 				const isLeft = i < half;
 				const bx = (isLeft ? b.right : b.left) - rect.left;
 				const by = b.top + b.height / 2 - rect.top;
@@ -439,8 +465,7 @@ const Brain3D = ({
 			const vh = window.innerHeight;
 			let weight = 0;
 			blend.set(0, 0, 0);
-			for (const { index, el } of steps) {
-				const r = el.getBoundingClientRect();
+			for (const { index, rect: r } of stepRects) {
 				const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
 				const w = visible / vh;
 				if (w <= 0.001) continue;
@@ -533,9 +558,8 @@ const Brain3D = ({
 			camera.lookAt(currentLookAt);
 
 			composer.render();
-			const rect = mount.getBoundingClientRect();
-			if (inHeroRef.current) drawCallouts(rect);
-			if (weight > 0.001 || choosing) publishAnchor(rect, anchorWorld);
+			if (inHeroRef.current) drawCallouts(mountRect);
+			if (weight > 0.001 || choosing) publishAnchor(mountRect, anchorWorld);
 			frame += 1;
 			requestAnimationFrame(animate);
 		};
@@ -562,6 +586,8 @@ const Brain3D = ({
 
 		return () => {
 			alive = false;
+			if (scrollRequestId) cancelAnimationFrame(scrollRequestId);
+			window.removeEventListener("scroll", onScroll);
 			visibilityObserver.disconnect();
 			document.removeEventListener("visibilitychange", onVisibilityChange);
 			resizeObserver.disconnect();
