@@ -6,6 +6,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
+import { BRAIN_BIN_PATH } from "./brainAsset";
 
 export type Section = {
 	label: string;
@@ -143,7 +144,7 @@ const Brain3D = ({
 		const isVisible = () => intersecting && pageVisible;
 
 		const loadTissue = async (): Promise<ArrayBuffer | null> => {
-			const response = await fetch("/image/cerebro.bin");
+			const response = await fetch(BRAIN_BIN_PATH);
 			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 			if (!response.body) return response.arrayBuffer();
 

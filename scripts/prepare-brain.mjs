@@ -2,9 +2,12 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 
 const INPUT = "assets/brain_areas.glb";
-const OUTPUT = "public/image/cerebro.bin";
+const OUTPUT_DIR = "public/image";
+const OUTPUT_PREFIX = "cerebro";
+const GENERATED_CONST = "app/src/common/brainAsset.ts";
 
 const POINTS = 9000;
 const EDGE_THRESHOLD = 22;
@@ -77,8 +80,26 @@ new GLTFLoader().parse(
 			output.writeUInt16LE(Math.min(65535, Math.max(0, q)), HEADER_SIZE + i * 2);
 		}
 
-		fs.mkdirSync(path.dirname(OUTPUT), { recursive: true });
-		fs.writeFileSync(OUTPUT, output);
+		// Nombre con hash de contenido: permite servir el .bin con caché
+		// inmutable de un año (next.config.js) sin arriesgar servir un
+		// binario viejo la próxima vez que el modelo cambie.
+		const hash = crypto.createHash("sha256").update(output).digest("hex").slice(0, 10);
+		const filename = `${OUTPUT_PREFIX}.${hash}.bin`;
+		const outputPath = path.join(OUTPUT_DIR, filename);
+
+		fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+		for (const f of fs.readdirSync(OUTPUT_DIR)) {
+			if (f.startsWith(`${OUTPUT_PREFIX}.`) && f.endsWith(".bin") && f !== filename) {
+				fs.unlinkSync(path.join(OUTPUT_DIR, f));
+			}
+		}
+		fs.writeFileSync(outputPath, output);
+
+		fs.writeFileSync(
+			GENERATED_CONST,
+			"// Generado por scripts/prepare-brain.mjs — no editar a mano.\n" +
+				`export const BRAIN_BIN_PATH = "/image/${filename}";\n`,
+		);
 
 		const before = fs.statSync(INPUT).size;
 		const after = output.length;
@@ -86,7 +107,7 @@ new GLTFLoader().parse(
 		console.log(`points:  ${pointCount}`);
 		console.log(`edges:   ${edgeCount / 2} segments (${edgeCount} vertices)`);
 		console.log(`before:  ${kb(before)}  (${INPUT})`);
-		console.log(`after:   ${kb(after)}  (${OUTPUT})`);
+		console.log(`after:   ${kb(after)}  (${outputPath})`);
 		console.log(`savings: ${(100 - (after / before) * 100).toFixed(1)}%`);
 	},
 	(e) => {

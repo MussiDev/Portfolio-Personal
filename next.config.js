@@ -51,7 +51,18 @@ const nextConfig = {
 		return siteRedirects;
 	},
 	async headers() {
-		return [{ source: "/((?!studio).*)", headers: securityHeaders }];
+		return [
+			{ source: "/((?!studio).*)", headers: securityHeaders },
+			{
+				// Nombre hasheado por contenido (scripts/prepare-brain.mjs): un
+				// cambio de modelo siempre produce un nombre nuevo, así que
+				// servir este archivo como inmutable por un año es seguro.
+				source: "/image/cerebro.:hash([a-f0-9]{10}).bin",
+				headers: [
+					{ key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+				],
+			},
+		];
 	},
 };
 

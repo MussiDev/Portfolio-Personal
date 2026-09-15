@@ -22,7 +22,7 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 
 - **Cerebro 3D como navegación** — seis regiones del cerebro son la navegación principal del sitio; el hover dispara una línea guía y la cámara vuela a esa región
 - **Sistema nervioso continuo** — un cordón de señal con pulso/flujo conecta el cerebro con el contenido a medida que se scrollea
-- **Binario propio para el modelo 3D** — `scripts/prepare-brain.mjs` convierte el `.glb` fuente (3 MB) a un binario cuantizado (`cerebro.bin`, ~460 KB) que se stream-parsea en el cliente
+- **Binario propio para el modelo 3D** — `scripts/prepare-brain.mjs` convierte el `.glb` fuente (3 MB) a un binario cuantizado (`cerebro.<hash>.bin`, ~460 KB) que se stream-parsea en el cliente; el nombre lleva un hash de contenido para poder servirlo con caché inmutable de un año
 - **Bilingüe (ES/EN)** — español sin prefijo, inglés bajo `/en`, con `hreflang` y `<html lang>` correctos por ruta
 - **Blog conectado a Sanity** — posts en Portable Text o Markdown, con diagramas Mermaid embebidos
 - **OG image dinámica y localizada** — `next/og`, prerenderizada por idioma
@@ -49,7 +49,7 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 ├── api/                             # Datos JSON (experiencia, proyectos, recomendaciones)
 ├── entities/                        # Tipos de dominio + tests puros (node:test)
 ├── sanity/                          # Cliente, queries y schema de Sanity
-├── scripts/prepare-brain.mjs        # Genera public/image/cerebro.bin desde el .glb
+├── scripts/prepare-brain.mjs        # Genera public/image/cerebro.<hash>.bin y app/src/common/brainAsset.ts
 ├── proxy.ts                         # Enrutamiento por idioma + gate de /studio (convención "proxy" de Next 16, reemplaza a middleware.ts)
 └── .github/workflows/ci.yml         # tsc + tests + build en CI
 ```
