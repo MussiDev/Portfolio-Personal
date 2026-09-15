@@ -9,8 +9,6 @@ import React, {
 	useState,
 } from "react";
 
-import emailjs from "@emailjs/browser";
-
 import type { Language } from "../../../../entities/i18n";
 import { shouldBlockSubmission } from "./captchaGate";
 
@@ -113,6 +111,7 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 			}
 
 			try {
+				const { default: emailjs } = await import("@emailjs/browser");
 				await emailjs.send(
 					serviceId,
 					templateId,
