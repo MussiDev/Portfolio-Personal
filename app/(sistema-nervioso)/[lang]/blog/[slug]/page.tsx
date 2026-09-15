@@ -179,6 +179,27 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 
 	if (!post) return notFound();
 
+	const d = getDict(lang);
+	const breadcrumbJsonLd = {
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		itemListElement: [
+			{ "@type": "ListItem", position: 1, name: "Joaquín Mussi", item: BASE_URL },
+			{
+				"@type": "ListItem",
+				position: 2,
+				name: d.blog.titulo,
+				item: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, "/#paso-4")}`,
+			},
+			{
+				"@type": "ListItem",
+				position: 3,
+				name: post.title,
+				item: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, `/blog/${slug}`)}`,
+			},
+		],
+	};
+
 	const jsonLd = {
 		"@context": "https://schema.org",
 		"@type": "BlogPosting",
@@ -209,6 +230,10 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 			<script
 				type='application/ld+json'
 				dangerouslySetInnerHTML={{ __html: toJsonLdScript(jsonLd) }}
+			/>
+			<script
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{ __html: toJsonLdScript(breadcrumbJsonLd) }}
 			/>
 			<h1 className='m-0 mb-4 text-3xl leading-tight md:text-5xl'>
 				{post.title}

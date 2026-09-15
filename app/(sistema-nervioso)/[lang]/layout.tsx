@@ -100,14 +100,23 @@ export const generateMetadata = async ({
 	};
 };
 
+// Solo datos ya públicos en el sitio (el mailto: del paso de contacto, el
+// nombre del empleador que ya aparece en la tabla de Contacto). Sin
+// address: no está declarada en ningún lado del sitio y no hay una fuente
+// real para ella — un schema inventado es peor que uno incompleto.
 const jsonLd = (lang: Language) => ({
 	"@context": "https://schema.org",
 	"@type": "Person",
 	name: "Joaquín Mussi",
 	url: BASE_URL,
+	email: "joakoomussi@gmail.com",
 	jobTitle: "Frontend Engineer",
 	inLanguage: lang,
 	sameAs: ["https://github.com/MussiDev", "https://www.linkedin.com/in/joaquinmussi/"],
+	worksFor: {
+		"@type": "Organization",
+		name: "La Mutual de AMR",
+	},
 	knowsAbout: [
 		"Next.js",
 		"React",
@@ -124,6 +133,13 @@ const jsonLd = (lang: Language) => ({
 		"CI/CD",
 	],
 });
+
+const websiteJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	name: "Joaquín Mussi Portfolio",
+	url: BASE_URL,
+};
 
 const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si"`;
 
@@ -155,6 +171,10 @@ const NervousSystemLayout = async ({
 				<script
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{ __html: toJsonLdScript(jsonLd(lang)) }}
+				/>
+				<script
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{ __html: toJsonLdScript(websiteJsonLd) }}
 				/>
 				{children}
 				<Cursor />
