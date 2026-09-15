@@ -2,10 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
+import { useActiveStep } from "../hooks/useActiveStep";
+import { useHashCleanup } from "../hooks/useHashCleanup";
+import { useReveal } from "../hooks/useReveal";
+import { PARTICLES, useSignalCord } from "../hooks/useSignalCord";
+import { useStepKeyboard } from "../hooks/useStepKeyboard";
+import { useStepLinks } from "../hooks/useStepLinks";
 import BrainCanvas from "./BrainLazy";
 import type { Section } from "./Brain3D";
-
-const PARTICLES = 9;
 
 const NervousSystem = ({
 	sections,
@@ -35,16 +39,9 @@ const NervousSystem = ({
 	const anchorRef = useRef({ x: 0, y: 0, ready: false });
 
 	const [ready, setReady] = useState(false);
-
-	const [activeStep, setActiveStep] = useState<number | null>(null);
 	const [hover, setHover] = useState<number | null>(null);
 
 	const withStep = sections.filter((section) => section.step !== undefined);
-
-	const active = hover ?? activeStep;
-	const inHero = activeStep === null;
-	const activeRef = useRef<number | null>(active);
-	activeRef.current = active;
 
 	const goToStep = useCallback((step: number) => {
 		document.getElementById(`paso-${step}`)?.scrollIntoView({
@@ -57,6 +54,13 @@ const NervousSystem = ({
 			history.replaceState(null, "", window.location.pathname + window.location.search);
 		}
 	}, []);
+
+	const activeStep = useActiveStep(containerRef, sections, setHover);
+
+	const active = hover ?? activeStep;
+	const inHero = activeStep === null;
+	const activeRef = useRef<number | null>(active);
+	activeRef.current = active;
 
 	const go = useCallback(
 		(i: number) => {
@@ -71,247 +75,11 @@ const NervousSystem = ({
 		[sections, goToStep],
 	);
 
-	useEffect(() => {
-		if (!/^#paso-\d+$/.test(window.location.hash)) return;
-		history.replaceState(
-			null,
-			"",
-			window.location.pathname + window.location.search,
-		);
-	}, []);
-
-	useEffect(() => {
-		const onClick = (e: MouseEvent) => {
-			if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
-			const target = (e.target as HTMLElement | null)?.closest?.(
-				'a[href^="#paso-"]',
-			) as HTMLAnchorElement | null;
-			if (!target) return;
-			const step = Number(target.getAttribute("href")?.replace("#paso-", ""));
-			if (Number.isNaN(step)) return;
-			e.preventDefault();
-			setHover(null);
-			goToStep(step);
-		};
-		document.addEventListener("click", onClick);
-		return () => document.removeEventListener("click", onClick);
-	}, [goToStep]);
-
-	useEffect(() => {
-		const container = containerRef.current;
-		if (!container) return;
-
-		const steps = Array.from(
-			container.querySelectorAll<HTMLElement>("[data-step]"),
-		);
-		if (!steps.length) return;
-
-		let requestId = 0;
-		let litBadge: HTMLElement | null = null;
-		const measure = () => {
-			requestId = 0;
-			const vh = window.innerHeight;
-			let best: HTMLElement | null = null;
-			let maxVisible = 0;
-			for (const el of steps) {
-				const r = el.getBoundingClientRect();
-				const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
-				if (visible > maxVisible) {
-					maxVisible = visible;
-					best = el;
-				}
-			}
-			if (!best || maxVisible <= 0) return;
-
-			const n = Number(best.dataset.step);
-			const i = n === 0 ? null : sections.findIndex((section) => section.step === n);
-			setActiveStep(i);
-			if (i !== null) setHover(null);
-
-			const nextBadge =
-				i !== null && sections[i].step !== undefined
-					? document.querySelector<HTMLElement>(
-							`#paso-${sections[i].step} [data-drop-target]`,
-						)
-					: null;
-			if (nextBadge !== litBadge) {
-				litBadge?.classList.remove("animate-disparo");
-				nextBadge?.classList.add("animate-disparo");
-				litBadge = nextBadge;
-			}
-		};
-
-		const onScroll = () => {
-			if (!requestId) requestId = requestAnimationFrame(measure);
-		};
-		measure();
-		window.addEventListener("scroll", onScroll, { passive: true });
-		window.addEventListener("resize", onScroll);
-		return () => {
-			if (requestId) cancelAnimationFrame(requestId);
-			litBadge?.classList.remove("animate-disparo");
-			window.removeEventListener("scroll", onScroll);
-			window.removeEventListener("resize", onScroll);
-		};
-	}, [sections]);
-
-	useEffect(() => {
-		const blocks = Array.from(
-			document.querySelectorAll<HTMLElement>("[data-revelar]"),
-		);
-		if (!blocks.length) return;
-
-		const reveal = (el: HTMLElement) => el.classList.add("visible");
-
-		if (typeof IntersectionObserver === "undefined") {
-			blocks.forEach(reveal);
-			return;
-		}
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const e of entries) {
-					if (!e.isIntersecting) continue;
-					reveal(e.target as HTMLElement);
-					observer.unobserve(e.target);
-				}
-			},
-			{ rootMargin: "0px 0px -12% 0px", threshold: 0.08 },
-		);
-		blocks.forEach((b) => observer.observe(b));
-
-		const safetyTimer = window.setTimeout(() => blocks.forEach(reveal), 2500);
-		return () => {
-			window.clearTimeout(safetyTimer);
-			observer.disconnect();
-		};
-	}, []);
-
-	useEffect(() => {
-		const safetyTimer = window.setTimeout(() => {
-			document
-				.querySelectorAll<HTMLElement>(".entra")
-				.forEach((el) => el.classList.remove("entra"));
-		}, 2500);
-		return () => window.clearTimeout(safetyTimer);
-	}, []);
-
-	useEffect(() => {
-		const onKeyDown = (e: KeyboardEvent) => {
-			const target = e.target as HTMLElement | null;
-			if (
-				target?.closest("input, textarea, select, [contenteditable='true']")
-			) {
-				return;
-			}
-			const container = containerRef.current;
-			const withinScope =
-				target === document.body ||
-				(!!container && (target === container || container.contains(target)));
-			if (!withinScope) return;
-
-			const i = activeRef.current;
-			if (e.key === "Enter" && i !== null && !e.metaKey && !e.ctrlKey) {
-				if (target?.closest("a, button")) return;
-				e.preventDefault();
-				const s = sections[i];
-				window.open(s.href, s.external ? "_blank" : "_self");
-			}
-			if (e.key === "Backspace") {
-				e.preventDefault();
-				setHover(null);
-				goToStep(0);
-			}
-		};
-		window.addEventListener("keydown", onKeyDown);
-		return () => window.removeEventListener("keydown", onKeyDown);
-	}, [sections, goToStep]);
-
-	useEffect(() => {
-		const reducedMotion = window.matchMedia(
-			"(prefers-reduced-motion: reduce)",
-		).matches;
-		// El cordón (streamRef) es `hidden md:block`: en mobile no existe
-		// visualmente, así que no tiene sentido recorrer el DOM y mutar
-		// atributos SVG por él en cada frame.
-		const desktopMQ = window.matchMedia("(min-width: 768px)");
-
-		let alive = true;
-		let idleTimer = 0;
-		let t = 0;
-		// document.querySelector solo se re-resuelve cuando cambia la sección
-		// activa, no en cada frame — la sección activa cambia con el scroll,
-		// no a 60fps.
-		let cachedFor: number | null | undefined;
-		let cachedDropTarget: HTMLElement | null = null;
-		const draw = () => {
-			if (!alive) return;
-			const stream = streamRef.current;
-			const cord = cordRef.current;
-			const i = activeRef.current;
-			const anchor = anchorRef.current;
-
-			if (!desktopMQ.matches) {
-				stream?.setAttribute("opacity", "0");
-				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
-				return;
-			}
-
-			if (cachedFor !== i) {
-				cachedFor = i;
-				cachedDropTarget =
-					i !== null && sections[i].step !== undefined
-						? document.querySelector<HTMLElement>(
-								`#paso-${sections[i].step} [data-drop-target]`,
-							)
-						: null;
-			}
-			const dropTarget = cachedDropTarget;
-
-			if (!stream || !cord || !anchor.ready || !dropTarget) {
-				stream?.setAttribute("opacity", "0");
-				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
-				return;
-			}
-
-			const r = dropTarget.getBoundingClientRect();
-			const hx = r.left + r.width / 2;
-			const hy = r.top + r.height / 2;
-			if (hy < -40 || hy > window.innerHeight + 40) {
-				stream.setAttribute("opacity", "0");
-				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
-				return;
-			}
-			stream.setAttribute("opacity", "1");
-
-			const cx = (anchor.x + hx) / 2;
-			const cy = (anchor.y + hy) / 2 + Math.abs(hx - anchor.x) * 0.18;
-			cord.setAttribute(
-				"d",
-				`M ${anchor.x} ${anchor.y} Q ${cx} ${cy} ${hx} ${hy}`,
-			);
-
-			if (!reducedMotion) t = (t + 0.006) % 1;
-			particlesRef.current.forEach((particle, k) => {
-				if (!particle) return;
-				const u = (t + k / PARTICLES) % 1;
-				const mu = 1 - u;
-				const x = mu * mu * anchor.x + 2 * mu * u * cx + u * u * hx;
-				const y = mu * mu * anchor.y + 2 * mu * u * cy + u * u * hy;
-				particle.setAttribute("cx", String(x));
-				particle.setAttribute("cy", String(y));
-				particle.setAttribute("opacity", String(Math.sin(u * Math.PI) * 0.9));
-				particle.setAttribute("r", String(1.4 + Math.sin(u * Math.PI) * 1.8));
-			});
-
-			requestAnimationFrame(draw);
-		};
-		draw();
-		return () => {
-			alive = false;
-			window.clearTimeout(idleTimer);
-		};
-	}, [sections]);
+	useHashCleanup();
+	useStepLinks(goToStep, setHover);
+	useReveal();
+	useStepKeyboard(containerRef, activeRef, sections, goToStep, setHover);
+	useSignalCord(streamRef, cordRef, particlesRef, anchorRef, activeRef, sections);
 
 	const liftVeil = useCallback(() => setReady(true), []);
 
