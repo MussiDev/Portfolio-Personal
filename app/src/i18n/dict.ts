@@ -28,9 +28,9 @@ const DICT = {
 		},
 		blog: {
 			titulo: "Blog",
-			glosa: "notas de laboratorio",
+			glosa: "notas técnicas",
 			bajada:
-				"Hipótesis, experimento y resultado. Lo que aprendí probando, no lo que leí.",
+				"Hacia dónde va el desarrollo con IA y sistemas basados en LLMs, visto desde el día a día de un frontend engineer.",
 			vacio: "El blog todavía está en blanco.",
 			volver: "Volver al blog",
 		},
@@ -117,9 +117,9 @@ const DICT = {
 		},
 		blog: {
 			titulo: "Blog",
-			glosa: "lab notes",
+			glosa: "technical notes",
 			bajada:
-				"Hypothesis, experiment and result. What I learned by trying, not by reading.",
+				"Where AI-driven development and LLM-based systems are heading, seen from a frontend engineer's day-to-day.",
 			vacio: "The blog is still blank.",
 			volver: "Back to the blog",
 		},
