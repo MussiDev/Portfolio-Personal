@@ -12,7 +12,12 @@ import { Suspense, cache } from "react";
 import { client } from "../../../../../sanity/lib/client";
 import dynamic from "next/dynamic";
 import { format } from "date-fns";
-import { localizedPath, type Language } from "../../../../../entities/i18n";
+import {
+	DEFAULT_LANGUAGE,
+	localizedPath,
+	type Language,
+} from "../../../../../entities/i18n";
+import { SITE_URL } from "../../../../../entities/site";
 import { getDict } from "../../../../src/i18n/dict";
 import { alternates } from "../../../../src/i18n/meta";
 import { es } from "date-fns/locale";
@@ -48,7 +53,7 @@ interface PageProps {
 	params: Promise<{ slug: string; lang: Language }>;
 }
 
-const BASE_URL = "https://joaquinmussi.vercel.app";
+const BASE_URL = SITE_URL;
 
 const getPost = cache(
 	(slug: string): Promise<Post | null> => client.fetch(postBySlugQuery, { slug }),
@@ -149,11 +154,13 @@ export async function generateMetadata({ params }: PageProps) {
 	return {
 		title: `${post.title} — Joaquín Mussi`,
 		description,
-		alternates: alternates(lang, `/blog/${slug}`),
+		// El blog vive en Sanity solo en español: no declarar un hreflang "en"
+		// que no tiene traducción real detrás (ver proxy.ts).
+		alternates: alternates(lang, `/blog/${slug}`, false),
 		openGraph: {
 			title: post.title,
 			description,
-			url: `${BASE_URL}${localizedPath(lang, `/blog/${slug}`)}`,
+			url: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, `/blog/${slug}`)}`,
 			type: "article",
 			publishedTime: post.publishedAt,
 			authors: ["Joaquín Mussi"],
@@ -188,10 +195,11 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 			name: "Joaquín Mussi",
 			url: BASE_URL,
 		},
-		url: `${BASE_URL}${localizedPath(lang, `/blog/${slug}`)}`,
+		url: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, `/blog/${slug}`)}`,
 		datePublished: post.publishedAt ?? undefined,
 		dateModified: post.publishedAt ?? undefined,
-		inLanguage: lang,
+		// El contenido del blog es español, siempre — no lo que declare la ruta.
+		inLanguage: DEFAULT_LANGUAGE,
 		...(post.coverImage && {
 			image: urlFor(post.coverImage).width(1200).height(630).url(),
 		}),

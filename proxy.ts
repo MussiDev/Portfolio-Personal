@@ -6,6 +6,12 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 const OUTSIDE_LOCALE_ROUTING = ["/studio", "/api", "/_next"];
 
+// El blog vive solo en Sanity en español: no hay traducción real detrás de
+// /en/blog/*. Server rutas así en vez de servir contenido español bajo
+// <html lang="en"> (rompe WCAG 3.1.1 y le miente a Google con un hreflang
+// que no existe).
+const UNTRANSLATED_SEGMENTS = ["/blog"];
+
 const studio = (req: NextRequest) => {
 	const { searchParams } = req.nextUrl;
 	const secret = process.env.STUDIO_SECRET;
@@ -38,6 +44,19 @@ export function proxy(req: NextRequest) {
 
 	if (OUTSIDE_LOCALE_ROUTING.some((p) => pathname.startsWith(p)) || pathname.includes(".")) {
 		return NextResponse.next();
+	}
+
+	for (const lang of LANGUAGES) {
+		if (lang === DEFAULT_LANGUAGE) continue;
+		const prefix = `/${lang}`;
+		const isUntranslated = UNTRANSLATED_SEGMENTS.some(
+			(seg) => pathname === `${prefix}${seg}` || pathname.startsWith(`${prefix}${seg}/`),
+		);
+		if (isUntranslated) {
+			const url = req.nextUrl.clone();
+			url.pathname = pathname.slice(prefix.length) || "/";
+			return NextResponse.redirect(url, 308);
+		}
 	}
 
 	if (pathname === `/${DEFAULT_LANGUAGE}` || pathname.startsWith(`/${DEFAULT_LANGUAGE}/`)) {
