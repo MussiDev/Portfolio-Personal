@@ -83,75 +83,72 @@ const OpenProject = ({
 	pendingLabel: string;
 }) => (
 	<div className='membrana flex flex-col'>
-		{STAGES.map(({ key, label }, i) => {
-			const stage = project.tiempos[key];
-			const body = paragraphs(stage, lang);
-			const hasContent = stageHasContent(stage);
+		<ol className='relative m-0 flex list-none flex-col gap-8 border-l-2 border-sinapsis/25 px-6 py-7 pl-9 sm:pl-11 md:px-8'>
+			{STAGES.map(({ key, label }, i) => {
+				const stage = project.tiempos[key];
+				const body = paragraphs(stage, lang);
+				const hasContent = stageHasContent(stage);
 
-			return (
-				<details
-					key={key}
-					open={i === 0}
-					className='tiempo border-b border-sinapsis/15 last:border-b-0'
-				>
-					<summary className='grid cursor-pointer list-none grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-4 px-6 py-3.5 transition-colors duration-200 ease-impulso hover:bg-membrana-honda'>
-						<span className='font-pieza text-[11px] tabular-nums text-sinapsis'>
-							{String(i + 1).padStart(2, "0")}
-						</span>
-						<h3 className='m-0 text-sm'>{t(label, lang)}</h3>
-						{hasContent ? (
-							<span
-								aria-hidden='true'
-								className='marcador font-pieza text-xs text-impulso'
-							/>
-						) : (
-							<span className='font-glosa text-[15px] italic leading-none text-mielina'>
-								{unwritten}
+				return (
+					<li key={key} className='relative'>
+						<span
+							aria-hidden='true'
+							className='absolute -left-[calc(2.25rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulso shadow-[0_0_0_3px_rgb(24_32_46)] sm:-left-[calc(2.75rem+5px)]'
+						/>
+						<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
+							<span className='font-pieza text-[11px] tabular-nums text-sinapsis'>
+								{String(i + 1).padStart(2, "0")}
 							</span>
-						)}
-					</summary>
+							<h3 className='m-0 text-sm md:text-base'>{t(label, lang)}</h3>
+							{!hasContent && (
+								<span className='font-glosa text-[15px] italic leading-none text-mielina'>
+									{unwritten}
+								</span>
+							)}
+						</div>
 
-					<div className='flex flex-col gap-5 px-6 pb-6 pt-1 md:pl-[3.75rem]'>
-						{body.map((p) => (
-							<p
-								key={p.slice(0, 40)}
-								className='m-0 max-w-[68ch] font-nota text-[14px] leading-relaxed text-mielina'
-							>
-								{p}
-							</p>
-						))}
+						<div className='mt-4 flex flex-col gap-5'>
+							{body.map((p) => (
+								<p
+									key={p.slice(0, 40)}
+									className='m-0 max-w-[68ch] font-nota text-[14px] leading-relaxed text-mielina'
+								>
+									{p}
+								</p>
+							))}
 
-						{key === "mecanismo" && "flujo" in stage && stage.flujo && (
-							<Flow steps={stage.flujo[lang] ?? stage.flujo.es} />
-						)}
-
-						{key === "mecanismo" && "diagrama" in stage && stage.diagrama && (
-							<BlueprintDiagram code={stage.diagrama} />
-						)}
-
-						{key === "mecanismo" && "codigo" in stage && stage.codigo && (
-							<pre className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'>
-								{stage.codigo}
-							</pre>
-						)}
-
-						{key === "resultado" &&
-							"medidas" in stage &&
-							stage.medidas.length > 0 && (
-								<Measurements
-									measurements={stage.medidas}
-									lang={lang}
-									unmeasured={unmeasured}
-								/>
+							{key === "mecanismo" && "flujo" in stage && stage.flujo && (
+								<Flow steps={stage.flujo[lang] ?? stage.flujo.es} />
 							)}
 
-						{stage.pendiente && (
-							<Pending label={pendingLabel}>{t(stage.pendiente, lang)}</Pending>
-						)}
-					</div>
-				</details>
-			);
-		})}
+							{key === "mecanismo" && "diagrama" in stage && stage.diagrama && (
+								<BlueprintDiagram code={stage.diagrama} />
+							)}
+
+							{key === "mecanismo" && "codigo" in stage && stage.codigo && (
+								<pre className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'>
+									{stage.codigo}
+								</pre>
+							)}
+
+							{key === "resultado" &&
+								"medidas" in stage &&
+								stage.medidas.length > 0 && (
+									<Measurements
+										measurements={stage.medidas}
+										lang={lang}
+										unmeasured={unmeasured}
+									/>
+								)}
+
+							{stage.pendiente && (
+								<Pending label={pendingLabel}>{t(stage.pendiente, lang)}</Pending>
+							)}
+						</div>
+					</li>
+				);
+			})}
+		</ol>
 	</div>
 );
 
