@@ -6,7 +6,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
-import { BRAIN_BIN_PATH } from "./brainAsset";
+import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
 
 export type Section = {
 	label: string;
@@ -15,7 +15,6 @@ export type Section = {
 	href: string;
 	external?: boolean;
 	step?: number;
-	anchor: [number, number, number];
 };
 
 const BASE_ROTATION = -Math.PI / 2;
@@ -198,8 +197,6 @@ const Brain3D = ({
 				const positions = unpackVectors(raw, 0, pointCount, min, range);
 				const edges = unpackVectors(raw, pointCount * 3, edgeCount, min, range);
 
-				snapAnchorsToTissue(positions);
-
 				const edgesGeo = new THREE.BufferGeometry();
 				edgesGeo.setAttribute("position", new THREE.BufferAttribute(edges, 3));
 				group.add(
@@ -328,29 +325,18 @@ const Brain3D = ({
 		const blend = new THREE.Vector3();
 		const aux = new THREE.Vector3();
 
-		const anchors = sections.map((section) => new THREE.Vector3(...section.anchor));
-
-		const snapAnchorsToTissue = (points: Float32Array) => {
-			for (const a of anchors) {
-				let best = Infinity;
-				let bx = a.x;
-				let by = a.y;
-				let bz = a.z;
-				for (let k = 0; k < points.length; k += 3) {
-					const dx = points[k] - a.x;
-					const dy = points[k + 1] - a.y;
-					const dz = points[k + 2] - a.z;
-					const d = dx * dx + dy * dy + dz * dz;
-					if (d < best) {
-						best = d;
-						bx = points[k];
-						by = points[k + 1];
-						bz = points[k + 2];
-					}
-				}
-				a.set(bx, by, bz);
-			}
-		};
+		// Ya snapeados al tejido más cercano en build time
+		// (scripts/prepare-brain.mjs, ver entities/brainAnchors.ts) — evita
+		// recorrer ~30k puntos por anchor en cada carga del cliente.
+		if (SNAPPED_ANCHORS.length !== sections.length) {
+			console.warn(
+				`brainAsset.ts tiene ${SNAPPED_ANCHORS.length} anchors pero hay ${sections.length} sections. ` +
+					"Actualizá entities/brainAnchors.ts y corré `npm run brain`.",
+			);
+		}
+		const anchors = sections.map(
+			(_section, i) => new THREE.Vector3(...(SNAPPED_ANCHORS[i] ?? [0, 0, 0])),
+		);
 
 		let steps: { index: number; el: HTMLElement }[] = [];
 		const mapSteps = () => {

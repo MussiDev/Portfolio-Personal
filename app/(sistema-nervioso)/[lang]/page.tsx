@@ -195,7 +195,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.experiencia,
 			href: "#paso-1",
 			step: 1,
-			anchor: [0, 0.8, 0.02] as [number, number, number],
 		},
 		{
 			label: mainProject.nombre,
@@ -203,7 +202,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.proyectos,
 			href: "#paso-2",
 			step: 2,
-			anchor: [0, 0.34, 0.7] as [number, number, number],
 		},
 		{
 			label: d.campos.recomendaciones,
@@ -211,7 +209,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.recomendaciones,
 			href: "#paso-3",
 			step: 3,
-			anchor: [0, -0.12, 0.58] as [number, number, number],
 		},
 		{
 			label: d.nav.blog,
@@ -219,7 +216,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.blog,
 			href: "#paso-4",
 			step: 4,
-			anchor: [0, -0.36, 0.44] as [number, number, number],
 		},
 		{
 			label: d.nav.contacto,
@@ -227,7 +223,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.contacto,
 			href: "#paso-5",
 			step: 5,
-			anchor: [0, 0.46, -0.62] as [number, number, number],
 		},
 		{
 			label: d.nav.cv,
@@ -235,7 +230,6 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.cv,
 			href: "/pdf.pdf",
 			external: true,
-			anchor: [0, -0.06, -0.8] as [number, number, number],
 		},
 	];
 

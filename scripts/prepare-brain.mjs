@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { RAW_ANCHORS } from "../entities/brainAnchors.ts";
 
 const INPUT = "assets/brain_areas.glb";
 const OUTPUT_DIR = "public/image";
@@ -49,6 +50,30 @@ new GLTFLoader().parse(
 			edge.dispose();
 			geo.dispose();
 		});
+
+		// Snapea cada anchor editorial (entities/brainAnchors.ts) al punto de
+		// tejido más cercano acá, en build time, en vez de recorrer los ~30k
+		// puntos por cada uno de los 6 anchors en el cliente en cada carga.
+		const snapToNearest = ([ax, ay, az]) => {
+			let best = Infinity;
+			let bx = ax;
+			let by = ay;
+			let bz = az;
+			for (let k = 0; k < points.length; k += 3) {
+				const dx = points[k] - ax;
+				const dy = points[k + 1] - ay;
+				const dz = points[k + 2] - az;
+				const d = dx * dx + dy * dy + dz * dz;
+				if (d < best) {
+					best = d;
+					bx = points[k];
+					by = points[k + 1];
+					bz = points[k + 2];
+				}
+			}
+			return [bx, by, bz];
+		};
+		const snappedAnchors = RAW_ANCHORS.map(snapToNearest);
 
 		const all = points.concat(edges);
 		const min = [Infinity, Infinity, Infinity];
@@ -98,7 +123,13 @@ new GLTFLoader().parse(
 		fs.writeFileSync(
 			GENERATED_CONST,
 			"// Generado por scripts/prepare-brain.mjs — no editar a mano.\n" +
-				`export const BRAIN_BIN_PATH = "/image/${filename}";\n`,
+				`export const BRAIN_BIN_PATH = "/image/${filename}";\n\n` +
+				"// Anchors de entities/brainAnchors.ts ya snapeados al punto de\n" +
+				"// tejido más cercano, en el mismo orden. Evita recorrer la nube\n" +
+				"// de puntos en el cliente en cada carga.\n" +
+				"export const SNAPPED_ANCHORS: readonly [number, number, number][] = " +
+				JSON.stringify(snappedAnchors) +
+				";\n",
 		);
 
 		const before = fs.statSync(INPUT).size;
