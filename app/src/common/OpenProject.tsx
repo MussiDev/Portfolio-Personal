@@ -74,11 +74,13 @@ const OpenProject = ({
 	lang,
 	unwritten,
 	unmeasured,
+	pendingLabel,
 }: {
 	project: Project;
 	lang: Language;
 	unwritten: string;
 	unmeasured: string;
+	pendingLabel: string;
 }) => (
 	<div className='membrana flex flex-col'>
 		{STAGES.map(({ key, label }, i) => {
@@ -144,7 +146,7 @@ const OpenProject = ({
 							)}
 
 						{stage.pendiente && (
-							<Pending>{t(stage.pendiente, lang)}</Pending>
+							<Pending label={pendingLabel}>{t(stage.pendiente, lang)}</Pending>
 						)}
 					</div>
 				</details>

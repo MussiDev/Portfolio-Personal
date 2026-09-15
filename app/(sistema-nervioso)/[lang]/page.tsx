@@ -490,6 +490,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 							lang={lang}
 							unwritten={d.proyectos.sinEscribir}
 							unmeasured={d.proyectos.sinMedir}
+							pendingLabel={d.falta}
 						/>
 
 						<div className='hidden flex-wrap items-center gap-x-6 gap-y-2 lg:flex'>
