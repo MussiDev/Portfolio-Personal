@@ -169,6 +169,25 @@ html:has(.sistema) *::-webkit-scrollbar-thumb {
 	}
 }
 
+/* Los seis tiempos de OpenProject van colapsados por defecto solo en
+mobile (demasiado scroll para leerlos de un tirón). A partir de md la
+narrativa vuelve a ser continua: se fuerza todo visible sin importar el
+atributo `open`, y el summary deja de comportarse como control. */
+@media (min-width: 768px) {
+	.sistema .tiempo-seis > summary {
+		cursor: default;
+		pointer-events: none;
+	}
+	.sistema .tiempo-seis:not([open]) > *:not(summary) {
+		display: flex;
+	}
+	.sistema .tiempo-seis::details-content {
+		block-size: auto !important;
+		overflow: visible !important;
+		content-visibility: visible !important;
+	}
+}
+
 .sistema .vermas > summary::-webkit-details-marker {
 	display: none;
 }

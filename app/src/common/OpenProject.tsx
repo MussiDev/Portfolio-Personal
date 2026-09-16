@@ -95,56 +95,62 @@ const OpenProject = ({
 							aria-hidden='true'
 							className='absolute -left-[calc(2.25rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulso shadow-[0_0_0_3px_rgb(24_32_46)] sm:-left-[calc(2.75rem+5px)]'
 						/>
-						<div className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
-							<span className='font-pieza text-[11px] tabular-nums text-sinapsis'>
-								{String(i + 1).padStart(2, "0")}
-							</span>
-							<h3 className='m-0 text-sm md:text-base'>{t(label, lang)}</h3>
-							{!hasContent && (
-								<span className='font-glosa text-[15px] italic leading-none text-mielina'>
-									{unwritten}
+						{/* Colapsado por defecto solo en mobile (md:tiempo-seis fuerza todo
+						abierto en desktop vía CSS) — en mobile los seis tiempos completos
+						son demasiado scroll para leerlos de un tirón. */}
+						<details className='tiempo tiempo-seis' open={i === 0}>
+							<summary className='flex cursor-pointer list-none flex-wrap items-baseline gap-x-4 gap-y-1'>
+								<span className='font-pieza text-[11px] tabular-nums text-sinapsis'>
+									{String(i + 1).padStart(2, "0")}
 								</span>
-							)}
-						</div>
+								<h3 className='m-0 text-sm md:text-base'>{t(label, lang)}</h3>
+								{!hasContent && (
+									<span className='font-glosa text-[15px] italic leading-none text-mielina'>
+										{unwritten}
+									</span>
+								)}
+								<span className='marcador ml-auto font-pieza text-[11px] text-sinapsis md:hidden' />
+							</summary>
 
-						<div className='mt-4 flex flex-col gap-5'>
-							{body.map((p) => (
-								<p
-									key={p.slice(0, 40)}
-									className='m-0 max-w-[68ch] font-nota text-[14px] leading-relaxed text-mielina'
-								>
-									{p}
-								</p>
-							))}
+							<div className='mt-4 flex flex-col gap-5'>
+								{body.map((p) => (
+									<p
+										key={p.slice(0, 40)}
+										className='m-0 max-w-[68ch] font-nota text-[14px] leading-relaxed text-mielina'
+									>
+										{p}
+									</p>
+								))}
 
-							{key === "mecanismo" && "flujo" in stage && stage.flujo && (
-								<Flow steps={stage.flujo[lang] ?? stage.flujo.es} />
-							)}
-
-							{key === "mecanismo" && "diagrama" in stage && stage.diagrama && (
-								<BlueprintDiagram code={stage.diagrama} />
-							)}
-
-							{key === "mecanismo" && "codigo" in stage && stage.codigo && (
-								<pre className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'>
-									{stage.codigo}
-								</pre>
-							)}
-
-							{key === "resultado" &&
-								"medidas" in stage &&
-								stage.medidas.length > 0 && (
-									<Measurements
-										measurements={stage.medidas}
-										lang={lang}
-										unmeasured={unmeasured}
-									/>
+								{key === "mecanismo" && "flujo" in stage && stage.flujo && (
+									<Flow steps={stage.flujo[lang] ?? stage.flujo.es} />
 								)}
 
-							{stage.pendiente && (
-								<Pending label={pendingLabel}>{t(stage.pendiente, lang)}</Pending>
-							)}
-						</div>
+								{key === "mecanismo" && "diagrama" in stage && stage.diagrama && (
+									<BlueprintDiagram code={stage.diagrama} />
+								)}
+
+								{key === "mecanismo" && "codigo" in stage && stage.codigo && (
+									<pre className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'>
+										{stage.codigo}
+									</pre>
+								)}
+
+								{key === "resultado" &&
+									"medidas" in stage &&
+									stage.medidas.length > 0 && (
+										<Measurements
+											measurements={stage.medidas}
+											lang={lang}
+											unmeasured={unmeasured}
+										/>
+									)}
+
+								{stage.pendiente && (
+									<Pending label={pendingLabel}>{t(stage.pendiente, lang)}</Pending>
+								)}
+							</div>
+						</details>
 					</li>
 				);
 			})}

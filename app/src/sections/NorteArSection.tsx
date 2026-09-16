@@ -23,8 +23,8 @@ const NorteArSection = ({
 		gloss={t(mainProject.contexto, lang)}
 		fact={`${STATUS_LABEL[mainProject.estado][lang]} · ${mainProject.stack.join(" · ")}`}
 	>
-		<div className='grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:items-start'>
-			<div className='flex flex-col gap-4'>
+		<div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-start'>
+			<div className='min-w-0 flex flex-col gap-4'>
 				<p className='m-0 font-glosa text-2xl italic leading-snug text-senal'>
 					{t(mainProject.resumen, lang)}
 				</p>
@@ -66,7 +66,7 @@ const NorteArSection = ({
 				</div>
 			</div>
 
-			<div className='flex flex-col gap-4'>
+			<div className='min-w-0 flex flex-col gap-4'>
 				<figure className='membrana m-0 flex flex-col gap-0 overflow-hidden p-1.5'>
 					<Image
 						src='/image/nortear/margen.jpg'
