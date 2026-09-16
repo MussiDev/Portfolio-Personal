@@ -1,27 +1,24 @@
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import { FlatCompat } from "@eslint/eslintrc";
+import coreWebVitals from "eslint-config-next/core-web-vitals";
+import typescript from "eslint-config-next/typescript";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-});
-
-// eslint-config-next todavía se distribuye en formato "legacy" (extends/
-// plugins), no como config plano nativo — FlatCompat lo adapta al flat
-// config que exige ESLint 9+. Patrón oficial de Next para app/router.
+// eslint-config-next 16 se distribuye como flat config nativo: exporta
+// directamente un array de configs. Antes esto pasaba por FlatCompat, que
+// es el puente para configs "legacy" (extends/plugins) — y adaptar algo que
+// ya es plano hacía que ESLint reventara al arrancar con "Converting
+// circular structure to JSON", antes de leer un solo archivo. O sea: el
+// proyecto no tenía linter, no tenía linter con hallazgos en cero.
 const eslintConfig = [
-	...compat.extends("next/core-web-vitals", "next/typescript"),
 	{
 		ignores: [
 			".next/**",
+			".next-broken-*/**",
 			"app/node_modules/**",
 			"public/**",
 			"sanity/**/*.json",
 		],
 	},
+	...coreWebVitals,
+	...typescript,
 ];
 
 export default eslintConfig;

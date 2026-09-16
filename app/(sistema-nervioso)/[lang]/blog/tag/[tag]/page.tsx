@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { LANGUAGES, localizedPath, type Language } from "../../../../../../entities/i18n";
+import { localizedPath, type Language } from "../../../../../../entities/i18n";
 import { alternates } from "../../../../../src/i18n/meta";
 import { getDict } from "../../../../../src/i18n/dict";
 import { client } from "../../../../../../sanity/lib/client";
