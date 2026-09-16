@@ -21,7 +21,7 @@ import { formatPostDate } from "../../../../src/components/Blog/postDate";
 import { getDict } from "../../../../src/i18n/dict";
 import { alternates } from "../../../../src/i18n/meta";
 import { notFound } from "next/navigation";
-import { postBySlugQuery } from "../../../../../sanity/lib/queries";
+import { postBySlugQuery, postsQuery } from "../../../../../sanity/lib/queries";
 import { urlFor } from "../../../../../sanity/lib/image";
 import type { SanityImageObject } from "@sanity/image-url";
 import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
@@ -56,6 +56,12 @@ const BASE_URL = SITE_URL;
 
 const getPost = cache(
 	(slug: string): Promise<Post | null> => client.fetch(postBySlugQuery, { slug }),
+);
+
+type PostSummary = { slug: string; title: string };
+
+const getAllPosts = cache(
+	(): Promise<PostSummary[]> => client.fetch(postsQuery),
 );
 
 interface MermaidBlockValue {
@@ -225,7 +231,13 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 		}),
 	};
 
+	const allPosts = await getAllPosts();
+	const idx = allPosts.findIndex((p) => p.slug === slug);
+	const olderPost = idx >= 0 ? allPosts[idx + 1] : undefined;
+	const newerPost = idx >= 0 && idx > 0 ? allPosts[idx - 1] : undefined;
+
 	return (
+		<>
 		<article id='post-article' className='membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
 			<script
 				type='application/ld+json'
@@ -288,16 +300,56 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 			{post.tags && post.tags.length > 0 && (
 				<div className='mt-10 flex flex-wrap gap-2'>
 					{post.tags.map((tag) => (
-						<span
+						<Link
 							key={tag}
-							className='border border-sinapsis/50 px-2.5 py-1 font-pieza text-[11px] text-sinapsis'
+							href={localizedPath(lang, `/blog/tag/${tag}`)}
+							className='border border-sinapsis/50 px-2.5 py-1 font-pieza text-[11px] text-sinapsis transition-colors duration-200 ease-impulso hover:border-impulso hover:text-impulso'
 						>
 							{tag}
-						</span>
+						</Link>
 					))}
 				</div>
 			)}
 		</article>
+
+		{(olderPost || newerPost) && (
+			<nav
+				aria-label={`${d.blog.anterior} / ${d.blog.siguiente}`}
+				className='grid grid-cols-1 gap-4 border-t border-sinapsis/20 pt-6 sm:grid-cols-2'
+			>
+				<div>
+					{olderPost && (
+						<Link
+							href={localizedPath(lang, `/blog/${olderPost.slug}`)}
+							className='group flex flex-col gap-1'
+						>
+							<span className='font-pieza text-[10px] uppercase tracking-[.14em] text-sinapsis'>
+								← {d.blog.anterior}
+							</span>
+							<span className='font-nota text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
+								{olderPost.title}
+							</span>
+						</Link>
+					)}
+				</div>
+				<div className='sm:text-right'>
+					{newerPost && (
+						<Link
+							href={localizedPath(lang, `/blog/${newerPost.slug}`)}
+							className='group flex flex-col gap-1 sm:items-end'
+						>
+							<span className='font-pieza text-[10px] uppercase tracking-[.14em] text-sinapsis'>
+								{d.blog.siguiente} →
+							</span>
+							<span className='font-nota text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
+								{newerPost.title}
+							</span>
+						</Link>
+					)}
+				</div>
+			</nav>
+		)}
+		</>
 	);
 }
 
@@ -340,7 +392,7 @@ export default async function PostPage({ params }: PageProps) {
 			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
 				<div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
 					<Link
-						href={localizedPath(lang, "/#paso-4")}
+						href={localizedPath(lang, "/blog")}
 						className='inline-flex w-fit items-center gap-2 font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
 					>
 						<svg

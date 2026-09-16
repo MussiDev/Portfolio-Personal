@@ -57,6 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 	return entries([
 		{ path: "/", changeFrequency: "weekly", priority: 1 },
+		{ path: "/blog", changeFrequency: "weekly", priority: 0.8, translated: false },
 
 		...posts.map((post) => ({
 			path: `/blog/${post.slug}`,

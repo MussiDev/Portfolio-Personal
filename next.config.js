@@ -4,7 +4,7 @@ const STEPS = {
 	"/oficio": "/#paso-1",
 	"/maquinas": "/#paso-2",
 	"/maquinas/:slug": "/#paso-2",
-	"/blog": "/#paso-4",
+	// /blog ya no redirige: es una página real (app/(sistema-nervioso)/[lang]/blog/page.tsx).
 	"/contacto": "/#paso-5",
 	"/anterior": "/",
 };
