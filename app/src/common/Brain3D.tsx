@@ -16,6 +16,10 @@ export type Section = {
 	href: string;
 	external?: boolean;
 	step?: number;
+	/** Índices (en el array `sections`) de otras secciones con las que esta
+	 * tiene una relación real de contenido — no decorativa. Ver page.tsx
+	 * para qué conexiones existen y por qué. */
+	related?: number[];
 };
 
 const BASE_ROTATION = -Math.PI / 2;
@@ -62,6 +66,7 @@ const Brain3D = ({
 	const labelsRef = useRef<(HTMLAnchorElement | null)[]>([]);
 	const calloutsRef = useRef<(SVGPolylineElement | null)[]>([]);
 	const targetsRef = useRef<(SVGCircleElement | null)[]>([]);
+	const connectionsRef = useRef<(SVGLineElement | null)[]>([]);
 	const pulseRef = useRef<SVGCircleElement>(null);
 	const readoutRef = useRef<HTMLSpanElement>(null);
 
@@ -78,6 +83,20 @@ const Brain3D = ({
 		() => [sections.slice(0, half), sections.slice(half)],
 		[sections, half],
 	);
+
+	// Pares únicos [i, j] con relación real de contenido (ver Section.related
+	// en page.tsx) — computado acá para que el JSX sepa cuántas <line> pintar,
+	// y de nuevo (idéntico, sections no cambia tras el mount) dentro del
+	// efecto de WebGL, que no puede depender de este valor de render.
+	const connectionPairs = useMemo(() => {
+		const pairs: [number, number][] = [];
+		sections.forEach((section, i) => {
+			for (const j of section.related ?? []) {
+				if (j > i) pairs.push([i, j]);
+			}
+		});
+		return pairs;
+	}, [sections]);
 
 	useEffect(() => {
 		const mount = mountRef.current;
@@ -418,19 +437,23 @@ const Brain3D = ({
 		const currentLookAt = new THREE.Vector3(0, 0, 0);
 		const colorAux = new THREE.Color();
 
+		const anchorScreen = sections.map(() => ({ x: 0, y: 0 }));
+
 		const drawCallouts = (rect: DOMRect) => {
 			sections.forEach((_section, i) => {
-				const line = calloutsRef.current[i];
-				const target = targetsRef.current[i];
-				const b = buttonRects[i];
-				if (!line || !target || !b) return;
-
 				vector
 					.copy(anchors[i])
 					.applyMatrix4(group.matrixWorld)
 					.project(camera);
 				const ax = (vector.x * 0.5 + 0.5) * rect.width;
 				const ay = (-vector.y * 0.5 + 0.5) * rect.height;
+				anchorScreen[i].x = ax;
+				anchorScreen[i].y = ay;
+
+				const line = calloutsRef.current[i];
+				const target = targetsRef.current[i];
+				const b = buttonRects[i];
+				if (!line || !target || !b) return;
 
 				const isLeft = i < half;
 				const bx = (isLeft ? b.right : b.left) - rect.left;
@@ -440,6 +463,19 @@ const Brain3D = ({
 				line.setAttribute("points", `${bx},${by} ${elbow},${by} ${ax},${ay}`);
 				target.setAttribute("cx", String(ax));
 				target.setAttribute("cy", String(ay));
+			});
+		};
+
+		const drawConnections = (activeNow: number | null) => {
+			connectionPairs.forEach(([a, b], k) => {
+				const line = connectionsRef.current[k];
+				if (!line) return;
+				const lit = activeNow === a || activeNow === b;
+				line.setAttribute("x1", String(anchorScreen[a].x));
+				line.setAttribute("y1", String(anchorScreen[a].y));
+				line.setAttribute("x2", String(anchorScreen[b].x));
+				line.setAttribute("y2", String(anchorScreen[b].y));
+				line.setAttribute("opacity", lit ? "0.9" : "0");
 			});
 		};
 
@@ -596,7 +632,10 @@ const Brain3D = ({
 			camera.lookAt(currentLookAt);
 
 			composer.render();
-			if (inHeroRef.current) drawCallouts(mountRect);
+			if (inHeroRef.current) {
+				drawCallouts(mountRect);
+				drawConnections(activeNow);
+			}
 			if (weight > 0.001 || choosing) publishAnchor(mountRect, anchorWorld);
 			frame += 1;
 			requestAnimationFrame(animate);
@@ -732,6 +771,19 @@ const Brain3D = ({
 							strokeWidth={1.2}
 						/>
 					</g>
+				))}
+				{connectionPairs.map(([a, b], k) => (
+					<line
+						key={`${a}-${b}`}
+						ref={(n) => {
+							connectionsRef.current[k] = n;
+						}}
+						stroke='rgb(255 106 58)'
+						strokeWidth={1.2}
+						strokeDasharray='3 4'
+						opacity={0}
+						className='transition-opacity duration-300 ease-impulso'
+					/>
 				))}
 				{active !== null && inHero && (
 					<circle ref={pulseRef} r={3.5} fill='rgb(255 106 58)' />

@@ -62,6 +62,7 @@ const DICT = {
 			bajar: "Bajar al registro",
 			pasos: "Progreso del recorrido",
 			navegacion: "Navegación principal",
+			conectadoCon: "Conectado con",
 			secciones: {
 				proyectos:
 					"Sistemas que construí o modernicé, abiertos en seis tiempos: problema, decisión, mecanismo, trade-off, resultado y qué haría distinto.",
@@ -157,6 +158,7 @@ const DICT = {
 			bajar: "Down to the record",
 			pasos: "Walkthrough progress",
 			navegacion: "Main navigation",
+			conectadoCon: "Connected to",
 			secciones: {
 				proyectos:
 					"Systems I built or modernised, opened in six beats: problem, decision, mechanism, trade-off, result and what I would do differently.",

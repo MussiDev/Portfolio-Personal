@@ -72,6 +72,10 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 	const postsCount = `${posts.length} ${d.ui.notas}`;
 	const recommendationsCount = `${recommendationList.length} ${d.ui.personas}`;
 
+	// Conexiones reales, no decorativas: NorteAR usa el mismo stack que
+	// aparece en Trayectoria, y las recomendaciones son de gente de esos
+	// mismos trabajos. Blog no conecta con nada — ningún post menciona el
+	// proyecto ni la trayectoria, así que no se inventa una relación ahí.
 	const sections = [
 		{
 			label: d.sobreMi.trayectoria,
@@ -79,6 +83,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.experiencia,
 			href: "#paso-1",
 			step: 1,
+			related: [1, 2],
 		},
 		{
 			label: mainProject.nombre,
@@ -86,6 +91,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.proyectos,
 			href: "#paso-2",
 			step: 2,
+			related: [0],
 		},
 		{
 			label: d.campos.recomendaciones,
@@ -93,6 +99,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 			summary: d.hero.secciones.recomendaciones,
 			href: "#paso-3",
 			step: 3,
+			related: [0],
 		},
 		{
 			label: d.nav.blog,
@@ -128,6 +135,7 @@ const HomePage = async ({ params }: { params: Promise<{ lang: Language }> }) => 
 				stepsLabel={d.hero.pasos}
 				scrollHintText={d.hero.bajar}
 				navLabel={d.hero.navegacion}
+				connectedLabel={d.hero.conectadoCon}
 			>
 				<section
 					id='paso-0'

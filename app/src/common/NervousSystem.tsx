@@ -21,6 +21,7 @@ const NervousSystem = ({
 	stepsLabel,
 	scrollHintText,
 	navLabel,
+	connectedLabel,
 }: {
 	sections: Section[];
 	children: ReactNode;
@@ -31,6 +32,7 @@ const NervousSystem = ({
 	stepsLabel: string;
 	scrollHintText: string;
 	navLabel: string;
+	connectedLabel: string;
 }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const streamRef = useRef<SVGSVGElement>(null);
@@ -127,6 +129,14 @@ const NervousSystem = ({
 							<p className='m-0 mt-2 font-nota text-[13px] leading-relaxed text-mielina'>
 								{sections[active].summary}
 							</p>
+							{!!sections[active].related?.length && (
+								<p className='m-0 mt-2 font-pieza text-[10px] uppercase tracking-[.12em] text-sinapsis'>
+									{connectedLabel}{" "}
+									{sections[active].related!
+										.map((i) => sections[i].label)
+										.join(" · ")}
+								</p>
+							)}
 						</div>
 					)}
 				</div>
