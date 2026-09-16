@@ -2,12 +2,10 @@
 
 import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
 import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
 import { aPantalla, pesosVisibles, puntosDelCallout } from "./brainLayout";
+import { crearEscenaDelCerebro } from "./brainScene";
 import { relatedTo } from "./relations";
 import { leerTejido } from "./tissueLoader";
 import { easeOutCubic, revealCounts } from "./tissueReveal";
@@ -27,8 +25,6 @@ export type Section = {
 
 const BASE_ROTATION = -Math.PI / 2;
 
-const FOV = 38;
-const MODEL_WIDTH = 2.6;
 
 const Z_HERO = 3.6;
 const Z_STEP = 4.3;
@@ -121,78 +117,18 @@ const Brain3D = ({
 			"(prefers-reduced-motion: reduce)",
 		).matches;
 
-		const scene = new THREE.Scene();
-		const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
-		camera.position.set(0, 0.1, Z_HERO);
+		// Toda la infraestructura de render (renderer, composer, cámara, bloom
+		// diferido, medición y disposal) vive en brainScene.ts. Acá queda la
+		// navegación: scroll-spy, callouts y el loop que los coordina.
+		const escena = crearEscenaDelCerebro(mount, (ancho, alto) => {
+			svgRef.current?.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
+		});
+		const { scene, camera, group } = escena;
 
-		const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-		const narrow = window.matchMedia("(max-width: 767px)").matches;
-		renderer.setPixelRatio(Math.min(window.devicePixelRatio, narrow ? 1.25 : 2));
-		renderer.setClearColor(0x000000, 0);
-		mount.appendChild(renderer.domElement);
-		renderer.domElement.style.width = "100%";
-		renderer.domElement.style.height = "100%";
-		renderer.domElement.style.display = "block";
-
-		const composer = new EffectComposer(renderer);
-		composer.addPass(new RenderPass(scene, camera));
-
-		/**
-		 * El bloom entra DESPUÉS de que el tejido terminó de construirse, no
-		 * al montar.
-		 *
-		 * Construir un UnrealBloomPass compila y linkea varios programas de
-		 * shader (downsample + blur separable + composite), y eso es trabajo
-		 * sincrónico en el hilo principal. Medido en 4G con la CPU a 4x: el
-		 * tejido tardaba 6408ms en aparecer con el bloom al montar, contra
-		 * 3236ms sin bloom. Más de tres segundos, todos antes del primer
-		 * frame útil.
-		 *
-		 * Sacarlo no era opción: sin bloom el tejido se ve plano, como un
-		 * render de wireframe, y los destellos pierden el brillo que los hace
-		 * leer como impulsos. Diferirlo da las dos cosas — el cerebro aparece
-		 * rápido y el glow llega un instante después, lo que encima acompaña
-		 * la idea de que el tejido se enciende.
-		 */
-		let bloom: UnrealBloomPass | null = null;
 		let bloomIdle = 0;
-		const encenderBloom = () => {
-			if (bloom || !alive) return;
-			bloom = new UnrealBloomPass(
-				new THREE.Vector2(width || 1, height || 1),
-				0.5,
-				0.8,
-				0.3,
-			);
-			composer.addPass(bloom);
-		};
 
-		const group = new THREE.Group();
-		group.position.y = -0.22;
-		scene.add(group);
-
-		let width = 0;
-		let height = 0;
-		let minZ = 0;
-		const measure = () => {
-			const rect = mount.getBoundingClientRect();
-			if (!rect.width || !rect.height) return;
-			width = rect.width;
-			height = rect.height;
-			minZ =
-				MODEL_WIDTH /
-				(2 * Math.tan((FOV * Math.PI) / 360) * (width / height));
-			camera.aspect = width / height;
-			camera.updateProjectionMatrix();
-			renderer.setSize(width, height, false);
-			composer.setSize(width, height);
-			bloom?.resolution.set(width, height);
-			svgRef.current?.setAttribute("viewBox", `0 0 ${width} ${height}`);
-		};
-		measure();
-		camera.position.setZ(Math.max(Z_HERO, minZ));
 		const resizeObserver = new ResizeObserver(() => {
-			measure();
+			escena.medir();
 			mapSteps();
 			measureLayout();
 		});
@@ -309,9 +245,9 @@ const Brain3D = ({
 					// el usuario llega a ver. El timeout evita que se posponga
 					// para siempre si la página nunca queda ociosa.
 					if (typeof requestIdleCallback === "function") {
-						bloomIdle = requestIdleCallback(encenderBloom, { timeout: 2000 });
+						bloomIdle = requestIdleCallback(escena.encenderBloom, { timeout: 2000 });
 					} else {
-						bloomIdle = window.setTimeout(encenderBloom, 300);
+						bloomIdle = window.setTimeout(escena.encenderBloom, 300);
 					}
 				};
 
@@ -508,18 +444,18 @@ const Brain3D = ({
 			const activeNow = activeRef.current;
 
 			const target =
-				width < 768
+				escena.ancho < 768
 					? 0
 					: Math.min(1, window.scrollY / Math.max(1, window.innerHeight));
 			shift += (target - shift) * (reducedMotion ? 1 : 0.08);
-			if (width && height) {
+			if (escena.ancho && escena.alto) {
 				camera.setViewOffset(
-					width,
-					height,
-					shift * width * SHIFT,
+					escena.ancho,
+					escena.alto,
+					shift * escena.ancho * SHIFT,
 					0,
-					width,
-					height,
+					escena.ancho,
+					escena.alto,
 				);
 			}
 
@@ -541,8 +477,8 @@ const Brain3D = ({
 				col.needsUpdate = true;
 			}
 
-			const zHero = Math.max(Z_HERO, minZ);
-			const zStep = Math.max(Z_STEP, minZ);
+			const zHero = Math.max(Z_HERO, escena.zMinima);
+			const zStep = Math.max(Z_STEP, escena.zMinima);
 			const z = zHero + (zStep - zHero) * shift;
 
 			// Qué tanto pesa cada paso es matemática pura y vive en
@@ -644,7 +580,7 @@ const Brain3D = ({
 			currentLookAt.lerp(targetLookAt, smooth);
 			camera.lookAt(currentLookAt);
 
-			composer.render();
+			escena.render();
 			if (inHeroRef.current) {
 				drawCallouts(mountRect);
 				drawConnections(activeNow);
@@ -681,24 +617,14 @@ const Brain3D = ({
 				if (typeof cancelIdleCallback === "function") cancelIdleCallback(bloomIdle);
 				else clearTimeout(bloomIdle);
 			}
-			bloom?.dispose();
 			if (scrollRequestId) cancelAnimationFrame(scrollRequestId);
 			window.removeEventListener("scroll", onScroll);
 			visibilityObserver.disconnect();
 			document.removeEventListener("visibilitychange", onVisibilityChange);
 			resizeObserver.disconnect();
-			composer.dispose();
-			renderer.dispose();
-			if (renderer.domElement.parentNode === mount) {
-				mount.removeChild(renderer.domElement);
-			}
-			scene.traverse((o) => {
-				const m = o as THREE.Mesh;
-				if (m.geometry) m.geometry.dispose();
-				const mat = m.material as THREE.Material | THREE.Material[] | undefined;
-				if (Array.isArray(mat)) mat.forEach((x) => x.dispose());
-				else mat?.dispose();
-			});
+			// Liberar GPU es responsabilidad de quien la tomó: la escena
+			// destruye su renderer, su composer, el bloom y las geometrías.
+			escena.destruir();
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
