@@ -44,7 +44,7 @@ const DICT = {
 			titulo: "Sobre mí",
 			bio: [
 				"Hace más de 4 años que trabajo en frontend, y lo que más me interesa es la parte que no se ve: las decisiones de arquitectura que definen si un sistema escala o se vuelve imposible de mantener.",
-				"Hoy lidero las definiciones de arquitectura frontend sobre plataformas internas que usan miles de personas. El último rediseño que hice redujo un 35% los tiempos de carga.",
+				"Hoy lidero las definiciones de arquitectura frontend sobre plataformas internas que usan miles de personas. El último rediseño que hice redujo significativamente los tiempos de carga.",
 				"Trabajo sobre todo con Next.js, React y TypeScript. Cuando hace falta integro APIs .NET y servicios de backend, pero mi foco está en el frontend.",
 				"Buena parte de lo que hago tiene que ver con sistemas que crecieron más de lo que su arquitectura original soportaba: migraciones de Angular y CSHTML a Next.js, sistemas de componentes reutilizables, y estándares de code review para que el equipo no repita los mismos errores.",
 				"Empecé Ingeniería en Sistemas en 2020 y la dejé en 2021. No fue abandono: fue una decisión sobre cómo quería aprender. Desde entonces me formo por mi cuenta y contra problemas reales — que es exactamente lo que hago en el trabajo todos los días.",
@@ -139,7 +139,7 @@ const DICT = {
 			titulo: "About me",
 			bio: [
 				"I've been working in frontend for over four years, and what interests me most is the part nobody sees: the architecture decisions that decide whether a system scales or becomes impossible to maintain.",
-				"Today I lead frontend architecture decisions for internal platforms used by thousands of people. The last redesign I led cut load times by 35%.",
+				"Today I lead frontend architecture decisions for internal platforms used by thousands of people. The last redesign I led cut load times significantly.",
 				"I work mostly with Next.js, React and TypeScript. When needed I integrate .NET APIs and backend services, but my focus stays on the frontend.",
 				"Much of what I do involves systems that outgrew their original architecture: migrations from Angular and CSHTML to Next.js, reusable component systems, and code review standards so the team doesn't repeat the same mistakes.",
 				"I started Systems Engineering in 2020 and left in 2021. It was not giving up: it was a decision about how I wanted to learn. Since then I have taught myself against real problems — which is exactly what I do at work every day.",
