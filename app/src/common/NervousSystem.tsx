@@ -4,12 +4,14 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 
 import { useActiveStep } from "../hooks/useActiveStep";
 import { useHashCleanup } from "../hooks/useHashCleanup";
+import { useIsDesktop } from "../hooks/useIsDesktop";
 import { useReveal } from "../hooks/useReveal";
 import { PARTICLES, useSignalCord } from "../hooks/useSignalCord";
 import { useStepKeyboard } from "../hooks/useStepKeyboard";
 import { useStepLinks } from "../hooks/useStepLinks";
 import BrainCanvas from "./BrainLazy";
 import type { Section } from "./Brain3D";
+import NervousSystemMobile from "./NervousSystemMobile";
 
 const NervousSystem = ({
 	sections,
@@ -42,6 +44,7 @@ const NervousSystem = ({
 
 	const [ready, setReady] = useState(false);
 	const [hover, setHover] = useState<number | null>(null);
+	const isDesktop = useIsDesktop();
 
 	const withStep = sections.filter((section) => section.step !== undefined);
 
@@ -90,6 +93,13 @@ const NervousSystem = ({
 		return () => clearTimeout(t);
 	}, [liftVeil]);
 
+	// El sustituto mobile es SVG estático: no hay nada que esperar, así que
+	// no tiene sentido dejarlo detrás del velo de 8s pensado para el cerebro
+	// 3D. Se revela apenas se confirma que no es desktop.
+	useEffect(() => {
+		if (isDesktop === false) liftVeil();
+	}, [isDesktop, liftVeil]);
+
 	return (
 		<div ref={containerRef} className='relative'>
 			<div
@@ -97,19 +107,22 @@ const NervousSystem = ({
 					ready ? "" : "!opacity-0"
 				}`}
 			>
-				<BrainCanvas
-					sections={sections}
-					active={active}
-					onActive={(i) => setHover(inHero ? i : null)}
-					onGo={go}
-					inHero={inHero}
-					anchorRef={anchorRef}
-					loadingText={loadingText}
-					activityText={activityText}
-					navLabel={navLabel}
-					onProgress={() => {}}
-					onReady={liftVeil}
-				/>
+				{isDesktop && (
+					<BrainCanvas
+						sections={sections}
+						active={active}
+						onActive={(i) => setHover(inHero ? i : null)}
+						onGo={go}
+						inHero={inHero}
+						anchorRef={anchorRef}
+						loadingText={loadingText}
+						activityText={activityText}
+						navLabel={navLabel}
+						onProgress={() => {}}
+						onReady={liftVeil}
+					/>
+				)}
+				{isDesktop === false && <NervousSystemMobile />}
 
 				<div
 					className={`absolute bottom-20 left-0 z-20 hidden max-w-[22rem] px-8 transition-all duration-700 ease-impulso md:block lg:px-14 ${
