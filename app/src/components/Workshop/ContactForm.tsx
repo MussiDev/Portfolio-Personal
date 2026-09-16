@@ -9,34 +9,32 @@ import React, {
 	useState,
 } from "react";
 
-import type { Language } from "../../../../entities/i18n";
+import { useIsMounted, useMediaQuery } from "../../hooks/useMediaQuery";
 import { shouldBlockSubmission } from "./captchaGate";
 
 const ReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
 type State = { ok: boolean | null; message: string };
 
-const COPY = {
-	es: {
-		name: "Nombre",
-		email: "Email",
-		message: "Mensaje",
-		send: "Enviar mensaje",
-		sending: "Enviando…",
-		ok: "Llegó. Te respondo apenas lo lea — normalmente dentro de las 24 horas.",
-		error: "No se pudo enviar. Probá de nuevo, o escribime por LinkedIn.",
-		captcha: "Marcá el captcha antes de enviar.",
-	},
-	en: {
-		name: "Name",
-		email: "Email",
-		message: "Message",
-		send: "Send message",
-		sending: "Sending…",
-		ok: "It arrived. I answer as soon as I read it — usually within 24 hours.",
-		error: "It could not be sent. Try again, or write to me on LinkedIn.",
-		captcha: "Tick the captcha before sending.",
-	},
+/**
+ * El copy llega por props desde ContactoSection (server component), que ya
+ * tiene el diccionario. Antes este archivo tenía su propio objeto COPY con
+ * es/en hardcodeado: dos sistemas de i18n en paralelo, y una traducción que
+ * se podía cambiar en dict.ts sin que este formulario se enterara.
+ *
+ * Por props y no importando getDict: esto es un client component, y un
+ * import del diccionario mandaría los dos idiomas completos al bundle del
+ * navegador para usar ocho strings.
+ */
+export type FormCopy = {
+	nombre: string;
+	email: string;
+	mensaje: string;
+	enviar: string;
+	enviando: string;
+	ok: string;
+	error: string;
+	captcha: string;
 };
 
 const fieldClass =
@@ -45,15 +43,17 @@ const fieldClass =
 const labelClass =
 	"font-rotulo text-[11px] uppercase tracking-[.14em] text-mielina";
 
-const ContactForm = ({ lang }: { lang: Language }) => {
+const ContactForm = ({ copy }: { copy: FormCopy }) => {
 	const [captchaOk, setCaptchaOk] = useState(false);
-	const [darkTheme, setDarkTheme] = useState(false);
-	const [mounted, setMounted] = useState(false);
 	const [wantsCaptcha, setWantsCaptcha] = useState(false);
+	// Suscripciones, no estado sincronizado a mano dentro de un efecto: el
+	// widget de reCAPTCHA no puede renderizarse en el server, y su tema
+	// sigue al del sistema.
+	const mounted = useIsMounted();
+	const darkTheme = useMediaQuery("(prefers-color-scheme: dark)") ?? false;
 	const boxRef = useRef<HTMLDivElement>(null);
 	const formRef = useRef<HTMLFormElement>(null);
 	const [compact, setCompact] = useState(false);
-	const c = COPY[lang];
 	const sitekey = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
 
 	useEffect(() => {
@@ -64,15 +64,6 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 		const observer = new ResizeObserver(decide);
 		observer.observe(box);
 		return () => observer.disconnect();
-	}, []);
-
-	useEffect(() => {
-		setMounted(true);
-		const mq = window.matchMedia("(prefers-color-scheme: dark)");
-		setDarkTheme(mq.matches);
-		const onChange = (e: MediaQueryListEvent) => setDarkTheme(e.matches);
-		mq.addEventListener("change", onChange);
-		return () => mq.removeEventListener("change", onChange);
 	}, []);
 
 	useEffect(() => {
@@ -96,10 +87,10 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 
 	const [state, send, sending] = useActionState<State, FormData>(
 		async (_prev, formData) => {
-			if (formData.get("lastName")) return { ok: true, message: c.ok };
+			if (formData.get("lastName")) return { ok: true, message: copy.ok };
 
 			if (shouldBlockSubmission(sitekey, captchaOk)) {
-				return { ok: false, message: c.captcha };
+				return { ok: false, message: copy.captcha };
 			}
 
 			const serviceId = process.env.NEXT_PUBLIC_SERVICE_ID;
@@ -107,7 +98,7 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 			const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 
 			if (!serviceId || !templateId || !publicKey) {
-				return { ok: false, message: c.error };
+				return { ok: false, message: copy.error };
 			}
 
 			try {
@@ -123,9 +114,9 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 					publicKey,
 				);
 				setCaptchaOk(false);
-				return { ok: true, message: c.ok };
+				return { ok: true, message: copy.ok };
 			} catch {
-				return { ok: false, message: c.error };
+				return { ok: false, message: copy.error };
 			}
 		},
 		{ ok: null, message: "" },
@@ -140,7 +131,7 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 		>
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='name'>
-					{c.name}
+					{copy.nombre}
 				</label>
 				<input
 					className={fieldClass}
@@ -154,7 +145,7 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='email'>
-					{c.email}
+					{copy.email}
 				</label>
 				<input
 					className={fieldClass}
@@ -168,7 +159,7 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='message'>
-					{c.message}
+					{copy.mensaje}
 				</label>
 				<textarea
 					className={`${fieldClass} resize-none`}
@@ -224,19 +215,27 @@ const ContactForm = ({ lang }: { lang: Language }) => {
 				disabled={sending}
 				className='flex h-12 items-center justify-center gap-2 border-[1.5px] border-impulso bg-impulso/[.07] font-rotulo text-sm font-semibold uppercase tracking-[.1em] text-impulso transition-colors duration-200 ease-impulso hover:bg-impulso/[.16] disabled:cursor-not-allowed disabled:border-sinapsis disabled:bg-transparent disabled:text-mielina'
 			>
-				{sending ? c.sending : c.send}
+				{sending ? copy.enviando : copy.enviar}
 			</button>
 
-			{state.ok !== null && (
-				<p
-					aria-live='polite'
-					className={`m-0 font-nota text-[15px] leading-relaxed ${
-						state.ok ? "text-mielina" : "text-impulso"
-					}`}
-				>
-					{state.message}
-				</p>
-			)}
+			{/* La región live existe SIEMPRE en el DOM, aunque esté vacía: un
+			 * lector de pantalla solo anuncia cambios dentro de una live region
+			 * que ya estaba montada. Si se monta junto con su contenido (como
+			 * hacía antes), el usuario envía el formulario y no se entera de
+			 * nada — ni del éxito ni del error. */}
+			<p
+				role='status'
+				aria-live='polite'
+				className={`m-0 font-nota text-[15px] leading-relaxed ${
+					state.ok === null
+						? "sr-only"
+						: state.ok
+							? "text-mielina"
+							: "text-impulso"
+				}`}
+			>
+				{state.message}
+			</p>
 		</form>
 	);
 };

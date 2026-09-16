@@ -69,10 +69,20 @@ const DICT = {
 				experiencia: "Dónde trabajé y qué construí ahí, ordenado por tiempo.",
 				recomendaciones:
 					"Lo que dijeron de trabajar conmigo quienes lo hicieron, con nombre, rol y relación.",
-				blog: "Notas de laboratorio: hipótesis, experimento y resultado. Lo que aprendí probando.",
+				blog: "Notas sobre cómo cambian los sistemas que usan LLMs: qué se rompe, qué reemplaza a qué, y por qué importa.",
 				contacto: "Para hablar de un puesto, un proyecto o una consulta puntual.",
 				cv: "El currículum en PDF, por si necesitás el formato de siempre.",
 			},
+		},
+		formulario: {
+			nombre: "Nombre",
+			email: "Email",
+			mensaje: "Mensaje",
+			enviar: "Enviar mensaje",
+			enviando: "Enviando…",
+			ok: "Llegó. Te respondo apenas lo lea — normalmente dentro de las 24 horas.",
+			error: "No se pudo enviar. Probá de nuevo, o escribime por LinkedIn.",
+			captcha: "Marcá el captcha antes de enviar.",
 		},
 		ui: {
 			empresas: "empresas",
@@ -165,10 +175,20 @@ const DICT = {
 				experiencia: "Where I worked and what I built there, ordered by time.",
 				recomendaciones:
 					"What the people who actually worked with me said, with name, role and relation.",
-				blog: "Lab notes: hypothesis, experiment and result. What I learned by trying.",
+				blog: "Notes on how systems built with LLMs are changing: what breaks, what replaces what, and why it matters.",
 				contacto: "To talk about a role, a project or a specific question.",
 				cv: "The résumé as a PDF, in case you need the usual format.",
 			},
+		},
+		formulario: {
+			nombre: "Name",
+			email: "Email",
+			mensaje: "Message",
+			enviar: "Send message",
+			enviando: "Sending…",
+			ok: "It arrived. I answer as soon as I read it — usually within 24 hours.",
+			error: "It could not be sent. Try again, or write to me on LinkedIn.",
+			captcha: "Tick the captcha before sending.",
 		},
 		ui: {
 			empresas: "companies",

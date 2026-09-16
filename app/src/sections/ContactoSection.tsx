@@ -71,7 +71,7 @@ const ContactoSection = ({
 					</div>
 				</dl>
 
-				<ContactForm lang={lang} />
+				<ContactForm copy={d.formulario} />
 
 				<div className='flex flex-wrap gap-x-8 gap-y-3'>
 					{links.map(([text, href, external]) => (
