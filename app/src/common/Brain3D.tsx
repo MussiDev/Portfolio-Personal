@@ -7,6 +7,9 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
 import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
+import { aPantalla, pesosVisibles, puntosDelCallout } from "./brainLayout";
+import { relatedTo } from "./relations";
+import { leerTejido } from "./tissueLoader";
 import { easeOutCubic, revealCounts } from "./tissueReveal";
 
 export type Section = {
@@ -70,13 +73,20 @@ const Brain3D = ({
 	const pulseRef = useRef<SVGCircleElement>(null);
 	const readoutRef = useRef<HTMLSpanElement>(null);
 
+	// El efecto de WebGL corre una sola vez y su loop de rAF necesita leer los
+	// valores vivos, no los del primer render: de ahí los refs. La sync va en
+	// un efecto y no en el cuerpo del render — escribir un ref durante el
+	// render es un side effect en fase de render, que con renders concurrentes
+	// puede ejecutarse dos veces o descartarse. Un frame de diferencia es
+	// invisible a 60fps.
 	const callbacksRef = useRef({ onProgress, onReady });
-	callbacksRef.current = { onProgress, onReady };
-
 	const activeRef = useRef<number | null>(active);
-	activeRef.current = active;
 	const inHeroRef = useRef(inHero);
-	inHeroRef.current = inHero;
+	useEffect(() => {
+		callbacksRef.current = { onProgress, onReady };
+		activeRef.current = active;
+		inHeroRef.current = inHero;
+	});
 
 	const half = Math.ceil(sections.length / 2);
 	const columns = useMemo(
@@ -88,10 +98,15 @@ const Brain3D = ({
 	// en page.tsx) — computado acá para que el JSX sepa cuántas <line> pintar,
 	// y de nuevo (idéntico, sections no cambia tras el mount) dentro del
 	// efecto de WebGL, que no puede depender de este valor de render.
+	//
+	// Por relatedTo y no leyendo `related` directo: una relación declarada en
+	// un solo sentido (B dice conocer a A, pero A no lo dice) se perdía con
+	// el filtro `j > i`, y entonces la etiqueta se iluminaba sin que hubiera
+	// una línea que la conectara — la promesa rota otra vez, al revés.
 	const connectionPairs = useMemo(() => {
 		const pairs: [number, number][] = [];
-		sections.forEach((section, i) => {
-			for (const j of section.related ?? []) {
+		sections.forEach((_section, i) => {
+			for (const j of relatedTo(sections, i)) {
 				if (j > i) pairs.push([i, j]);
 			}
 		});
@@ -121,8 +136,36 @@ const Brain3D = ({
 
 		const composer = new EffectComposer(renderer);
 		composer.addPass(new RenderPass(scene, camera));
-		const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.5, 0.8, 0.3);
-		composer.addPass(bloom);
+
+		/**
+		 * El bloom entra DESPUÉS de que el tejido terminó de construirse, no
+		 * al montar.
+		 *
+		 * Construir un UnrealBloomPass compila y linkea varios programas de
+		 * shader (downsample + blur separable + composite), y eso es trabajo
+		 * sincrónico en el hilo principal. Medido en 4G con la CPU a 4x: el
+		 * tejido tardaba 6408ms en aparecer con el bloom al montar, contra
+		 * 3236ms sin bloom. Más de tres segundos, todos antes del primer
+		 * frame útil.
+		 *
+		 * Sacarlo no era opción: sin bloom el tejido se ve plano, como un
+		 * render de wireframe, y los destellos pierden el brillo que los hace
+		 * leer como impulsos. Diferirlo da las dos cosas — el cerebro aparece
+		 * rápido y el glow llega un instante después, lo que encima acompaña
+		 * la idea de que el tejido se enciende.
+		 */
+		let bloom: UnrealBloomPass | null = null;
+		let bloomIdle = 0;
+		const encenderBloom = () => {
+			if (bloom || !alive) return;
+			bloom = new UnrealBloomPass(
+				new THREE.Vector2(width || 1, height || 1),
+				0.5,
+				0.8,
+				0.3,
+			);
+			composer.addPass(bloom);
+		};
 
 		const group = new THREE.Group();
 		group.position.y = -0.22;
@@ -143,7 +186,7 @@ const Brain3D = ({
 			camera.updateProjectionMatrix();
 			renderer.setSize(width, height, false);
 			composer.setSize(width, height);
-			bloom.resolution.set(width, height);
+			bloom?.resolution.set(width, height);
 			svgRef.current?.setAttribute("viewBox", `0 0 ${width} ${height}`);
 		};
 		measure();
@@ -164,58 +207,18 @@ const Brain3D = ({
 		let pageVisible = document.visibilityState !== "hidden";
 		const isVisible = () => intersecting && pageVisible;
 
-		const loadTissue = async (): Promise<ArrayBuffer | null> => {
-			const response = await fetch(BRAIN_BIN_PATH);
-			if (!response.ok) throw new Error(`HTTP ${response.status}`);
-			if (!response.body) return response.arrayBuffer();
-
-			const reader = response.body.getReader();
-			const chunks: Uint8Array[] = [];
-			let read = 0;
-			let total = 0;
-
-			for (;;) {
-				const { done, value } = await reader.read();
-				if (done) break;
-				if (!alive) {
-					await reader.cancel();
-					return null;
+		// El streaming, el header partido entre chunks y el progreso viven en
+		// tissueLoader.ts, con sus propios tests. Acá queda solo lo que de
+		// verdad necesita WebGL.
+		leerTejido(BRAIN_BIN_PATH, {
+			sigueVivo: () => alive,
+			onProgress: (fraccion) => {
+				callbacksRef.current.onProgress(fraccion);
+				if (readoutRef.current) {
+					readoutRef.current.textContent = `${loadingText} · ${Math.round(fraccion * 100)}%`;
 				}
-				chunks.push(value);
-				read += value.length;
-
-				if (!total && read >= BIN_HEADER_SIZE) {
-					const headerBytes = new Uint8Array(BIN_HEADER_SIZE);
-					let written = 0;
-					for (const c of chunks) {
-						const count = Math.min(c.length, BIN_HEADER_SIZE - written);
-						headerBytes.set(c.subarray(0, count), written);
-						written += count;
-						if (written >= BIN_HEADER_SIZE) break;
-					}
-					const headerView = new DataView(headerBytes.buffer);
-					total = BIN_HEADER_SIZE + (headerView.getUint32(4, true) + headerView.getUint32(8, true)) * 3 * 2;
-				}
-				if (total) {
-					const fraction = Math.min(1, read / total);
-					callbacksRef.current.onProgress(fraction);
-					if (readoutRef.current) {
-						readoutRef.current.textContent = `${loadingText} · ${Math.round(fraction * 100)}%`;
-					}
-				}
-			}
-
-			const full = new Uint8Array(read);
-			let cursor = 0;
-			for (const c of chunks) {
-				full.set(c, cursor);
-				cursor += c.length;
-			}
-			callbacksRef.current.onProgress(1);
-			return full.buffer;
-		};
-
-		loadTissue()
+			},
+		})
 			.then((buffer) => {
 				if (!alive || !buffer) return;
 
@@ -301,6 +304,15 @@ const Brain3D = ({
 						readoutRef.current.textContent = `${sections.length} ${activityText}`;
 					}
 					if (alive) callbacksRef.current.onReady();
+					// En idle: compilar los shaders del bloom justo cuando el
+					// velo se levanta metería un tirón en el primer frame que
+					// el usuario llega a ver. El timeout evita que se posponga
+					// para siempre si la página nunca queda ociosa.
+					if (typeof requestIdleCallback === "function") {
+						bloomIdle = requestIdleCallback(encenderBloom, { timeout: 2000 });
+					} else {
+						bloomIdle = window.setTimeout(encenderBloom, 300);
+					}
 				};
 
 				if (reducedMotion) {
@@ -445,8 +457,7 @@ const Brain3D = ({
 					.copy(anchors[i])
 					.applyMatrix4(group.matrixWorld)
 					.project(camera);
-				const ax = (vector.x * 0.5 + 0.5) * rect.width;
-				const ay = (-vector.y * 0.5 + 0.5) * rect.height;
+				const { x: ax, y: ay } = aPantalla(vector, rect);
 				anchorScreen[i].x = ax;
 				anchorScreen[i].y = ay;
 
@@ -455,12 +466,10 @@ const Brain3D = ({
 				const b = buttonRects[i];
 				if (!line || !target || !b) return;
 
-				const isLeft = i < half;
-				const bx = (isLeft ? b.right : b.left) - rect.left;
-				const by = b.top + b.height / 2 - rect.top;
-				const elbow = isLeft ? bx + 26 : bx - 26;
-
-				line.setAttribute("points", `${bx},${by} ${elbow},${by} ${ax},${ay}`);
+				line.setAttribute(
+					"points",
+					puntosDelCallout(b, { x: ax, y: ay }, rect, i < half),
+				);
 				target.setAttribute("cx", String(ax));
 				target.setAttribute("cy", String(ay));
 			});
@@ -536,21 +545,25 @@ const Brain3D = ({
 			const zStep = Math.max(Z_STEP, minZ);
 			const z = zHero + (zStep - zHero) * shift;
 
-			const vh = window.innerHeight;
-			let weight = 0;
+			// Qué tanto pesa cada paso es matemática pura y vive en
+			// brainLayout.ts, con tests; acá queda solo mezclar los anclajes
+			// en espacio de mundo, que sí necesita three.js.
+			const { pesos, total: weight, fuerza: strength } = pesosVisibles(
+				stepRects.map(({ index, rect: r }) => ({
+					index,
+					top: r.top,
+					bottom: r.bottom,
+				})),
+				window.innerHeight,
+			);
 			blend.set(0, 0, 0);
-			for (const { index, rect: r } of stepRects) {
-				const visible = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
-				const w = visible / vh;
-				if (w <= 0.001) continue;
+			for (const { index, peso } of pesos) {
 				aux
 					.copy(anchors[index])
 					.applyMatrix4(group.matrixWorld)
-					.multiplyScalar(w);
+					.multiplyScalar(peso);
 				blend.add(aux);
-				weight += w;
 			}
-			const strength = Math.min(1, weight);
 			if (weight > 0.001) blend.divideScalar(weight);
 
 			const choosing = inHeroRef.current && activeNow !== null;
@@ -664,6 +677,11 @@ const Brain3D = ({
 		return () => {
 			alive = false;
 			if (revealRaf) cancelAnimationFrame(revealRaf);
+			if (bloomIdle) {
+				if (typeof cancelIdleCallback === "function") cancelIdleCallback(bloomIdle);
+				else clearTimeout(bloomIdle);
+			}
+			bloom?.dispose();
 			if (scrollRequestId) cancelAnimationFrame(scrollRequestId);
 			window.removeEventListener("scroll", onScroll);
 			visibilityObserver.disconnect();
@@ -685,8 +703,28 @@ const Brain3D = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const vinculadas = useMemo(
+		() => new Set(relatedTo(sections, active)),
+		[active, sections],
+	);
+
+	/**
+	 * Cuatro estados, no dos. El panel afirma "conectado con X · Y" y hasta
+	 * ahora nada en pantalla lo mostraba: las vinculadas se apagaban igual
+	 * que las ajenas (0.08), así que la conexión más valiosa del sitio era
+	 * una línea naranja entre dos puntos anónimos del tejido. Con un nivel
+	 * intermedio, el ojo puede recorrer el camino completo: etiqueta activa →
+	 * su anclaje → conexión → anclaje vinculado → su etiqueta.
+	 */
+	const estado = (i: number): "activo" | "vinculado" | "reposo" | "ajeno" => {
+		if (active === i) return "activo";
+		if (vinculadas.has(i)) return "vinculado";
+		return active === null ? "reposo" : "ajeno";
+	};
+
 	const renderLabel = (section: Section, i: number) => {
 		const lit = active === i;
+		const vinculado = vinculadas.has(i);
 		const isLeft = i < half;
 		return (
 			<a
@@ -713,17 +751,19 @@ const Brain3D = ({
 				} ${
 					lit
 						? "border-y-impulso/40"
-						: "border-y-transparent hover:border-y-sinapsis/25"
+						: vinculado
+							? "border-y-impulso/20"
+							: "border-y-transparent hover:border-y-sinapsis/25"
 				}`}
 			>
 				<span
 					className={`flex items-baseline gap-2 font-rotulo text-[13px] font-bold uppercase tracking-[.06em] transition-colors duration-300 ease-impulso ${
 						isLeft ? "" : "flex-row-reverse"
-					} ${lit ? "text-impulso" : "text-senal"}`}
+					} ${lit ? "text-impulso" : vinculado ? "text-impulso/65" : "text-senal"}`}
 				>
 					<span
 						className={`font-pieza text-[10px] tabular-nums ${
-							lit ? "text-impulso" : "text-sinapsis"
+							lit ? "text-impulso" : vinculado ? "text-impulso/50" : "text-sinapsis"
 						}`}
 					>
 						{String(i + 1).padStart(2, "0")}
@@ -749,30 +789,59 @@ const Brain3D = ({
 				preserveAspectRatio='none'
 				aria-hidden='true'
 			>
-				{sections.map((s, i) => (
-					<g key={s.href + s.label}>
-						<polyline
-							ref={(n) => {
-								calloutsRef.current[i] = n;
-							}}
-							fill='none'
-							stroke={active === i ? "rgb(255 106 58)" : "rgb(124 152 190)"}
-							strokeOpacity={active === i ? 0.85 : active === null ? 0.3 : 0.08}
-							strokeWidth={active === i ? 1.4 : 1}
-						/>
-						<circle
-							ref={(n) => {
-								targetsRef.current[i] = n;
-							}}
-							r={active === i ? 5 : 2.5}
-							fill='none'
-							stroke={active === i ? "rgb(255 106 58)" : "rgb(124 152 190)"}
-							strokeOpacity={active === i ? 0.9 : active === null ? 0.5 : 0.1}
-							strokeWidth={1.2}
-						/>
-					</g>
-				))}
+				{sections.map((s, i) => {
+					// El callout y el target de una sección vinculada quedan en
+					// naranja tenue: son el tramo del camino que va del anclaje a
+					// su etiqueta. Sin esto la conexión moría dentro del tejido.
+					const e = estado(i);
+					const naranja = e === "activo" || e === "vinculado";
+					return (
+						<g key={s.href + s.label}>
+							<polyline
+								ref={(n) => {
+									calloutsRef.current[i] = n;
+								}}
+								fill='none'
+								stroke={naranja ? "rgb(255 106 58)" : "rgb(124 152 190)"}
+								strokeOpacity={
+									e === "activo"
+										? 0.85
+										: e === "vinculado"
+											? 0.4
+											: e === "reposo"
+												? 0.3
+												: 0.08
+								}
+								strokeWidth={e === "activo" ? 1.4 : 1}
+								className='transition-[stroke-opacity] duration-300 ease-impulso'
+							/>
+							<circle
+								ref={(n) => {
+									targetsRef.current[i] = n;
+								}}
+								r={e === "activo" ? 5 : e === "vinculado" ? 3.5 : 2.5}
+								fill='none'
+								stroke={naranja ? "rgb(255 106 58)" : "rgb(124 152 190)"}
+								strokeOpacity={
+									e === "activo"
+										? 0.9
+										: e === "vinculado"
+											? 0.6
+											: e === "reposo"
+												? 0.5
+												: 0.1
+								}
+								strokeWidth={1.2}
+								className='transition-[stroke-opacity] duration-300 ease-impulso'
+							/>
+						</g>
+					);
+				})}
 				{connectionPairs.map(([a, b], k) => (
+					// animate-conduccion (la misma del cordón de señal) hace que
+					// el guionado corra a lo largo de la línea: la conexión deja
+					// de ser una raya punteada y pasa a leerse como algo que
+					// viaja de una región a la otra.
 					<line
 						key={`${a}-${b}`}
 						ref={(n) => {
@@ -781,8 +850,9 @@ const Brain3D = ({
 						stroke='rgb(255 106 58)'
 						strokeWidth={1.2}
 						strokeDasharray='3 4'
+						strokeDashoffset={140}
 						opacity={0}
-						className='transition-opacity duration-300 ease-impulso'
+						className='animate-conduccion transition-opacity duration-300 ease-impulso'
 					/>
 				))}
 				{active !== null && inHero && (
