@@ -5,7 +5,9 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 
+import { BRAIN_BIN_PATH } from "../../src/common/brainAsset";
 import Cursor from "../../src/common/Cursor";
+import WebVitals from "../../src/common/WebVitals";
 import { getDict } from "../../src/i18n/dict";
 import { LANGUAGES, isLanguage, type Language } from "../../../entities/i18n";
 import { SITE_URL } from "../../../entities/site";
@@ -103,7 +105,9 @@ export const generateMetadata = async ({
 // Solo datos ya públicos en el sitio (el mailto: del paso de contacto, el
 // nombre del empleador que ya aparece en la tabla de Contacto). Sin
 // address: no está declarada en ningún lado del sitio y no hay una fuente
-// real para ella — un schema inventado es peor que uno incompleto.
+// real para ella. Sin image: no hay una foto/headshot en el repo, y el
+// opengraph-image de Next lleva un hash de build que no es una URL
+// estable para citar acá — un schema inventado es peor que uno incompleto.
 const jsonLd = (lang: Language) => ({
 	"@context": "https://schema.org",
 	"@type": "Person",
@@ -141,7 +145,33 @@ const websiteJsonLd = {
 	url: BASE_URL,
 };
 
-const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si"`;
+/**
+ * Corre durante el parseo del HTML, antes de cualquier hidratación.
+ *
+ * Además de marcar que hay JS (de lo que dependen las animaciones de
+ * entrada en globals.css), arranca la descarga del tejido del cerebro.
+ *
+ * El .bin pesa 466 KB y se pedía recién al final de una cascada de siete
+ * pasos en serie: HTML → bundle → hidratación → efecto de useIsDesktop →
+ * import dinámico de Brain3D → chunk de three.js → fetch. Medido: el
+ * documento queda interactivo a los ~32ms y el .bin no arrancaba hasta los
+ * ~487ms.
+ *
+ * ¿Por qué acá y no un <link rel="preload"> en el JSX? Porque React lo
+ * descarta silenciosamente (no llega al HTML), y su API soportada,
+ * ReactDOM.preload(), no acepta `media` — sin eso, mobile se bajaría los
+ * 466 KB que d3d9cb0 decidió no descargar. El matchMedia de acá mantiene
+ * esa decisión intacta.
+ *
+ * `crossOrigin` no es decorativo: sin él el preload queda en modo no-cors,
+ * no matchea el fetch() de Brain3D, y el archivo se descarga dos veces.
+ */
+const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si";
+if(matchMedia("(min-width: 768px)").matches){
+var l=document.createElement("link");
+l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href=${JSON.stringify(BRAIN_BIN_PATH)};
+document.head.appendChild(l);
+}`;
 
 const NervousSystemLayout = async ({
 	children,
@@ -160,7 +190,7 @@ const NervousSystemLayout = async ({
 			suppressHydrationWarning
 			className={`${label.variable} ${display.variable} ${mono.variable}`}
 		>
-			<body className='bg-tejido text-senal'>
+				<body className='bg-tejido text-senal'>
 				<a
 					href='#paso-1'
 					className='sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-impulso focus:px-4 focus:py-2 focus:font-rotulo focus:text-xs focus:font-bold focus:uppercase focus:tracking-[.12em] focus:text-tejido'
@@ -178,6 +208,7 @@ const NervousSystemLayout = async ({
 				/>
 				{children}
 				<Cursor />
+				<WebVitals />
 			</body>
 		</html>
 	);

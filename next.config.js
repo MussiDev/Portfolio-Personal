@@ -14,13 +14,27 @@ const siteRedirects = Object.entries(STEPS).flatMap(([from, to]) => [
 	{ source: `/en${from}`, destination: `/en${to.slice(1)}`, permanent: true },
 ]);
 
+// Si el endpoint de Web Vitals (app/src/common/WebVitals.tsx) es de otro
+// origen, hay que declararlo en connect-src o el sendBeacon se bloquea sin
+// error visible: la instrumentación parecería andar y no reportaría nada.
+// Una ruta relativa (/api/vitals) ya está cubierta por 'self'.
+const vitalsOrigin = (() => {
+	const endpoint = process.env.NEXT_PUBLIC_VITALS_ENDPOINT;
+	if (!endpoint || !endpoint.startsWith("http")) return null;
+	try {
+		return new URL(endpoint).origin;
+	} catch {
+		return null;
+	}
+})();
+
 const CSP = [
 	"default-src 'self'",
 	"script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com",
 	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 	"font-src 'self' https://fonts.gstatic.com",
 	"img-src 'self' data: https://cdn.sanity.io",
-	"connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://api.emailjs.com https://www.google.com https://fonts.googleapis.com",
+	`connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://api.emailjs.com https://www.google.com https://fonts.googleapis.com${vitalsOrigin ? ` ${vitalsOrigin}` : ""}`,
 	"frame-src https://www.google.com",
 	"frame-ancestors 'none'",
 	"object-src 'none'",
