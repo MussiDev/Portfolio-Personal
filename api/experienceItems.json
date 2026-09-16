@@ -4,7 +4,7 @@
 		"totalTime": "JUNE 2022 - PRESENT · REMOTE",
 		"roles": [
 			{
-				"position": "Software Engineer",
+				"position": "Frontend Engineer",
 				"time": "NOV 2023 - PRESENT",
 				"description": {
 					"en": "Leading frontend architecture for internal platforms used by thousands of people, across insurance, healthcare and investment products.",
@@ -12,14 +12,14 @@
 				},
 				"highlights": {
 					"en": [
-						"Redesigned the core web architecture, cutting load times by 35%",
+						"Redesigned the core web architecture, significantly cutting load times",
 						"Defined the technology stack and engineering standards across frontend and .NET APIs",
 						"Built full-stack applications with Next.js, React, TypeScript and .NET",
 						"Introduced reusable component systems that eliminated duplicated UI code across products",
 						"Established code review standards and mentored junior developers on architecture and best practices"
 					],
 					"es": [
-						"Rediseñé la arquitectura web principal, reduciendo un 35% los tiempos de carga",
+						"Rediseñé la arquitectura web principal, reduciendo significativamente los tiempos de carga",
 						"Definí el stack tecnológico y los estándares de ingeniería entre frontend y APIs .NET",
 						"Construí aplicaciones full stack con Next.js, React, TypeScript y .NET",
 						"Introduje sistemas de componentes reutilizables que eliminaron código de UI duplicado entre productos",
