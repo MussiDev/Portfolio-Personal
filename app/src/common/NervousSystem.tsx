@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useActiveStep } from "../hooks/useActiveStep";
-import { useHashCleanup } from "../hooks/useHashCleanup";
+import { useHashEntry } from "../hooks/useHashEntry";
 import { useIsDesktop } from "../hooks/useIsDesktop";
 import { useReveal } from "../hooks/useReveal";
 import { PARTICLES, useSignalCord } from "../hooks/useSignalCord";
 import { useStepKeyboard } from "../hooks/useStepKeyboard";
 import { useStepLinks } from "../hooks/useStepLinks";
 import BrainCanvas from "./BrainLazy";
+import { relatedTo } from "./relations";
 import type { Section } from "./Brain3D";
 import NervousSystemMobile from "./NervousSystemMobile";
 
@@ -48,6 +49,11 @@ const NervousSystem = ({
 
 	const withStep = sections.filter((section) => section.step !== undefined);
 
+	// El hash se escribe, no se borra: es la única URL que identifica a una
+	// sección, y de ella dependen los 301 de next.config.js (/contacto →
+	// /#paso-5) y el BreadcrumbList del blog. Se usa replaceState en vez de
+	// pushState para no llenar el historial con un paso por cada scroll:
+	// el back del navegador sigue saliendo del sitio, no recorriendo pasos.
 	const goToStep = useCallback((step: number) => {
 		document.getElementById(`paso-${step}`)?.scrollIntoView({
 			behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -55,17 +61,22 @@ const NervousSystem = ({
 				: "smooth",
 			block: "start",
 		});
-		if (window.location.hash) {
-			history.replaceState(null, "", window.location.pathname + window.location.search);
-		}
+		const { pathname, search } = window.location;
+		history.replaceState(null, "", step === 0 ? pathname + search : `${pathname}${search}#paso-${step}`);
 	}, []);
 
 	const activeStep = useActiveStep(containerRef, sections, setHover);
 
 	const active = hover ?? activeStep;
 	const inHero = activeStep === null;
+	// Sincronizado en un efecto y no en el cuerpo del render: escribir un ref
+	// durante el render es un side effect en fase de render. Los consumidores
+	// (useStepKeyboard, useSignalCord) lo leen dentro de handlers y de un
+	// loop de rAF, donde un frame de diferencia no se percibe.
 	const activeRef = useRef<number | null>(active);
-	activeRef.current = active;
+	useEffect(() => {
+		activeRef.current = active;
+	}, [active]);
 
 	const go = useCallback(
 		(i: number) => {
@@ -80,7 +91,7 @@ const NervousSystem = ({
 		[sections, goToStep],
 	);
 
-	useHashCleanup();
+	useHashEntry();
 	useStepLinks(goToStep, setHover);
 	useReveal();
 	useStepKeyboard(containerRef, activeRef, sections, goToStep, setHover);
@@ -93,19 +104,22 @@ const NervousSystem = ({
 		return () => clearTimeout(t);
 	}, [liftVeil]);
 
-	// El sustituto mobile es SVG estático: no hay nada que esperar, así que
-	// no tiene sentido dejarlo detrás del velo de 8s pensado para el cerebro
-	// 3D. Se revela apenas se confirma que no es desktop.
-	useEffect(() => {
-		if (isDesktop === false) liftVeil();
-	}, [isDesktop, liftVeil]);
+	// El tejido de mobile ahora también se construye (canvas 2D) y avisa por
+	// onReady cuando terminó, igual que el cerebro 3D — incluso si el canvas
+	// falla. Ya no hace falta revelarlo a mano al detectar mobile; el
+	// timeout de 8s de arriba sigue como red.
 
 	return (
 		<div ref={containerRef} className='relative'>
 			<div
-				className={`barrido pointer-events-none sticky top-0 z-0 h-[100svh] overflow-hidden opacity-40 transition-opacity duration-700 ease-impulso md:opacity-100 ${
-					ready ? "" : "!opacity-0"
-				}`}
+				// En mobile el tejido va a plena intensidad mientras es el hero
+				// (no hay nada encima que leer) y recién baja a 40% cuando el
+				// contenido de un paso se le pone arriba. Antes estaba fijo en
+				// 40%, así que la construcción del tejido se veía a media luz
+				// justo en el momento en que es el protagonista.
+				className={`barrido pointer-events-none sticky top-0 z-0 h-[100svh] overflow-hidden transition-opacity duration-700 ease-impulso md:opacity-100 ${
+					inHero ? "opacity-100" : "opacity-40"
+				} ${ready ? "" : "!opacity-0"}`}
 			>
 				{isDesktop && (
 					<BrainCanvas
@@ -122,7 +136,14 @@ const NervousSystem = ({
 						onReady={liftVeil}
 					/>
 				)}
-				{isDesktop === false && <NervousSystemMobile />}
+				{isDesktop === false && (
+					<NervousSystemMobile
+						sectionCount={sections.length}
+						active={active}
+						anchorRef={anchorRef}
+						onReady={liftVeil}
+					/>
+				)}
 
 				<div
 					className={`absolute bottom-20 left-0 z-20 hidden max-w-[22rem] px-8 transition-all duration-700 ease-impulso md:block lg:px-14 ${
@@ -142,12 +163,20 @@ const NervousSystem = ({
 							<p className='m-0 mt-2 font-nota text-[13px] leading-relaxed text-mielina'>
 								{sections[active].summary}
 							</p>
-							{!!sections[active].related?.length && (
+							{/* Los nombres van en el mismo naranja tenue que reciben
+							sus etiquetas en el cerebro: así el panel y lo que se
+							ilumina se leen como la misma afirmación, no como dos
+							cosas sueltas. La lista sale de relatedTo, igual que la
+							iluminación, para que no puedan divergir. */}
+							{relatedTo(sections, active).length > 0 && (
 								<p className='m-0 mt-2 font-pieza text-[10px] uppercase tracking-[.12em] text-sinapsis'>
 									{connectedLabel}{" "}
-									{sections[active].related!
-										.map((i) => sections[i].label)
-										.join(" · ")}
+									{relatedTo(sections, active).map((i, n) => (
+										<span key={sections[i].href + sections[i].label}>
+											{n > 0 && " · "}
+											<span className='text-impulso/65'>{sections[i].label}</span>
+										</span>
+									))}
 								</p>
 							)}
 						</div>
@@ -157,7 +186,7 @@ const NervousSystem = ({
 
 			<svg
 				ref={streamRef}
-				className='pointer-events-none fixed inset-0 z-30 hidden h-full w-full transition-opacity duration-300 md:block'
+				className='pointer-events-none fixed inset-0 z-30 h-full w-full transition-opacity duration-300'
 				aria-hidden='true'
 				opacity='0'
 			>

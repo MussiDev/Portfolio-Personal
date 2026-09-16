@@ -35,9 +35,17 @@ export const useStepKeyboard = (
 				if (target?.closest("a, button")) return;
 				e.preventDefault();
 				const s = sections[i];
-				window.open(s.href, s.external ? "_blank" : "_self");
+				// Mismo camino que el click (onGo → goToStep): scroll suave y
+				// hash escrito. Antes esto hacía window.open(href, "_self") con
+				// un href="#paso-N", o sea un salto por hash nativo — otra
+				// navegación, otro resultado visual, para la misma acción.
+				if (s.step === undefined) window.open(s.href, s.external ? "_blank" : "_self");
+				else goToStep(s.step);
 			}
-			if (e.key === "Backspace") {
+			// Escape además de Backspace: es la tecla que la gente ya asocia
+			// con "salir de esto", y no compite con ningún hábito previo.
+			// Backspace se mantiene porque el HUD lo muestra como afordancia.
+			if (e.key === "Backspace" || e.key === "Escape") {
 				e.preventDefault();
 				setHover(null);
 				goToStep(0);

@@ -10,11 +10,17 @@ type Anchor = { x: number; y: number; ready: boolean };
 
 /**
  * Dibuja el cordón de señal (streamRef/cordRef) y sus partículas entre el
- * cerebro y la sección activa. Guardas de performance: no hace nada por
- * debajo de md (el cordón es `hidden md:block`, así que animarlo ahí es
- * puro costo sin resultado visible) y cachea el querySelector del
- * data-drop-target por índice de sección en vez de re-resolverlo cada
- * frame — solo cambia cuando cambia la sección activa, no a 60fps.
+ * tejido y la sección activa. Una sola implementación para los dos
+ * breakpoints: quien publique `anchorRef` decide de dónde sale el cordón —
+ * Brain3D en desktop, NervousSystemMobile en mobile. El cordón es el gesto
+ * que mejor cuenta el concepto del sitio, así que dejarlo fuera de mobile
+ * (como estaba) era dejar el concepto fuera de mobile.
+ *
+ * Guarda de performance que sí se mantiene: el querySelector del
+ * data-drop-target se cachea por índice de sección en vez de re-resolverse
+ * cada frame — solo cambia cuando cambia la sección activa, no a 60fps.
+ * Cuando no hay nada que dibujar el loop baja a un tick de 250ms en vez de
+ * pedir un rAF por frame.
  */
 export const useSignalCord = (
 	streamRef: RefObject<SVGSVGElement | null>,
@@ -28,8 +34,6 @@ export const useSignalCord = (
 		const reducedMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
-		const desktopMQ = window.matchMedia("(min-width: 768px)");
-
 		let alive = true;
 		let idleTimer = 0;
 		let t = 0;
@@ -41,12 +45,6 @@ export const useSignalCord = (
 			const cord = cordRef.current;
 			const i = activeRef.current;
 			const anchor = anchorRef.current;
-
-			if (!desktopMQ.matches) {
-				stream?.setAttribute("opacity", "0");
-				idleTimer = window.setTimeout(() => requestAnimationFrame(draw), 250);
-				return;
-			}
 
 			if (cachedFor !== i) {
 				cachedFor = i;
