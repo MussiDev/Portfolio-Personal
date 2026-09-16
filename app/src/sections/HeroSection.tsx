@@ -25,6 +25,34 @@ const HeroSection = ({
 				<p className='entra entra-2 m-0 mt-2.5 max-w-[46ch] font-pieza text-[10.5px] uppercase leading-relaxed tracking-[.16em] text-sinapsis'>
 					{d.hero.rol}
 				</p>
+
+				{/*
+				 * La promesa del sitio, en la voz de glosa que ya se usa para las
+				 * afirmaciones. Antes el hero solo decía el puesto: una tarjeta de
+				 * presentación, no una razón para seguir scrolleando. Esto es una
+				 * afirmación que el resto del sitio prueba — los descartes muestran
+				 * qué no se construyó y por qué, y los seis tiempos de NorteAR
+				 * empiezan por el problema del usuario, no por el stack.
+				 */}
+				<p className='entra entra-2 m-0 mt-5 max-w-[22ch] font-glosa text-[clamp(1.35rem,2.4vw,2rem)] italic leading-[1.15] text-senal sm:max-w-[26ch]'>
+					{d.hero.propuesta}
+				</p>
+
+				{/* El único CTA del hero. El objetivo de negocio del sitio es que
+				 * te escriban, y hasta ahora eso estaba a seis pantallas de scroll
+				 * sin una sola invitación en el camino. */}
+				{/* El área táctil va en el <a> y el subrayado en el <span>, por lo
+				 * mismo que en LanguageSwitch: con el min-h-11 en el link, el
+				 * borde inferior se despega del texto 44px más abajo. */}
+				<a
+					href='#paso-5'
+					className='entra entra-3 pointer-events-auto mt-4 inline-flex min-h-11 items-center font-rotulo text-xs font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
+				>
+					<span className='inline-flex items-center gap-2 border-b border-current pb-0.5'>
+						{d.hero.cta}
+						<span aria-hidden='true'>→</span>
+					</span>
+				</a>
 			</div>
 			<div className='entra entra-1 pointer-events-auto shrink-0 font-pieza text-xs text-mielina'>
 				<LanguageSwitch current={lang} />
