@@ -50,3 +50,9 @@ app/node_modules/
 
 # assets fuente del cerebro 3D (el .glb no se sirve en runtime, solo cerebro.bin)
 /assets/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
