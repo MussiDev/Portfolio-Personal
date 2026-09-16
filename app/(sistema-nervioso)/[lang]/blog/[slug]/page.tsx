@@ -1,15 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-	PortableText,
-	type PortableTextComponents,
-	type PortableTextMarkComponentProps,
-	type PortableTextTypeComponentProps,
-} from "@portabletext/react";
-import ReactMarkdown from "react-markdown";
 import { Suspense, cache } from "react";
 import { client } from "../../../../../sanity/lib/client";
-import dynamic from "next/dynamic";
 import {
 	DEFAULT_LANGUAGE,
 	localizedPath,
@@ -25,15 +17,11 @@ import { postBySlugQuery, postsQuery } from "../../../../../sanity/lib/queries";
 import { urlFor } from "../../../../../sanity/lib/image";
 import type { SanityImageObject } from "@sanity/image-url";
 import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
+import PostBody from "../../../../src/components/Blog/PostBody";
 import {
 	extractExcerpt,
 	type PortableTextBlock,
 } from "../../../../src/components/Blog/excerpt";
-
-const MermaidDiagram = dynamic(
-	() => import("../../../../src/components/Blog/MermaidDiagram"),
-	{ ssr: true },
-);
 
 interface CoverImage extends SanityImageObject {
 	alt?: string;
@@ -63,81 +51,6 @@ type PostSummary = { slug: string; title: string };
 const getAllPosts = cache(
 	(): Promise<PostSummary[]> => client.fetch(postsQuery),
 );
-
-interface MermaidBlockValue {
-	_type: "mermaidBlock";
-	_key: string;
-	code: string;
-}
-
-const portableTextComponents: PortableTextComponents = {
-	types: {
-		mermaidBlock: ({ value }: PortableTextTypeComponentProps<MermaidBlockValue>) => (
-			<MermaidDiagram code={value.code} />
-		),
-	},
-	block: {
-		normal: ({ children }) => (
-			<p className='m-0 mb-5 max-w-[68ch] break-words font-nota text-lg leading-relaxed'>
-				{children}
-			</p>
-		),
-		h1: ({ children }) => (
-			<h1 className='mb-4 mt-10 text-2xl md:text-3xl'>{children}</h1>
-		),
-		h2: ({ children }) => (
-			<h2 className='mb-3 mt-10 text-xl md:text-2xl'>{children}</h2>
-		),
-		h3: ({ children }) => (
-			<h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>
-		),
-		blockquote: ({ children }) => (
-			<blockquote className='my-6 max-w-[62ch] border-l-2 border-impulso/60 pl-4 font-glosa text-xl italic leading-snug text-mielina'>
-				{children}
-			</blockquote>
-		),
-	},
-	list: {
-		bullet: ({ children }) => (
-			<ul className='mb-5 max-w-[68ch] list-inside list-disc space-y-1 pl-5 font-nota text-lg leading-relaxed'>
-				{children}
-			</ul>
-		),
-		number: ({ children }) => (
-			<ol className='mb-5 max-w-[68ch] list-inside list-decimal space-y-1 pl-5 font-nota text-lg leading-relaxed'>
-				{children}
-			</ol>
-		),
-	},
-	listItem: {
-		bullet: ({ children }) => <li className='break-words'>{children}</li>,
-		number: ({ children }) => <li className='break-words'>{children}</li>,
-	},
-	marks: {
-		strong: ({ children }) => (
-			<strong className='font-medium text-senal'>{children}</strong>
-		),
-		em: ({ children }) => <em className='italic'>{children}</em>,
-		code: ({ children }) => (
-			<code className='bg-membrana-honda px-1.5 py-0.5 font-pieza text-[.9em] text-sinapsis'>
-				{children}
-			</code>
-		),
-		link: ({
-			children,
-			value,
-		}: PortableTextMarkComponentProps<{ _type: "link"; href?: string }>) => (
-			<a
-				href={value?.href}
-				target='_blank'
-				rel='noopener noreferrer'
-				className='text-sinapsis underline decoration-sinapsis/40 underline-offset-4 hover:text-impulso'
-			>
-				{children}
-			</a>
-		),
-	},
-};
 
 export async function generateStaticParams() {
 	const posts: { slug: string }[] = await client.fetch(
@@ -192,10 +105,13 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 		itemListElement: [
 			{ "@type": "ListItem", position: 1, name: "Joaquín Mussi", item: BASE_URL },
 			{
+				// /blog, no /#paso-4: el breadcrumb debe apuntar a una URL
+				// indexable por sí misma. La sección 4 de la home es un ancla
+				// dentro de otra página, no el padre del post.
 				"@type": "ListItem",
 				position: 2,
 				name: d.blog.titulo,
-				item: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, "/#paso-4")}`,
+				item: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, "/blog")}`,
 			},
 			{
 				"@type": "ListItem",
@@ -259,43 +175,23 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 
 			{post.coverImage && (
 				<div className='relative mb-10 h-64 w-full overflow-hidden border border-sinapsis/30 md:h-96'>
+					{/* Esta imagen es el LCP de la página del post: está arriba de
+					todo y es el elemento más grande. Sin `priority` arranca lazy
+					(o sea, el LCP espera a que el scanner la descubra), y sin
+					`sizes` un `fill` hace que Next asuma 100vw y sirva el candidato
+					más grande del srcset para una columna que nunca pasa de 760px. */}
 					<Image
 						src={urlFor(post.coverImage).width(1200).height(600).url()}
 						alt={post.coverImage.alt || post.title}
 						fill
+						priority
+						sizes='(max-width: 832px) 100vw, 760px'
 						className='object-cover'
 					/>
 				</div>
 			)}
 
-			<div className='break-words'>
-				{post.markdownBody ? (
-					<ReactMarkdown
-						components={{
-							p: ({ children }) => <p className='m-0 mb-5 max-w-[68ch] break-words font-nota text-lg leading-relaxed'>{children}</p>,
-							h1: ({ children }) => <h1 className='mb-4 mt-10 text-2xl md:text-3xl'>{children}</h1>,
-							h2: ({ children }) => <h2 className='mb-3 mt-10 text-xl md:text-2xl'>{children}</h2>,
-							h3: ({ children }) => <h3 className='mb-2 mt-8 text-lg md:text-xl'>{children}</h3>,
-							blockquote: ({ children }) => <blockquote className='my-6 max-w-[62ch] border-l-2 border-impulso/60 pl-4 font-glosa text-xl italic leading-snug text-mielina'>{children}</blockquote>,
-							ul: ({ children }) => <ul className='mb-5 max-w-[68ch] list-inside list-disc space-y-1 pl-5 font-nota text-lg leading-relaxed'>{children}</ul>,
-							ol: ({ children }) => <ol className='mb-5 max-w-[68ch] list-inside list-decimal space-y-1 pl-5 font-nota text-lg leading-relaxed'>{children}</ol>,
-							li: ({ children }) => <li className='break-words'>{children}</li>,
-							strong: ({ children }) => <strong className='font-medium text-senal'>{children}</strong>,
-							em: ({ children }) => <em className='italic'>{children}</em>,
-							code: ({ className, children }) => {
-								const lang = /language-(\w+)/.exec(className ?? "")?.[1];
-								if (lang === "mermaid") return <MermaidDiagram code={String(children).trim()} />;
-								return <code className='bg-membrana-honda px-1.5 py-0.5 font-pieza text-[.9em] text-sinapsis'>{children}</code>;
-							},
-							a: ({ children, href }) => <a href={href} target='_blank' rel='noopener noreferrer' className='text-sinapsis underline decoration-sinapsis/40 underline-offset-4 hover:text-impulso'>{children}</a>,
-						}}
-					>
-						{post.markdownBody}
-					</ReactMarkdown>
-				) : (
-					<PortableText value={post.body ?? []} components={portableTextComponents} />
-				)}
-			</div>
+			<PostBody body={post.body} markdownBody={post.markdownBody} />
 
 			{post.tags && post.tags.length > 0 && (
 				<div className='mt-10 flex flex-wrap gap-2'>
