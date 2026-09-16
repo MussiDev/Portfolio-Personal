@@ -55,7 +55,7 @@ const TrayectoriaSection = ({
 								aria-hidden='true'
 								className='absolute -left-[calc(1.5rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulso shadow-[0_0_0_3px_rgb(5_7_13)] sm:-left-[calc(2rem+5px)]'
 							/>
-							<Card>
+							<Card className='membrana-viva'>
 								<div className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-sinapsis/20 pb-3'>
 									<h3 className='m-0 text-lg md:text-xl'>{e.company}</h3>
 									<span className='font-pieza text-[10px] uppercase tracking-[.12em] text-sinapsis'>

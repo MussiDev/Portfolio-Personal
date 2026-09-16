@@ -46,7 +46,7 @@ const RecomendacionesSection = ({
 				{recommendationList.slice(1).map((r) => (
 					<figure
 						key={r.id}
-						className='membrana m-0 flex flex-col gap-4 px-6 py-6'
+						className='membrana membrana-viva m-0 flex flex-col gap-4 px-6 py-6'
 					>
 						<blockquote className='m-0'>
 							<p className='m-0 font-glosa text-[19px] italic leading-relaxed text-senal'>

@@ -70,6 +70,18 @@
 		0 20px 44px -28px rgb(0 0 0 / 0.9);
 }
 
+/* Respuesta al hover para superficies no clickeables (entradas del
+ * timeline, recomendaciones): reconoce el mouse sin fingir que son
+ * links — nada de color de acento, solo el borde un poco más presente.
+ * Clase aparte de .membrana a propósito: no todo lo que usa .membrana
+ * (el form de contacto, la lista del blog) debe reaccionar así. */
+.membrana-viva {
+	transition: border-color 0.3s ease;
+}
+.membrana-viva:hover {
+	border-color: rgb(var(--sinapsis) / 0.6);
+}
+
 .rayado {
 	background-image: repeating-linear-gradient(
 		to bottom,

@@ -55,6 +55,14 @@ export const Step = ({
 	</section>
 );
 
-export const Card = ({ children }: { children: ReactNode }) => (
-	<div className='membrana flex flex-col gap-3 px-6 py-5'>{children}</div>
+export const Card = ({
+	children,
+	className = "",
+}: {
+	children: ReactNode;
+	className?: string;
+}) => (
+	<div className={`membrana flex flex-col gap-3 px-6 py-5 ${className}`}>
+		{children}
+	</div>
 );
