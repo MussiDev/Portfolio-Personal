@@ -7,6 +7,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
 import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
+import { easeOutCubic, revealCounts } from "./tissueReveal";
 
 export type Section = {
 	label: string;
@@ -138,6 +139,7 @@ const Brain3D = ({
 		let alive = true;
 		let sparks: THREE.Points | null = null;
 		let phases: number[] = [];
+		let revealRaf = 0;
 
 		let intersecting = true;
 		let pageVisible = document.visibilityState !== "hidden";
@@ -175,7 +177,13 @@ const Brain3D = ({
 					const headerView = new DataView(headerBytes.buffer);
 					total = BIN_HEADER_SIZE + (headerView.getUint32(4, true) + headerView.getUint32(8, true)) * 3 * 2;
 				}
-				if (total) callbacksRef.current.onProgress(Math.min(1, read / total));
+				if (total) {
+					const fraction = Math.min(1, read / total);
+					callbacksRef.current.onProgress(fraction);
+					if (readoutRef.current) {
+						readoutRef.current.textContent = `${loadingText} · ${Math.round(fraction * 100)}%`;
+					}
+				}
 			}
 
 			const full = new Uint8Array(read);
@@ -229,6 +237,14 @@ const Brain3D = ({
 					),
 				);
 
+				// El tejido se construye a la vista: los puntos aparecen primero,
+				// las aristas se tienden después (drawRange crece sin tocar los
+				// buffers ya parseados), y recién cuando termina se avisa onReady
+				// — que dispara el barrido naranja en NervousSystem. Con
+				// reduced-motion salta directo al estado final.
+				cloud.setDrawRange(0, reducedMotion ? pointCount : 0);
+				edgesGeo.setDrawRange(0, reducedMotion ? edgeCount : 0);
+
 				const total = positions.length / 3;
 				const sparkPositions = new Float32Array(SPONTANEOUS * 3);
 				const sparkColors = new Float32Array(SPONTANEOUS * 3);
@@ -258,17 +274,39 @@ const Brain3D = ({
 						blending: THREE.AdditiveBlending,
 					}),
 				);
+				sparks.visible = reducedMotion;
 				group.add(sparks);
 
-				if (readoutRef.current) {
-					readoutRef.current.textContent = `${sections.length} ${activityText}`;
-				}
+				const finish = () => {
+					if (readoutRef.current) {
+						readoutRef.current.textContent = `${sections.length} ${activityText}`;
+					}
+					if (alive) callbacksRef.current.onReady();
+				};
 
-				requestAnimationFrame(() =>
-					requestAnimationFrame(() => {
-						if (alive) callbacksRef.current.onReady();
-					}),
-				);
+				if (reducedMotion) {
+					requestAnimationFrame(() => requestAnimationFrame(finish));
+				} else {
+					const REVEAL_MS = 900;
+					const start = performance.now();
+					const step = (now: number) => {
+						if (!alive) return;
+						const t = Math.min(1, (now - start) / REVEAL_MS);
+						const { points, edges } = revealCounts(easeOutCubic(t), pointCount, edgeCount);
+						cloud.setDrawRange(0, points);
+						edgesGeo.setDrawRange(0, edges);
+
+						if (t < 1) {
+							revealRaf = requestAnimationFrame(step);
+						} else {
+							cloud.setDrawRange(0, pointCount);
+							edgesGeo.setDrawRange(0, edgeCount);
+							if (sparks) sparks.visible = true;
+							finish();
+						}
+					};
+					revealRaf = requestAnimationFrame(step);
+				}
 			})
 			.catch((e) => {
 				console.error("Could not load the brain tissue:", e);
@@ -586,6 +624,7 @@ const Brain3D = ({
 
 		return () => {
 			alive = false;
+			if (revealRaf) cancelAnimationFrame(revealRaf);
 			if (scrollRequestId) cancelAnimationFrame(scrollRequestId);
 			window.removeEventListener("scroll", onScroll);
 			visibilityObserver.disconnect();
