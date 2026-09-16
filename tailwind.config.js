@@ -46,8 +46,6 @@ module.exports = {
 			sinapsis: "rgb(var(--sinapsis) / <alpha-value>)",
 			impulso: "rgb(var(--impulso) / <alpha-value>)",
 
-			"slate-800": "#040508",
-
 			transparent: "transparent",
 			current: "currentColor",
 			white: "#fff",

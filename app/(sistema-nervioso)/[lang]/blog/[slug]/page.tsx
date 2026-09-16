@@ -28,6 +28,7 @@ interface CoverImage extends SanityImageObject {
 }
 
 interface Post {
+	_updatedAt?: string;
 	title: string;
 	publishedAt: string;
 	coverImage?: CoverImage;
@@ -139,7 +140,10 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 		},
 		url: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, `/blog/${slug}`)}`,
 		datePublished: post.publishedAt ?? undefined,
-		dateModified: post.publishedAt ?? undefined,
+		// _updatedAt de Sanity: antes esto repetía publishedAt, o sea que le
+		// declaraba a Google que ninguna nota se editó nunca — justo la señal
+		// que usa para saber si vale la pena volver a rastrearla.
+		dateModified: post._updatedAt ?? post.publishedAt ?? undefined,
 		// El contenido del blog es español, siempre — no lo que declare la ruta.
 		inLanguage: DEFAULT_LANGUAGE,
 		...(post.coverImage && {

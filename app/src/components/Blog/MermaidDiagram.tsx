@@ -32,7 +32,7 @@ export default function MermaidDiagram({ code }: { code: string }) {
 	return (
 		<div
 			ref={ref}
-			className='my-6 flex justify-center overflow-x-auto rounded-lg bg-slate-800/50 p-4'
+			className='my-6 flex justify-center overflow-x-auto rounded-lg bg-tejido-hondo/60 p-4'
 		/>
 	);
 }
