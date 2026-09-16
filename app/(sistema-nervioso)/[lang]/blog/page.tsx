@@ -46,7 +46,7 @@ const BlogIndexPage = async ({ params }: { params: Promise<{ lang: Language }> }
 	return (
 		<main className='sistema min-h-screen px-5 py-12 md:px-16 md:py-16'>
 			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
-				<div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
+				<div className='entra entra-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
 					<Link
 						href={localizedPath(lang, "/")}
 						className='font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
@@ -61,7 +61,7 @@ const BlogIndexPage = async ({ params }: { params: Promise<{ lang: Language }> }
 					</Link>
 				</div>
 
-				<header className='flex flex-col gap-2'>
+				<header className='entra entra-2 flex flex-col gap-2'>
 					<h1 className='m-0 text-3xl md:text-5xl'>{d.blog.titulo}</h1>
 					<span className='font-glosa text-lg italic leading-none text-mielina'>
 						{d.blog.glosa}
@@ -71,7 +71,7 @@ const BlogIndexPage = async ({ params }: { params: Promise<{ lang: Language }> }
 					</p>
 				</header>
 
-				<div className='membrana flex flex-col'>
+				<div className='entra entra-3 membrana flex flex-col'>
 					{posts.length === 0 ? (
 						<p className='m-0 px-6 py-8 font-glosa text-[16px] italic text-mielina'>
 							{d.blog.vacio}

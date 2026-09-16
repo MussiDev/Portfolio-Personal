@@ -60,7 +60,7 @@ const TagPage = async ({ params }: PageProps) => {
 	return (
 		<main className='sistema min-h-screen px-5 py-12 md:px-16 md:py-16'>
 			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
-				<div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
+				<div className='entra entra-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
 					<Link
 						href={localizedPath(lang, "/blog")}
 						className='font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
@@ -75,14 +75,14 @@ const TagPage = async ({ params }: PageProps) => {
 					</Link>
 				</div>
 
-				<header className='flex flex-col gap-2'>
+				<header className='entra entra-2 flex flex-col gap-2'>
 					<span className='font-pieza text-[10px] uppercase tracking-[.16em] text-sinapsis'>
 						{d.blog.etiqueta}
 					</span>
 					<h1 className='m-0 text-2xl md:text-4xl'>{d.blog.porEtiqueta(tag)}</h1>
 				</header>
 
-				<div className='membrana flex flex-col'>
+				<div className='entra entra-3 membrana flex flex-col'>
 					{posts.map((post, i) => (
 						<article
 							key={post._id}

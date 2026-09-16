@@ -238,7 +238,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 
 	return (
 		<>
-		<article id='post-article' className='membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
+		<article id='post-article' className='entra entra-2 membrana marcas relative px-7 py-9 md:px-14 md:py-14'>
 			<script
 				type='application/ld+json'
 				dangerouslySetInnerHTML={{ __html: toJsonLdScript(jsonLd) }}
@@ -390,7 +390,7 @@ export default async function PostPage({ params }: PageProps) {
 		<main className='sistema min-h-screen px-5 py-12 md:px-16 md:py-16'>
 			<ReadingProgress targetId='post-article' />
 			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
-				<div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
+				<div className='entra entra-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
 					<Link
 						href={localizedPath(lang, "/blog")}
 						className='inline-flex w-fit items-center gap-2 font-rotulo text-xs font-semibold uppercase tracking-[.12em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
