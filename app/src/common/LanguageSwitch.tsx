@@ -24,17 +24,25 @@ const LanguageSwitch = ({ current }: { current: Language }) => {
 			{LANGUAGES.map((lang, i) => (
 				<span key={lang} className='flex items-center gap-2'>
 					{i > 0 && <span className='text-sinapsis/40'>/</span>}
+					{/* El área táctil vive en el <a> (min-h-11 = 44px) y el
+					subrayado en un <span> adentro: si el padding fuera al link,
+					el borde inferior se despegaría del texto. Antes estos links
+					medían 19px, y son la única forma de cambiar de idioma. */}
 					<Link
 						href={pathFor(pathname, lang)}
 						hrefLang={lang}
 						aria-current={lang === current ? "true" : undefined}
-						className={
-							lang === current
-								? "border-b border-impulso pb-0.5 text-impulso"
-								: "text-mielina hover:text-sinapsis"
-						}
+						className='inline-flex min-h-11 items-center px-1'
 					>
-						{lang.toUpperCase()}
+						<span
+							className={
+								lang === current
+									? "border-b border-impulso pb-0.5 text-impulso"
+									: "text-mielina hover:text-sinapsis"
+							}
+						>
+							{lang.toUpperCase()}
+						</span>
 					</Link>
 				</span>
 			))}
