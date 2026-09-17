@@ -2,13 +2,12 @@
 
 import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
-import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
 import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
 import { aPantalla, pesosVisibles, puntosDelCallout } from "./brainLayout";
 import { crearEscenaDelCerebro } from "./brainScene";
+import { construirTejido, type Tejido } from "./brainTissue";
 import { relatedTo } from "./relations";
 import { leerTejido } from "./tissueLoader";
-import { easeOutCubic, revealCounts } from "./tissueReveal";
 
 export type Section = {
 	label: string;
@@ -30,10 +29,7 @@ const Z_HERO = 3.6;
 const Z_STEP = 4.3;
 const SHIFT = 0.24;
 
-const TISSUE = new THREE.Color(0x7c98be);
 const IMPULSE = new THREE.Color(0xff6a3a);
-
-const SPONTANEOUS = 120;
 
 const Brain3D = ({
 	sections,
@@ -135,9 +131,7 @@ const Brain3D = ({
 		resizeObserver.observe(mount);
 
 		let alive = true;
-		let sparks: THREE.Points | null = null;
-		let phases: number[] = [];
-		let revealRaf = 0;
+		let tejido: Tejido | null = null;
 
 		let intersecting = true;
 		let pageVisible = document.visibilityState !== "hidden";
@@ -157,123 +151,29 @@ const Brain3D = ({
 		})
 			.then((buffer) => {
 				if (!alive || !buffer) return;
-
-				const { pointCount, edgeCount, min, range } = parseBinHeader(buffer);
-				const raw = new Uint16Array(buffer, BIN_HEADER_SIZE);
-
-				const positions = unpackVectors(raw, 0, pointCount, min, range);
-				const edges = unpackVectors(raw, pointCount * 3, edgeCount, min, range);
-
-				const edgesGeo = new THREE.BufferGeometry();
-				edgesGeo.setAttribute("position", new THREE.BufferAttribute(edges, 3));
-				group.add(
-					new THREE.LineSegments(
-						edgesGeo,
-						new THREE.LineBasicMaterial({
-							color: TISSUE,
-							transparent: true,
-							opacity: 0.14,
-							depthWrite: false,
-							blending: THREE.AdditiveBlending,
-						}),
-					),
-				);
-
-				const cloud = new THREE.BufferGeometry();
-				cloud.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-				group.add(
-					new THREE.Points(
-						cloud,
-						new THREE.PointsMaterial({
-							color: TISSUE,
-							size: 0.008,
-							sizeAttenuation: true,
-							transparent: true,
-							opacity: 0.6,
-							depthWrite: false,
-						}),
-					),
-				);
-
-				// El tejido se construye a la vista: los puntos aparecen primero,
-				// las aristas se tienden después (drawRange crece sin tocar los
-				// buffers ya parseados), y recién cuando termina se avisa onReady
-				// — que dispara el barrido naranja en NervousSystem. Con
-				// reduced-motion salta directo al estado final.
-				cloud.setDrawRange(0, reducedMotion ? pointCount : 0);
-				edgesGeo.setDrawRange(0, reducedMotion ? edgeCount : 0);
-
-				const total = positions.length / 3;
-				const sparkPositions = new Float32Array(SPONTANEOUS * 3);
-				const sparkColors = new Float32Array(SPONTANEOUS * 3);
-				phases = [];
-				for (let i = 0; i < SPONTANEOUS; i += 1) {
-					const k = Math.floor(Math.random() * total) * 3;
-					phases.push(Math.random() * Math.PI * 2);
-					sparkPositions[i * 3] = positions[k];
-					sparkPositions[i * 3 + 1] = positions[k + 1];
-					sparkPositions[i * 3 + 2] = positions[k + 2];
-				}
-				const sparksGeo = new THREE.BufferGeometry();
-				sparksGeo.setAttribute(
-					"position",
-					new THREE.BufferAttribute(sparkPositions, 3),
-				);
-				sparksGeo.setAttribute("color", new THREE.BufferAttribute(sparkColors, 3));
-				sparks = new THREE.Points(
-					sparksGeo,
-					new THREE.PointsMaterial({
-						size: 0.03,
-						sizeAttenuation: true,
-						transparent: true,
-						opacity: 0.95,
-						vertexColors: true,
-						depthWrite: false,
-						blending: THREE.AdditiveBlending,
-					}),
-				);
-				sparks.visible = reducedMotion;
-				group.add(sparks);
-
-				const finish = () => {
-					if (readoutRef.current) {
-						readoutRef.current.textContent = `${sections.length} ${activityText}`;
-					}
-					if (alive) callbacksRef.current.onReady();
-					// En idle: compilar los shaders del bloom justo cuando el
-					// velo se levanta metería un tirón en el primer frame que
-					// el usuario llega a ver. El timeout evita que se posponga
-					// para siempre si la página nunca queda ociosa.
-					if (typeof requestIdleCallback === "function") {
-						bloomIdle = requestIdleCallback(escena.encenderBloom, { timeout: 2000 });
-					} else {
-						bloomIdle = window.setTimeout(escena.encenderBloom, 300);
-					}
-				};
-
-				if (reducedMotion) {
-					requestAnimationFrame(() => requestAnimationFrame(finish));
-				} else {
-					const REVEAL_MS = 900;
-					const start = performance.now();
-					const step = (now: number) => {
-						if (!alive) return;
-						const t = Math.min(1, (now - start) / REVEAL_MS);
-						const { points, edges } = revealCounts(easeOutCubic(t), pointCount, edgeCount);
-						cloud.setDrawRange(0, points);
-						edgesGeo.setDrawRange(0, edges);
-
-						if (t < 1) {
-							revealRaf = requestAnimationFrame(step);
-						} else {
-							cloud.setDrawRange(0, pointCount);
-							edgesGeo.setDrawRange(0, edgeCount);
-							if (sparks) sparks.visible = true;
-							finish();
+				// La geometría y su reveal viven en brainTissue.ts. Lo que queda acá
+				// es la coordinación: avisar al hero que puede levantar el velo y
+				// programar el bloom para después del primer frame útil.
+				tejido = construirTejido(group, buffer, {
+					reducedMotion,
+					sigueVivo: () => alive,
+					alTerminar: () => {
+						if (readoutRef.current) {
+							readoutRef.current.textContent = `${sections.length} ${activityText}`;
 						}
-					};
-					revealRaf = requestAnimationFrame(step);
-				}
+						if (!alive) return;
+						callbacksRef.current.onReady();
+						// En idle: compilar los shaders del bloom justo cuando el velo
+						// se levanta metería un tirón en el primer frame que el usuario
+						// llega a ver. El timeout evita que se posponga para siempre si
+						// la página nunca queda ociosa.
+						if (typeof requestIdleCallback === "function") {
+							bloomIdle = requestIdleCallback(escena.encenderBloom, { timeout: 2000 });
+						} else {
+							bloomIdle = window.setTimeout(escena.encenderBloom, 300);
+						}
+					},
+				});
 			})
 			.catch((e) => {
 				console.error("Could not load the brain tissue:", e);
@@ -383,7 +283,6 @@ const Brain3D = ({
 		const targetCamera = new THREE.Vector3();
 		const targetLookAt = new THREE.Vector3();
 		const currentLookAt = new THREE.Vector3(0, 0, 0);
-		const colorAux = new THREE.Color();
 
 		const anchorScreen = sections.map(() => ({ x: 0, y: 0 }));
 
@@ -461,21 +360,7 @@ const Brain3D = ({
 
 			group.updateMatrixWorld(true);
 
-			if (sparks && !reducedMotion) {
-				const col = sparks.geometry.getAttribute(
-					"color",
-				) as THREE.BufferAttribute;
-				for (let i = 0; i < SPONTANEOUS; i += 1) {
-					const f = (Math.sin(frame / 42 + phases[i]) + 1) / 2;
-					const spike = Math.pow(f, 7);
-					colorAux
-						.copy(TISSUE)
-						.lerp(IMPULSE, spike)
-						.multiplyScalar(0.25 + spike);
-					col.setXYZ(i, colorAux.r, colorAux.g, colorAux.b);
-				}
-				col.needsUpdate = true;
-			}
+			tejido?.latir(frame);
 
 			const zHero = Math.max(Z_HERO, escena.zMinima);
 			const zStep = Math.max(Z_STEP, escena.zMinima);
@@ -612,7 +497,7 @@ const Brain3D = ({
 
 		return () => {
 			alive = false;
-			if (revealRaf) cancelAnimationFrame(revealRaf);
+			tejido?.cancelar();
 			if (bloomIdle) {
 				if (typeof cancelIdleCallback === "function") cancelIdleCallback(bloomIdle);
 				else clearTimeout(bloomIdle);
