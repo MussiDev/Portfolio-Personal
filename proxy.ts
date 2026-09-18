@@ -46,6 +46,16 @@ export function proxy(req: NextRequest) {
 		return NextResponse.next();
 	}
 
+	// Las tarjetas de Open Graph se sirven tal cual, con prefijo de idioma o
+	// sin él. Next arma la URL del og:image con la ruta interna (/es/...), y
+	// la regla de abajo la redirigía con un 308: cada scraper (LinkedIn,
+	// WhatsApp, Slack) pagaba un redirect antes de ver la imagen, y no todos
+	// lo siguen. Una imagen no es contenido duplicado; no hay nada que
+	// canonicalizar acá.
+	if (/\/(opengraph|twitter)-image/.test(pathname)) {
+		return NextResponse.next();
+	}
+
 	for (const lang of LANGUAGES) {
 		if (lang === DEFAULT_LANGUAGE) continue;
 		const prefix = `/${lang}`;
