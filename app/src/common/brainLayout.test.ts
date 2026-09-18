@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { aPantalla, pesosVisibles, puntosDelCallout } from "./brainLayout.ts";
+import { aPantalla, pesosVisibles, puntoSobreCallout, puntosDelCallout } from "./brainLayout.ts";
 
 const origen = { left: 0, top: 0 };
 
@@ -104,4 +104,26 @@ test("un viewport de alto 0 no produce NaN", () => {
 	assert.deepEqual(pesos, []);
 	assert.equal(total, 0);
 	assert.equal(fuerza, 0);
+});
+
+test("el pulso arranca en la etiqueta, pasa por el codo y llega al anclaje", () => {
+	const puntos = "0,0 100,0 100,200";
+	assert.deepEqual(puntoSobreCallout(puntos, 0), { x: 0, y: 0 });
+	assert.deepEqual(puntoSobreCallout(puntos, 0.35), { x: 100, y: 0 });
+	const casiFin = puntoSobreCallout(puntos, 0.9999)!;
+	assert.ok(Math.abs(casiFin.x - 100) < 1e-6 && casiFin.y > 199.9);
+});
+
+test("a mitad del primer tramo el pulso está a mitad del horizontal", () => {
+	assert.deepEqual(puntoSobreCallout("0,0 100,0 100,200", 0.175), { x: 50, y: 0 });
+});
+
+test("sin una polilínea válida no hay pulso, en vez de NaN", () => {
+	// Antes de la primera medición el atributo points no existe; una etiqueta
+	// fuera de pantalla puede dejar menos vértices. Ninguno de los dos casos
+	// puede terminar en un cx="NaN" en el DOM.
+	assert.equal(puntoSobreCallout(null, 0.5), null);
+	assert.equal(puntoSobreCallout("", 0.5), null);
+	assert.equal(puntoSobreCallout("0,0 100,0", 0.5), null);
+	assert.equal(puntoSobreCallout("0,0 x,0 100,200", 0.5), null);
 });

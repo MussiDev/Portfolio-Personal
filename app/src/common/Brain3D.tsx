@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
-import { aPantalla, pesosVisibles, puntosDelCallout } from "./brainLayout";
+import {
+	aPantalla,
+	pesosVisibles,
+	puntoSobreCallout,
+	puntosDelCallout,
+} from "./brainLayout";
+import { crearMarcadores } from "./brainMarkers";
 import { crearEscenaDelCerebro } from "./brainScene";
 import { construirTejido, type Tejido } from "./brainTissue";
 import { relatedTo } from "./relations";
@@ -24,12 +30,9 @@ export type Section = {
 
 const BASE_ROTATION = -Math.PI / 2;
 
-
 const Z_HERO = 3.6;
 const Z_STEP = 4.3;
 const SHIFT = 0.24;
-
-const IMPULSE = new THREE.Color(0xff6a3a);
 
 const Brain3D = ({
 	sections,
@@ -180,51 +183,8 @@ const Brain3D = ({
 				callbacksRef.current.onReady();
 			});
 
-		const axonGeo = new THREE.BufferGeometry();
-		axonGeo.setAttribute(
-			"position",
-			new THREE.BufferAttribute(new Float32Array(6), 3),
-		);
-		const axonMat = new THREE.LineBasicMaterial({
-			color: IMPULSE,
-			transparent: true,
-			opacity: 0,
-			blending: THREE.AdditiveBlending,
-			depthWrite: false,
-		});
-		scene.add(new THREE.Line(axonGeo, axonMat));
-
-		const impulseGeo = new THREE.BufferGeometry();
-		impulseGeo.setAttribute(
-			"position",
-			new THREE.BufferAttribute(new Float32Array(3), 3),
-		);
-		const impulseMat = new THREE.PointsMaterial({
-			color: IMPULSE,
-			size: 0.09,
-			sizeAttenuation: true,
-			transparent: true,
-			opacity: 0,
-			depthWrite: false,
-			blending: THREE.AdditiveBlending,
-		});
-		scene.add(new THREE.Points(impulseGeo, impulseMat));
-
-		const pinGeo = new THREE.BufferGeometry();
-		pinGeo.setAttribute(
-			"position",
-			new THREE.BufferAttribute(new Float32Array(3), 3),
-		);
-		const pinMat = new THREE.PointsMaterial({
-			color: IMPULSE,
-			size: 0.16,
-			sizeAttenuation: true,
-			transparent: true,
-			opacity: 0,
-			depthWrite: false,
-			blending: THREE.AdditiveBlending,
-		});
-		scene.add(new THREE.Points(pinGeo, pinMat));
+		// Axón, impulso y pin: la señal que va hacia la región activa.
+		const marcadores = crearMarcadores(scene, { reducedMotion });
 
 		const vector = new THREE.Vector3();
 		const anchorWorld = new THREE.Vector3();
@@ -331,7 +291,6 @@ const Brain3D = ({
 		};
 
 		let frame = 0;
-		let progress = 0;
 		let shift = 0;
 		let looping = false;
 		const animate = () => {
@@ -413,50 +372,25 @@ const Brain3D = ({
 			}
 
 			if (weight <= 0.001 && !choosing) {
-				axonMat.opacity += (0 - axonMat.opacity) * 0.1;
-				impulseMat.opacity += (0 - impulseMat.opacity) * 0.1;
-				pinMat.opacity += (0 - pinMat.opacity) * 0.1;
+				marcadores.apagar();
 				anchorRef.current.ready = false;
-				progress = 0;
 			} else {
-				const pos = axonGeo.getAttribute("position") as THREE.BufferAttribute;
-				pos.setXYZ(0, 0, group.position.y, 0);
-				pos.setXYZ(1, anchorWorld.x, anchorWorld.y, anchorWorld.z);
-				pos.needsUpdate = true;
-				axonMat.opacity += (0.5 * settled - axonMat.opacity) * 0.1;
-
-				const cp = pinGeo.getAttribute(
-					"position",
-				) as THREE.BufferAttribute;
-				cp.setXYZ(0, anchorWorld.x, anchorWorld.y, anchorWorld.z);
-				cp.needsUpdate = true;
-				const beat = reducedMotion ? 0 : Math.sin(frame / 30) * 0.25;
-				pinMat.opacity +=
-					((0.75 + beat) * settled - pinMat.opacity) * 0.12;
-
-				progress = reducedMotion ? 1 : (progress + 0.016) % 1;
-				const ip = impulseGeo.getAttribute("position") as THREE.BufferAttribute;
-				ip.setXYZ(
-					0,
-					anchorWorld.x * progress,
-					group.position.y + (anchorWorld.y - group.position.y) * progress,
-					anchorWorld.z * progress,
+				const progress = marcadores.apuntar(
+					anchorWorld,
+					group.position.y,
+					settled,
+					frame,
 				);
-				ip.needsUpdate = true;
-				impulseMat.opacity =
-					(reducedMotion ? 0.9 : Math.sin(progress * Math.PI)) * settled;
 
 				const pulseEl = pulseRef.current;
 				const line =
 					activeNow !== null ? calloutsRef.current[activeNow] : null;
-				const calloutPoints = line?.getAttribute("points")?.split(" ");
-				if (pulseEl && calloutPoints?.length === 3) {
-					const [p0, p1, p2] = calloutPoints.map((q) => q.split(",").map(Number));
-					const [a, b] = progress < 0.35 ? [p0, p1] : [p1, p2];
-					const u =
-						progress < 0.35 ? progress / 0.35 : (progress - 0.35) / 0.65;
-					pulseEl.setAttribute("cx", String(a[0] + (b[0] - a[0]) * u));
-					pulseEl.setAttribute("cy", String(a[1] + (b[1] - a[1]) * u));
+				// El pulso del SVG recorre el callout sincronizado con el impulso
+				// 3D; la interpolación sobre la polilínea está en brainLayout.
+				const enCallout = puntoSobreCallout(line?.getAttribute("points"), progress);
+				if (pulseEl && enCallout) {
+					pulseEl.setAttribute("cx", String(enCallout.x));
+					pulseEl.setAttribute("cy", String(enCallout.y));
 				}
 			}
 

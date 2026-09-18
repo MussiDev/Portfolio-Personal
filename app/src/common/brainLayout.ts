@@ -72,3 +72,33 @@ export const pesosVisibles = (
 
 	return { pesos, total, fuerza: Math.min(1, total) };
 };
+
+/**
+ * Qué fracción del viaje del pulso se pasa en el primer tramo del callout
+ * (el horizontal, que sale de la etiqueta hasta el codo). Es corto en
+ * píxeles pero se le da más de un tercio del tiempo: así el pulso "sale"
+ * de la etiqueta de forma visible antes de tirarse hacia el tejido.
+ */
+const PRIMER_TRAMO = 0.35;
+
+/**
+ * Dónde está el pulso sobre la polilínea del callout para un progreso 0..1.
+ * `null` si los puntos no son una polilínea de tres vértices (el callout
+ * todavía no se midió, o la etiqueta no está en pantalla).
+ */
+export const puntoSobreCallout = (
+	puntos: string | null | undefined,
+	progreso: number,
+): { x: number; y: number } | null => {
+	const p = puntos?.split(" ").map((q) => q.split(",").map(Number));
+	if (!p || p.length !== 3 || p.some((v) => v.length !== 2 || v.some(Number.isNaN))) {
+		return null;
+	}
+	const [p0, p1, p2] = p;
+	const enPrimero = progreso < PRIMER_TRAMO;
+	const [a, b] = enPrimero ? [p0, p1] : [p1, p2];
+	const u = enPrimero
+		? progreso / PRIMER_TRAMO
+		: (progreso - PRIMER_TRAMO) / (1 - PRIMER_TRAMO);
+	return { x: a[0] + (b[0] - a[0]) * u, y: a[1] + (b[1] - a[1]) * u };
+};
