@@ -32,7 +32,24 @@ const esperarRevelado = async (page: Page) => {
 	);
 };
 
-const analizar = (page: Page) =>
+/**
+ * axe trata como oculto todo lo que está dentro de un <details> cerrado,
+ * aunque el CSS lo muestre. Los seis tiempos de un proyecto se ven abiertos
+ * en desktop solo por CSS, así que axe auditaba el primero y salteaba los
+ * otros cinco: 39 nodos evaluados en vez de 95, y dos violaciones reales
+ * (el diagrama sin nombre y sin foco) que nunca aparecían. Se abren todos
+ * antes de auditar: lo plegado también lo va a usar alguien.
+ */
+const analizar = async (page: Page) => {
+	await page.evaluate(() =>
+		document.querySelectorAll("details").forEach((d) => {
+			d.open = true;
+		}),
+	);
+	return analizarTalCual(page);
+};
+
+const analizarTalCual = (page: Page) =>
 	new AxeBuilder({ page })
 		.withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
 		// El canvas/WebGL del tejido es decoración marcada aria-hidden; axe
