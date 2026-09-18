@@ -25,6 +25,9 @@ const DICT = {
 		proyectos: {
 			sinEscribir: "sin escribir",
 			sinMedir: "sin medir",
+			leerCaso: "Leer el caso completo",
+			enSeisTiempos: "El caso, en seis tiempos",
+			volver: "Volver al inicio",
 		},
 		blog: {
 			titulo: "Blog",
@@ -137,6 +140,9 @@ const DICT = {
 		proyectos: {
 			sinEscribir: "not written",
 			sinMedir: "not measured",
+			leerCaso: "Read the full case",
+			enSeisTiempos: "The case, in six beats",
+			volver: "Back to home",
 		},
 		blog: {
 			titulo: "Blog",

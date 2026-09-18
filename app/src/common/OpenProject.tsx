@@ -75,16 +75,20 @@ const OpenProject = ({
 	unwritten,
 	unmeasured,
 	pendingLabel,
+	etapas,
 }: {
 	project: Project;
 	lang: Language;
 	unwritten: string;
 	unmeasured: string;
 	pendingLabel: string;
+	/** Qué tiempos mostrar. Por defecto, los seis. La home muestra solo el
+	 * problema como gancho; el caso completo vive en /proyectos/[slug]. */
+	etapas?: readonly (typeof STAGES)[number]["key"][];
 }) => (
 	<div className='membrana flex flex-col'>
 		<ol className='relative m-0 flex list-none flex-col gap-8 border-l-2 border-sinapsis/25 px-6 py-7 pl-9 sm:pl-11 md:px-8'>
-			{STAGES.map(({ key, label }, i) => {
+			{STAGES.filter(({ key }) => !etapas || etapas.includes(key)).map(({ key, label }, i) => {
 				const stage = project.tiempos[key];
 				const body = paragraphs(stage, lang);
 				const hasContent = stageHasContent(stage);

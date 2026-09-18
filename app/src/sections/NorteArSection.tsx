@@ -1,10 +1,11 @@
-import Image from "next/image";
+import Link from "next/link";
 
-import { t, type Language } from "../../../entities/i18n";
+import { localizedPath, t, type Language } from "../../../entities/i18n";
 import type Project from "../../../entities/project";
 import type { Dict } from "../i18n/dict";
 import OpenProject from "../common/OpenProject";
 import { STATUS_LABEL } from "../common/projects";
+import NorteArFigura from "./NorteArFigura";
 import { Step } from "./StepLayout";
 
 const NorteArSection = ({
@@ -43,13 +44,30 @@ const NorteArSection = ({
 					))}
 				</div>
 
+				{/*
+				 * En la home va solo el problema: es el gancho, y está escrito
+				 * desde el usuario. Los seis tiempos completos viven en
+				 * /proyectos/[slug], una URL que se puede compartir y que Google
+				 * puede indexar por sí sola — un ancla dentro de la home no.
+				 */}
 				<OpenProject
 					project={mainProject}
 					lang={lang}
 					unwritten={d.proyectos.sinEscribir}
 					unmeasured={d.proyectos.sinMedir}
 					pendingLabel={d.falta}
+					etapas={["problema"]}
 				/>
+
+				<Link
+					href={localizedPath(lang, `/proyectos/${mainProject.slug}`)}
+					className='inline-flex min-h-11 w-fit items-center font-rotulo text-xs font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
+				>
+					<span className='inline-flex items-center gap-2 border-b border-current pb-0.5'>
+						{d.proyectos.leerCaso}
+						<span aria-hidden='true'>→</span>
+					</span>
+				</Link>
 
 				<div className='hidden flex-wrap items-center gap-x-6 gap-y-2 lg:flex'>
 					{mainProject.enlaces?.map((e) => (
@@ -67,35 +85,7 @@ const NorteArSection = ({
 			</div>
 
 			<div className='min-w-0 flex flex-col gap-4'>
-				<figure className='membrana m-0 flex flex-col gap-0 overflow-hidden p-1.5'>
-					<Image
-						src='/image/nortear/margen.jpg'
-						alt={d.ui.altMargen}
-						width={1337}
-						height={151}
-						sizes='(max-width: 768px) 100vw, 42rem'
-						className='h-auto w-full rounded-[2px]'
-					/>
-					<figcaption className='flex flex-wrap items-baseline gap-x-3 px-4 pb-3 pt-3 font-pieza text-[10px] uppercase tracking-[.12em] text-mielina'>
-						<span className='text-impulso'>{d.ui.margenDelDia}</span>
-						<span>{d.ui.formulaMargen}</span>
-					</figcaption>
-
-					<details className='tiempo border-t border-sinapsis/15'>
-						<summary className='flex cursor-pointer list-none items-center gap-3 px-4 py-2.5 font-rotulo text-[10px] font-semibold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'>
-							{d.ui.verPanelCompleto}
-							<span className='marcador font-pieza text-[11px]' />
-						</summary>
-						<Image
-							src='/image/nortear/dashboard.jpg'
-							alt={d.ui.altPanel}
-							width={1568}
-							height={703}
-							sizes='(max-width: 768px) 100vw, 42rem'
-							className='h-auto w-full rounded-[2px]'
-						/>
-					</details>
-				</figure>
+				<NorteArFigura d={d} />
 			</div>
 		</div>
 	</Step>

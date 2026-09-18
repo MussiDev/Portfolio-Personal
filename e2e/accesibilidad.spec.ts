@@ -45,6 +45,7 @@ const rutas = [
 	["home es", "/"],
 	["home en", "/en"],
 	["listado del blog", "/blog"],
+	["caso de NorteAR", "/proyectos/nortear"],
 ] as const;
 
 for (const [nombre, ruta] of rutas) {

@@ -9,10 +9,24 @@ const STEPS = {
 	"/anterior": "/",
 };
 
-const siteRedirects = Object.entries(STEPS).flatMap(([from, to]) => [
-	{ source: from, destination: to, permanent: true },
-	{ source: `/en${from}`, destination: `/en${to.slice(1)}`, permanent: true },
+// Las máquinas del sitio anterior que hoy tienen página propia. Van ANTES
+// del comodín /maquinas/:slug (Next evalúa los redirects en orden). No se
+// redirige el comodín entero a /proyectos/:slug porque el sitio anterior
+// tenía ocho slugs y hoy existe uno: los otros siete terminarían en un 404
+// en vez de en la home.
+const PROYECTOS_CON_PAGINA = ["nortear"];
+const projectRedirects = PROYECTOS_CON_PAGINA.flatMap((slug) => [
+	{ source: `/maquinas/${slug}`, destination: `/proyectos/${slug}`, permanent: true },
+	{ source: `/en/maquinas/${slug}`, destination: `/en/proyectos/${slug}`, permanent: true },
 ]);
+
+const siteRedirects = [
+	...projectRedirects,
+	...Object.entries(STEPS).flatMap(([from, to]) => [
+		{ source: from, destination: to, permanent: true },
+		{ source: `/en${from}`, destination: `/en${to.slice(1)}`, permanent: true },
+	]),
+];
 
 // Si el endpoint de Web Vitals (app/src/common/WebVitals.tsx) es de otro
 // origen, hay que declararlo en connect-src o el sendBeacon se bloquea sin

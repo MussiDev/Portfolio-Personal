@@ -3,6 +3,7 @@ import { MetadataRoute } from "next";
 import { client } from "../sanity/lib/client";
 import { LANGUAGES, DEFAULT_LANGUAGE, localizedPath } from "../entities/i18n";
 import { SITE_URL } from "../entities/site";
+import { getProjects } from "./src/common/projects";
 
 const BASE_URL = SITE_URL;
 
@@ -57,6 +58,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 	return entries([
 		{ path: "/", changeFrequency: "weekly", priority: 1 },
+		// Traducidos de verdad (projects.json tiene es y en en cada tiempo):
+		// a diferencia del blog, van con hreflang a los dos idiomas.
+		...getProjects().map((project) => ({
+			path: `/proyectos/${project.slug}`,
+			changeFrequency: "monthly" as const,
+			priority: 0.9,
+		})),
 		{ path: "/blog", changeFrequency: "weekly", priority: 0.8, translated: false },
 
 		...posts.map((post) => ({
