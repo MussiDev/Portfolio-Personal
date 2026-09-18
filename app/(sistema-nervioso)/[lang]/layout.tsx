@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 
+import { BRAIN2D_PATH } from "../../src/common/brain2dAsset";
 import { BRAIN_BIN_PATH } from "../../src/common/brainAsset";
 import Cursor from "../../src/common/Cursor";
 import WebVitals from "../../src/common/WebVitals";
@@ -168,12 +169,13 @@ const websiteJsonLd = {
  * `crossOrigin` no es decorativo: sin él el preload queda en modo no-cors,
  * no matchea el fetch() de Brain3D, y el archivo se descarga dos veces.
  */
+// Cada viewport precarga SU cerebro: el 3D (466 KB) en desktop, la
+// proyección 2D (~27 KB) en mobile. Nunca los dos.
 const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si";
-if(matchMedia("(min-width: 768px)").matches){
 var l=document.createElement("link");
-l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href=${JSON.stringify(BRAIN_BIN_PATH)};
-document.head.appendChild(l);
-}`;
+l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";
+l.href=matchMedia("(min-width: 768px)").matches?${JSON.stringify(BRAIN_BIN_PATH)}:${JSON.stringify(BRAIN2D_PATH)};
+document.head.appendChild(l);`;
 
 const NervousSystemLayout = async ({
 	children,

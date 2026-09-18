@@ -28,6 +28,30 @@ test.describe("mobile", () => {
 		expect(pedidos, `mobile pidió assets de desktop:\n${pedidos.join("\n")}`).toEqual([]);
 	});
 
+	test("baja el cerebro 2D, una sola vez, por preload y liviano", async ({ page }) => {
+		const pedidos: string[] = [];
+		page.on("request", (r) => {
+			if (/cerebro-2d\.[a-f0-9]+\.bin/.test(r.url())) pedidos.push(r.url());
+		});
+		await page.goto("/", { waitUntil: "networkidle" });
+		await page.waitForTimeout(2500);
+
+		const recurso = await page.evaluate(() =>
+			performance
+				.getEntriesByType("resource")
+				.filter((r) => /cerebro-2d\.[a-f0-9]+\.bin/.test(r.name))
+				.map((r) => ({
+					iniciador: (r as PerformanceResourceTiming).initiatorType,
+					bytes: (r as PerformanceResourceTiming).encodedBodySize,
+				})),
+		);
+		expect(recurso, "el cerebro 2D tiene que pedirse exactamente una vez").toHaveLength(1);
+		// 'link': lo arrancó el preload del script de arranque, no el canvas
+		// al final de la hidratación.
+		expect(recurso[0].iniciador).toBe("link");
+		expect(recurso[0].bytes, "el punto era no bajar el .bin 3D de 466 KB").toBeLessThan(40 * 1024);
+	});
+
 	test("todo link de navegación llega al mínimo táctil", async ({ page }) => {
 		await page.goto("/");
 		// Incluye a propósito el switch de idioma: es un <nav> aparte y sus

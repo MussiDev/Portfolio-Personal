@@ -106,6 +106,14 @@ const nextConfig = {
 					{ key: "Cache-Control", value: "public, max-age=31536000, immutable" },
 				],
 			},
+			{
+				// La proyección 2D de mobile (scripts/prepare-brain-2d.mjs): mismo
+				// esquema de nombre con hash de contenido, mismo caché.
+				source: "/image/cerebro-2d.:hash([a-f0-9]{10}).bin",
+				headers: [
+					{ key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+				],
+			},
 		];
 	},
 };

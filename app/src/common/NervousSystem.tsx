@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useActiveStep } from "../hooks/useActiveStep";
 import { useHashEntry } from "../hooks/useHashEntry";
 import { useIsDesktop } from "../hooks/useIsDesktop";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useReveal } from "../hooks/useReveal";
 import { PARTICLES, useSignalCord } from "../hooks/useSignalCord";
 import { useStepKeyboard } from "../hooks/useStepKeyboard";
@@ -13,6 +14,9 @@ import BrainCanvas from "./BrainLazy";
 import { relatedTo } from "./relations";
 import type { Section } from "./Brain3D";
 import NervousSystemMobile from "./NervousSystemMobile";
+
+/** Cuánto dura encendida cada región en el recorrido del hero en mobile. */
+const CICLO_MS = 2800;
 
 const NervousSystem = ({
 	sections,
@@ -69,6 +73,66 @@ const NervousSystem = ({
 
 	const active = hover ?? activeStep;
 	const inHero = activeStep === null;
+
+	/**
+	 * El concepto en mobile.
+	 *
+	 * En desktop el cerebro es el índice y se descubre con el mouse: al
+	 * posarse en una región se enciende, muestra sus conexiones reales y las
+	 * etiquetas responden. En un teléfono no hay mouse, y sin esto el tejido
+	 * era un dibujo: seis nodos sin número, sin relación con la lista, y
+	 * nunca una región activa en el hero.
+	 *
+	 * Así que en el hero de mobile el tejido recorre las regiones solo — la
+	 * activa se enciende, se tienden sus conexiones, y la lista de abajo
+	 * responde igual que las etiquetas de desktop. Con teclado, enfocar una
+	 * fila la enciende y frena el recorrido. Con movimiento reducido no hay
+	 * recorrido: queda la 01 encendida, quieta.
+	 *
+	 * Va aparte de `active` a propósito: `active` también lo leen los atajos
+	 * de teclado, y un Enter no puede abrir la sección que el ciclo tenía
+	 * encendida en ese instante.
+	 */
+	const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+	const relaciones = useMemo(
+		() => sections.map((_section, i) => relatedTo(sections, i)),
+		[sections],
+	);
+	const [ciclo, setCiclo] = useState(0);
+	const [filaEnfocada, setFilaEnfocada] = useState<number | null>(null);
+	const demoMobile = isDesktop === false && inHero;
+
+	useEffect(() => {
+		if (!demoMobile || reducedMotion !== false || filaEnfocada !== null) return;
+		const id = window.setInterval(
+			() => setCiclo((c) => (c + 1) % sections.length),
+			CICLO_MS,
+		);
+		return () => window.clearInterval(id);
+	}, [demoMobile, reducedMotion, filaEnfocada, sections.length]);
+
+	useEffect(() => {
+		if (isDesktop !== false) return;
+		const onFocusIn = (e: FocusEvent) => {
+			const fila = (e.target as HTMLElement | null)?.closest?.<HTMLElement>("[data-region]");
+			setFilaEnfocada(fila ? Number(fila.dataset.region) : null);
+		};
+		document.addEventListener("focusin", onFocusIn);
+		return () => document.removeEventListener("focusin", onFocusIn);
+	}, [isDesktop]);
+
+	const regionHero = demoMobile ? (filaEnfocada ?? ciclo) : null;
+
+	// Las filas del <nav> mobile se renderizan en el server y no leen este
+	// estado: se les pasa como data-estado y el CSS hace el resto.
+	useEffect(() => {
+		const vinculadas = new Set(regionHero !== null ? relaciones[regionHero] : []);
+		document.querySelectorAll<HTMLElement>("[data-region]").forEach((el) => {
+			const i = Number(el.dataset.region);
+			el.dataset.estado =
+				i === regionHero ? "activo" : vinculadas.has(i) ? "vinculado" : "reposo";
+		});
+	}, [regionHero, relaciones]);
 	// Sincronizado en un efecto y no en el cuerpo del render: escribir un ref
 	// durante el render es un side effect en fase de render. Los consumidores
 	// (useStepKeyboard, useSignalCord) lo leen dentro de handlers y de un
@@ -139,7 +203,8 @@ const NervousSystem = ({
 				{isDesktop === false && (
 					<NervousSystemMobile
 						sectionCount={sections.length}
-						active={active}
+						active={inHero ? regionHero : active}
+						relaciones={relaciones}
 						anchorRef={anchorRef}
 						onReady={liftVeil}
 					/>
