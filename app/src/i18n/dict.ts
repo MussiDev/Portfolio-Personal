@@ -61,11 +61,12 @@ const DICT = {
 		},
 		hero: {
 			rol: "Frontend Engineer · Arquitectura y performance · Remoto",
-			// La promesa del hero. Es una afirmación concreta y verificable, no
-			// una descripción de puesto: el resto del sitio la demuestra — el
-			// bloque de descartes muestra qué NO construí y por qué, y los seis
-			// tiempos de NorteAR empiezan por el problema, no por el stack.
-			propuesta: "Antes de construir una pantalla, decido si el usuario la necesita.",
+			// La promesa del hero, en palabras del autor: se orienta al producto
+			// y a pensarlo para el usuario. El resto del sitio la demuestra — el
+			// bloque de descartes muestra qué NO se construyó y por qué, y los
+			// seis tiempos de NorteAR empiezan por el problema, no por el stack.
+			// Corta a propósito: en mobile comparte la pantalla con el cerebro.
+			propuesta: "Pienso el producto antes que el código.",
 			cta: "Hablemos",
 			abrir: "Abrir",
 			volver: "Volver",
@@ -179,7 +180,7 @@ const DICT = {
 		},
 		hero: {
 			rol: "Frontend Engineer · Architecture & performance · Remote",
-			propuesta: "Before I build a screen, I decide whether the user needs it.",
+			propuesta: "I think about the product before the code.",
 			cta: "Let's talk",
 			abrir: "Open",
 			volver: "Back",

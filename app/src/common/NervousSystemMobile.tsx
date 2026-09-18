@@ -31,6 +31,8 @@ const REVEAL_MS = 900;
 const MARGEN = 18;
 /** Alto de referencia para la densidad: a este tamaño se dibuja todo. */
 const ALTO_REFERENCIA = 300;
+/** Por debajo de este alto, los seis números se pisan entre sí. */
+const ALTO_PARA_NUMERAR_TODO = 150;
 
 const TISSUE_RGB = "124, 152, 190";
 const IMPULSE_RGB = "255, 106, 58";
@@ -227,6 +229,8 @@ const NervousSystemMobile = ({
 				return a ? { x: px(a[0]), y: py(a[1]) } : null;
 			};
 
+			const numerarTodas = alto >= ALTO_PARA_NUMERAR_TODO;
+
 			if (t >= 0.7) {
 				// Primero las conexiones, para que queden debajo de los nodos.
 				const origen = activeNow !== null ? enPantalla(activeNow) : null;
@@ -283,8 +287,12 @@ const NervousSystemMobile = ({
 					ctx.fill();
 
 					// El número de la sección, el mismo de la lista de abajo y de
-					// las etiquetas de desktop: la leyenda del mapa. A la izquierda
-					// del nodo si está pegado al borde derecho.
+					// las etiquetas de desktop: la leyenda del mapa. En un cerebro
+					// bajo (un iPhone SE deja ~130px) los seis números se pisan
+					// entre sí, así que se numeran solo las regiones encendidas;
+					// la lista de abajo sigue mostrando los seis.
+					if (!numerarTodas && !lit && !vinculada) continue;
+					// A la izquierda del nodo si está pegado al borde derecho.
 					const aLaIzquierda = p.x > width - 36;
 					ctx.font = `500 10px ${fuentePieza}`;
 					ctx.textBaseline = "middle";
