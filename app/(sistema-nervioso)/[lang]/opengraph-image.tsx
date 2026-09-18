@@ -1,42 +1,44 @@
 import { ImageResponse } from "next/og";
+
 import { isLanguage, LANGUAGES, type Language } from "../../../entities/i18n";
+import { SITE_URL } from "../../../entities/site";
+import { getDict } from "../../src/i18n/dict";
+
+/**
+ * La tarjeta que aparece cada vez que alguien comparte el sitio.
+ *
+ * Venía del concepto anterior (el taller): tipografías IBM Plex, un
+ * "DOC REG-01" y una bajada propia duplicada acá adentro. Ahora usa el
+ * mismo sistema que el sitio y que la tarjeta de NorteAR — Archivo,
+ * Instrument Serif, JetBrains Mono — y la bajada sale del diccionario: la
+ * tarjeta dice lo mismo que el hero, y si el hero cambia, la tarjeta
+ * también.
+ */
 
 export const generateStaticParams = () => LANGUAGES.map((lang) => ({ lang }));
 
-export const alt = "Joaquín Mussi - Frontend Engineer";
+export const alt = "Joaquín Mussi — Frontend Engineer";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const COPY: Record<Language, { tagline: string; fields: string; role: string; stack: string }> = {
-	es: {
-		tagline: "Arquitectura frontend y performance",
-		fields: "ROL  Frontend Engineer   STACK  Next.js · React · TypeScript · APIs .NET",
-		role: "Frontend Engineer",
-		stack: "Next.js · React · TypeScript · APIs .NET",
-	},
-	en: {
-		tagline: "Frontend architecture and performance",
-		fields: "ROLE  Frontend Engineer   STACK  Next.js · React · TypeScript · .NET APIs",
-		role: "Frontend Engineer",
-		stack: "Next.js · React · TypeScript · .NET APIs",
-	},
-};
+const TEJIDO = "#05070d";
+const SENAL = "#e8edf5";
+const MIELINA = "#9eacc1";
+const SINAPSIS = "#7c98be";
+const IMPULSO = "#ff6a3a";
 
-const TISSUE = "#05070d";
-const SIGNAL = "#e8edf5";
-const MYELIN = "#9eacc1";
-const SYNAPSE = "#7c98be";
-const IMPULSE = "#ff6a3a";
+const STACK = "Next.js · React · TypeScript · .NET";
 
-const loadFont = async (query: string, text: string): Promise<ArrayBuffer | null> => {
+const cargarFuente = async (query: string, texto: string): Promise<ArrayBuffer | null> => {
 	try {
 		const css = await fetch(
-			`https://fonts.googleapis.com/css2?family=${query}&text=${encodeURIComponent(text)}`,
+			`https://fonts.googleapis.com/css2?family=${query}&text=${encodeURIComponent(texto)}`,
 		).then((r) => r.text());
 		const url = css.match(/src: url\(([^)]+)\)/)?.[1];
 		if (!url) return null;
 		return await fetch(url).then((r) => r.arrayBuffer());
 	} catch {
+		// Sin red en build la tarjeta sale igual, con la fuente por defecto.
 		return null;
 	}
 };
@@ -44,14 +46,36 @@ const loadFont = async (query: string, text: string): Promise<ArrayBuffer | null
 export default async function Image({ params }: { params: Promise<{ lang: string }> }) {
 	const { lang } = await params;
 	const l: Language = isLanguage(lang) ? lang : "es";
-	const { tagline: TAGLINE, fields: FIELDS, role: ROLE, stack: STACK } = COPY[l];
-	const TITLE = "JOAQUÍN MUSSI";
+	const d = getDict(l);
 
-	const [label, prose, mono] = await Promise.all([
-		loadFont("IBM+Plex+Sans+Condensed:wght@700", TITLE + FIELDS),
-		loadFont("IBM+Plex+Serif:ital,wght@1,400", TAGLINE),
-		loadFont("IBM+Plex+Mono:wght@500", FIELDS + "01"),
+	const titulo = "JOAQUÍN MUSSI";
+	const bajante = "FRONTEND ENGINEER";
+	const propuesta = d.hero.propuesta;
+	// La misma etiqueta que la tabla de Contacto, no una inventada para acá.
+	const rotuloModalidad = d.campos.lugar.toUpperCase();
+	const modalidad = d.ui.remoto;
+	const dominio = new URL(SITE_URL).host.toUpperCase();
+
+	// Google devuelve solo los glifos de `text=`: toda palabra que vaya en
+	// cada fuente tiene que estar en su lista, o esa letra cae a la de
+	// sistema (ya pasó con la "D" de ESTADO en la tarjeta de NorteAR).
+	const [rotulo, glosa, pieza] = await Promise.all([
+		cargarFuente(
+			"Archivo:wdth,wght@112,800",
+			titulo + bajante + rotuloModalidad + "STACK" + dominio,
+		),
+		cargarFuente("Instrument+Serif:ital@1", propuesta),
+		cargarFuente("JetBrains+Mono:wght@500", STACK + modalidad),
 	]);
+
+	const campo = (etiqueta: string, valor: string) => (
+		<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+			<span style={{ fontFamily: "rotulo", fontSize: 13, letterSpacing: 2, color: MIELINA }}>
+				{etiqueta}
+			</span>
+			<span style={{ fontFamily: "pieza", fontSize: 20, color: SINAPSIS }}>{valor}</span>
+		</div>
+	);
 
 	return new ImageResponse(
 		(
@@ -61,89 +85,80 @@ export default async function Image({ params }: { params: Promise<{ lang: string
 					height: "100%",
 					display: "flex",
 					flexDirection: "column",
-					background: TISSUE,
+					background: TEJIDO,
 					backgroundImage:
-						`repeating-linear-gradient(to right, ${SYNAPSE}1f 0 1px, transparent 1px 32px),` +
-						`repeating-linear-gradient(to bottom, ${SYNAPSE}1f 0 1px, transparent 1px 32px)`,
+						`repeating-linear-gradient(to right, ${SINAPSIS}1f 0 1px, transparent 1px 32px),` +
+						`repeating-linear-gradient(to bottom, ${SINAPSIS}1f 0 1px, transparent 1px 32px)`,
 					padding: "72px",
 					position: "relative",
 				}}
 			>
-				{[
-					{ top: 32, left: 32, border: "top left" as const },
-					{ top: 32, right: 32, border: "top right" as const },
-					{ bottom: 32, left: 32, border: "bottom left" as const },
-					{ bottom: 32, right: 32, border: "bottom right" as const },
-				].map(({ border, ...pos }, i) => {
-					const [vSide, hSide] = border.split(" ") as ["top" | "bottom", "left" | "right"];
-					const stroke = `2px solid ${SYNAPSE}`;
+				{(["top left", "top right", "bottom left", "bottom right"] as const).map((esquina) => {
+					const [v, h] = esquina.split(" ") as ["top" | "bottom", "left" | "right"];
+					const trazo = `2px solid ${SINAPSIS}`;
 					return (
 						<div
-							key={i}
+							key={esquina}
 							style={{
 								position: "absolute",
 								width: 22,
 								height: 22,
 								opacity: 0.5,
-								...pos,
-								...(vSide === "top" ? { borderTop: stroke } : { borderBottom: stroke }),
-								...(hSide === "left" ? { borderLeft: stroke } : { borderRight: stroke }),
+								[v]: 32,
+								[h]: 32,
+								...(v === "top" ? { borderTop: trazo } : { borderBottom: trazo }),
+								...(h === "left" ? { borderLeft: trazo } : { borderRight: trazo }),
 							}}
 						/>
 					);
 				})}
 
 				<div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", gap: 28 }}>
+					<span style={{ fontFamily: "rotulo", fontSize: 15, letterSpacing: 3, color: IMPULSO }}>
+						{bajante}
+					</span>
 					<div
 						style={{
-							fontFamily: "label",
+							fontFamily: "rotulo",
 							fontSize: 96,
-							fontWeight: 700,
-							letterSpacing: 4,
-							color: SIGNAL,
-							lineHeight: 0.95,
+							fontWeight: 800,
+							color: SENAL,
+							lineHeight: 0.9,
 						}}
 					>
-						{TITLE}
+						{titulo}
 					</div>
 					<div
 						style={{
-							fontFamily: "prose",
+							fontFamily: "glosa",
 							fontStyle: "italic",
-							fontSize: 34,
-							color: MYELIN,
+							fontSize: 44,
+							lineHeight: 1.15,
+							color: SENAL,
+							maxWidth: 920,
+							// Sin esto la frase en español deja "necesita." sola en
+							// la segunda línea.
+							textWrap: "balance",
 						}}
 					>
-						{TAGLINE}
+						{propuesta}
 					</div>
 				</div>
 
 				<div
 					style={{
 						display: "flex",
-						borderTop: `2px solid ${SYNAPSE}`,
+						borderTop: `2px solid ${SINAPSIS}`,
 						paddingTop: 24,
 						gap: 56,
-						fontFamily: "mono",
 					}}
 				>
-					<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-						<span style={{ fontFamily: "label", fontSize: 13, letterSpacing: 2, color: MYELIN }}>
-							{l === "es" ? "ROL" : "ROLE"}
+					{campo("STACK", STACK)}
+					{campo(rotuloModalidad, modalidad)}
+					<div style={{ display: "flex", marginLeft: "auto", alignItems: "flex-end" }}>
+						<span style={{ fontFamily: "rotulo", fontSize: 18, letterSpacing: 2, color: MIELINA }}>
+							{dominio}
 						</span>
-						<span style={{ fontSize: 20, color: SYNAPSE }}>{ROLE}</span>
-					</div>
-					<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-						<span style={{ fontFamily: "label", fontSize: 13, letterSpacing: 2, color: MYELIN }}>
-							STACK
-						</span>
-						<span style={{ fontSize: 20, color: SYNAPSE }}>{STACK}</span>
-					</div>
-					<div style={{ display: "flex", flexDirection: "column", gap: 6, marginLeft: "auto" }}>
-						<span style={{ fontFamily: "label", fontSize: 13, letterSpacing: 2, color: MYELIN }}>
-							DOC
-						</span>
-						<span style={{ fontSize: 20, color: IMPULSE }}>REG-01</span>
 					</div>
 				</div>
 			</div>
@@ -151,9 +166,9 @@ export default async function Image({ params }: { params: Promise<{ lang: string
 		{
 			...size,
 			fonts: [
-				label && { name: "label", data: label, weight: 700 as const, style: "normal" as const },
-				prose && { name: "prose", data: prose, weight: 400 as const, style: "italic" as const },
-				mono && { name: "mono", data: mono, weight: 500 as const, style: "normal" as const },
+				rotulo && { name: "rotulo", data: rotulo, weight: 800 as const, style: "normal" as const },
+				glosa && { name: "glosa", data: glosa, weight: 400 as const, style: "italic" as const },
+				pieza && { name: "pieza", data: pieza, weight: 500 as const, style: "normal" as const },
 			].filter((f): f is Exclude<typeof f, false | null> => Boolean(f)),
 		},
 	);
