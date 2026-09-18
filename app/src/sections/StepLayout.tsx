@@ -5,14 +5,12 @@ export const Step = ({
 	title,
 	gloss,
 	fact,
-	wide,
 	children,
 }: {
 	n: number;
 	title: string;
 	gloss?: string;
 	fact?: string;
-	wide?: boolean;
 	children: ReactNode;
 }) => (
 	<section
@@ -22,9 +20,7 @@ export const Step = ({
 	>
 		<div
 			data-revelar
-			className={`pointer-events-auto ml-auto w-full ${
-				wide ? "max-w-[68rem] md:w-[86%]" : "max-w-[42rem] md:w-[54%]"
-			}`}
+			className='pointer-events-auto ml-auto w-full max-w-[42rem] md:w-[54%]'
 		>
 			<header className='mb-7 flex items-start gap-3 sm:gap-4 md:mb-9'>
 				<span
