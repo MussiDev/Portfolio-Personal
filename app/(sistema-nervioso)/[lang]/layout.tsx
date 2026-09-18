@@ -74,7 +74,9 @@ export const generateMetadata = async ({
 		manifest: "/manifest.json",
 		icons: {
 			icon: "/favicon.ico",
-			apple: "/favicon.ico",
+			// iOS usa este PNG para el ícono en la pantalla de inicio; un .ico lo
+			// ignora y hace una captura de la página en su lugar.
+			apple: "/icons/apple-touch-icon.png",
 		},
 		openGraph: {
 			type: "website",
@@ -190,7 +192,7 @@ const NervousSystemLayout = async ({
 			suppressHydrationWarning
 			className={`${label.variable} ${display.variable} ${mono.variable}`}
 		>
-				<body className='bg-tejido text-senal'>
+			<body className='bg-tejido text-senal'>
 				<a
 					href='#paso-1'
 					className='sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-impulso focus:px-4 focus:py-2 focus:font-rotulo focus:text-xs focus:font-bold focus:uppercase focus:tracking-[.12em] focus:text-tejido'
