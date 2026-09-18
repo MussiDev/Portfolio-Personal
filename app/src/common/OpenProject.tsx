@@ -75,6 +75,9 @@ const OpenProject = ({
 	unwritten,
 	unmeasured,
 	pendingLabel,
+	diagramLabel,
+	scrollHint,
+	codeLabel,
 	etapas,
 }: {
 	project: Project;
@@ -82,6 +85,9 @@ const OpenProject = ({
 	unwritten: string;
 	unmeasured: string;
 	pendingLabel: string;
+	diagramLabel: string;
+	scrollHint: string;
+	codeLabel: string;
 	/** Qué tiempos mostrar. Por defecto, los seis. La home muestra solo el
 	 * problema como gancho; el caso completo vive en /proyectos/[slug]. */
 	etapas?: readonly (typeof STAGES)[number]["key"][];
@@ -131,11 +137,21 @@ const OpenProject = ({
 								)}
 
 								{key === "mecanismo" && "diagrama" in stage && stage.diagrama && (
-									<BlueprintDiagram code={stage.diagrama} />
+									<BlueprintDiagram code={stage.diagrama} label={diagramLabel} pista={scrollHint} />
 								)}
 
 								{key === "mecanismo" && "codigo" in stage && stage.codigo && (
-									<pre className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'>
+									// Enfocable y con nombre: en pantallas angostas las líneas no
+									// entran y el bloque scrollea, y una zona que scrollea sin
+									// poder enfocarse queda fuera de alcance sin mouse. Siempre y
+									// no solo cuando desborda porque esto se renderiza en el server,
+									// donde el ancho no se conoce — igual que los bloques de GitHub.
+									<pre
+										tabIndex={0}
+										role='region'
+										aria-label={codeLabel}
+										className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'
+									>
 										{stage.codigo}
 									</pre>
 								)}

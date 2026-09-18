@@ -28,6 +28,9 @@ const DICT = {
 			leerCaso: "Leer el caso completo",
 			enSeisTiempos: "El caso, en seis tiempos",
 			volver: "Volver al inicio",
+			diagrama: "Diagrama del mecanismo",
+			deslizar: "Deslizá para ver el diagrama completo →",
+			codigo: "Fragmento de código del mecanismo",
 		},
 		blog: {
 			titulo: "Blog",
@@ -143,6 +146,9 @@ const DICT = {
 			leerCaso: "Read the full case",
 			enSeisTiempos: "The case, in six beats",
 			volver: "Back to home",
+			diagrama: "Mechanism diagram",
+			deslizar: "Scroll to see the whole diagram →",
+			codigo: "Mechanism code excerpt",
 		},
 		blog: {
 			titulo: "Blog",

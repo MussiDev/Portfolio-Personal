@@ -81,3 +81,29 @@ test("desde la home se llega al caso completo, y se vuelve al mismo paso", async
 		.poll(() => page.evaluate(() => Math.round(document.getElementById("paso-2")!.getBoundingClientRect().top)))
 		.toBeLessThan(5);
 });
+
+test("el diagrama se nombra, se enfoca y se recorre con el teclado cuando no entra", async ({ page }) => {
+	await page.goto("/proyectos/nortear");
+	// En mobile los tiempos arrancan plegados: se abre el del diagrama.
+	await page.evaluate(() => document.querySelectorAll("details").forEach((d) => (d.open = true)));
+	const diagrama = page.locator('[role="img"][aria-label]').filter({ has: page.locator("svg") });
+	await expect(diagrama).toHaveCount(1);
+	await expect(diagrama).toHaveAttribute("aria-label", /diagrama|diagram/i);
+
+	const desborda = await diagrama.evaluate((el) => el.scrollWidth > el.clientWidth + 1);
+	const pista = page.getByText(/deslizá para ver|scroll to see/i);
+	if (!desborda) {
+		// Si entra, no hay nada que avisar ni un tab stop que no haga nada.
+		await expect(pista).toHaveCount(0);
+		await expect(diagrama).not.toHaveAttribute("tabindex", "0");
+		return;
+	}
+
+	await expect(pista).toBeVisible();
+	await diagrama.focus();
+	await expect(diagrama).toBeFocused();
+	const antes = await diagrama.evaluate((el) => el.scrollLeft);
+	await page.keyboard.press("ArrowRight");
+	await page.keyboard.press("ArrowRight");
+	await expect.poll(() => diagrama.evaluate((el) => el.scrollLeft)).toBeGreaterThan(antes);
+});

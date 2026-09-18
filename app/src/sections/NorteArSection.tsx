@@ -50,6 +50,9 @@ const NorteArSection = ({
 				unwritten={d.proyectos.sinEscribir}
 				unmeasured={d.proyectos.sinMedir}
 				pendingLabel={d.falta}
+				diagramLabel={d.proyectos.diagrama}
+				scrollHint={d.proyectos.deslizar}
+				codeLabel={d.proyectos.codigo}
 				etapas={["problema"]}
 			/>
 
