@@ -74,7 +74,7 @@ const NorteArSection = ({
 						rel={e.externo ? "noreferrer" : undefined}
 						className='inline-flex min-h-11 items-center font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
 					>
-						<span className='border-b border-current pb-0.5'>{t(e.etiqueta, lang)} ↗</span>
+						<span className='border-b border-current pb-0.5'>{t(e.etiqueta, lang)}</span>
 					</a>
 				))}
 			</div>

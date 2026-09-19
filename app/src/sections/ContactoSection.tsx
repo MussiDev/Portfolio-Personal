@@ -83,7 +83,6 @@ const ContactoSection = ({
 							className='border-b border-sinapsis pb-0.5 font-rotulo text-sm font-bold uppercase tracking-[.1em] text-sinapsis transition-colors duration-200 ease-impulso hover:border-impulso hover:text-impulso'
 						>
 							{text}
-							{external && " ↗"}
 						</a>
 					))}
 				</div>

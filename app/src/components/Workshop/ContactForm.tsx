@@ -1,30 +1,28 @@
 "use client";
 
-import React, {
-	Suspense,
-	lazy,
-	useActionState,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import Script from "next/script";
+import { useActionState, useEffect, useRef, useState } from "react";
 
-import { useIsMounted, useMediaQuery } from "../../hooks/useMediaQuery";
 import { shouldBlockSubmission } from "./captchaGate";
-
-const ReCAPTCHA = lazy(() => import("react-google-recaptcha"));
 
 type State = { ok: boolean | null; message: string };
 
+declare global {
+	interface Window {
+		grecaptcha?: {
+			ready: (callback: () => void) => void;
+			execute: (siteKey: string, options: { action: string }) => Promise<string>;
+		};
+	}
+}
+
+const CAPTCHA_ACTION = "contact";
+
 /**
  * El copy llega por props desde ContactoSection (server component), que ya
- * tiene el diccionario. Antes este archivo tenía su propio objeto COPY con
- * es/en hardcodeado: dos sistemas de i18n en paralelo, y una traducción que
- * se podía cambiar en dict.ts sin que este formulario se enterara.
- *
- * Por props y no importando getDict: esto es un client component, y un
- * import del diccionario mandaría los dos idiomas completos al bundle del
- * navegador para usar ocho strings.
+ * tiene el diccionario. Por props y no importando getDict: esto es un client
+ * component, y ese import mandaría los dos idiomas completos al bundle del
+ * navegador para usar un puñado de strings.
  */
 export type FormCopy = {
 	nombre: string;
@@ -35,37 +33,64 @@ export type FormCopy = {
 	ok: string;
 	error: string;
 	captcha: string;
+	proteccion: string;
+	privacidad: string;
+	y: string;
+	terminos: string;
+	deGoogle: string;
 };
 
 const fieldClass =
 	"w-full border border-sinapsis bg-membrana px-4 py-2.5 font-rotulo text-base text-senal placeholder:text-mielina/70 focus:border-impulso focus:outline-none focus:ring-2 focus:ring-impulso/40 transition-colors duration-200 ease-impulso";
 
-const labelClass =
-	"font-rotulo text-[11px] uppercase tracking-[.14em] text-mielina";
+const labelClass = "font-rotulo text-[11px] uppercase tracking-[.14em] text-mielina";
+
+const linkClass = "underline decoration-sinapsis/50 hover:text-impulso";
+
+/**
+ * reCAPTCHA v3: no hay widget. La clave registrada en Google es v3, y un
+ * widget v2 (el checkbox de antes) Google se niega a montarlo con una clave
+ * v3 — por eso el captcha nunca apareció en producción. Acá se pide un token
+ * al enviar y se verifica en el server (/api/verify-captcha) con umbral de
+ * score y chequeo de acción.
+ */
+const getCaptchaToken = async (siteKey: string): Promise<string | null> => {
+	if (!window.grecaptcha) return null;
+	try {
+		return await new Promise<string>((resolve, reject) => {
+			window.grecaptcha!.ready(() => {
+				window.grecaptcha!.execute(siteKey, { action: CAPTCHA_ACTION }).then(resolve, reject);
+			});
+		});
+	} catch {
+		return null;
+	}
+};
+
+const verifyCaptcha = async (siteKey: string): Promise<boolean> => {
+	const token = await getCaptchaToken(siteKey);
+	if (!token) return false;
+	try {
+		const res = await fetch("/api/verify-captcha", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ token }),
+		});
+		if (!res.ok) return false;
+		const data = (await res.json()) as { success: boolean };
+		return data.success;
+	} catch {
+		return false;
+	}
+};
 
 const ContactForm = ({ copy }: { copy: FormCopy }) => {
-	const [captchaOk, setCaptchaOk] = useState(false);
 	const [wantsCaptcha, setWantsCaptcha] = useState(false);
-	// Suscripciones, no estado sincronizado a mano dentro de un efecto: el
-	// widget de reCAPTCHA no puede renderizarse en el server, y su tema
-	// sigue al del sistema.
-	const mounted = useIsMounted();
-	const darkTheme = useMediaQuery("(prefers-color-scheme: dark)") ?? false;
-	const boxRef = useRef<HTMLDivElement>(null);
 	const formRef = useRef<HTMLFormElement>(null);
-	const [compact, setCompact] = useState(false);
 	const sitekey = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
 
-	useEffect(() => {
-		const box = boxRef.current;
-		if (!box) return;
-		const decide = () => setCompact(box.clientWidth < 310);
-		decide();
-		const observer = new ResizeObserver(decide);
-		observer.observe(box);
-		return () => observer.disconnect();
-	}, []);
-
+	// El script de Google se pide recién cuando el formulario está por verse:
+	// nadie que no llegue al paso de contacto lo descarga.
 	useEffect(() => {
 		if (wantsCaptcha) return;
 		const form = formRef.current;
@@ -89,19 +114,24 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 		async (_prev, formData) => {
 			if (formData.get("lastName")) return { ok: true, message: copy.ok };
 
-			if (shouldBlockSubmission(sitekey, captchaOk)) {
-				return { ok: false, message: copy.captcha };
-			}
-
 			const serviceId = process.env.NEXT_PUBLIC_SERVICE_ID;
 			const templateId = process.env.NEXT_PUBLIC_TEMPLATE_ID;
 			const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
-
 			if (!serviceId || !templateId || !publicKey) {
 				return { ok: false, message: copy.error };
 			}
 
+			// Fail closed: sin sitekey no hay forma de verificar nada, así que se
+			// bloquea en vez de mandar sin captcha. Es una regresión que ya pasó
+			// una vez (la variable ausente dejaba pasar cualquier envío) y que
+			// captchaGate.test.ts fija.
+			const verificado = sitekey ? await verifyCaptcha(sitekey) : false;
+			if (shouldBlockSubmission(sitekey, verificado)) {
+				return { ok: false, message: copy.captcha };
+			}
+
 			try {
+				// Se importa recién al enviar: no pesa en el bundle de quien solo mira.
 				const { default: emailjs } = await import("@emailjs/browser");
 				await emailjs.send(
 					serviceId,
@@ -113,7 +143,6 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 					},
 					publicKey,
 				);
-				setCaptchaOk(false);
 				return { ok: true, message: copy.ok };
 			} catch {
 				return { ok: false, message: copy.error };
@@ -129,6 +158,13 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 			onFocus={() => setWantsCaptcha(true)}
 			className='flex max-w-[54ch] flex-col gap-6 border border-sinapsis bg-membrana/40 px-7 py-7'
 		>
+			{sitekey && wantsCaptcha && (
+				<Script
+					src={`https://www.google.com/recaptcha/api.js?render=${sitekey}`}
+					strategy='lazyOnload'
+				/>
+			)}
+
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='name'>
 					{copy.nombre}
@@ -179,37 +215,6 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 				className='absolute h-0 w-0 opacity-0'
 			/>
 
-			{sitekey && (
-				<div ref={boxRef} className='captcha'>
-					{mounted && wantsCaptcha ? (
-						<Suspense
-							fallback={
-								<div
-									className={`max-w-full bg-membrana-honda ${
-										compact ? "h-[144px] w-[164px]" : "h-[78px] w-[304px]"
-									}`}
-								/>
-							}
-						>
-							<ReCAPTCHA
-								key={`${darkTheme ? "dark" : "light"}-${compact ? "c" : "n"}`}
-								size={compact ? "compact" : "normal"}
-								sitekey={sitekey}
-								theme={darkTheme ? "dark" : "light"}
-								onChange={() => setCaptchaOk(true)}
-								onExpired={() => setCaptchaOk(false)}
-							/>
-						</Suspense>
-					) : (
-						<div
-							className={`max-w-full bg-membrana-honda ${
-								compact ? "h-[144px] w-[164px]" : "h-[78px] w-[304px]"
-							}`}
-						/>
-					)}
-				</div>
-			)}
-
 			<button
 				type='submit'
 				disabled={sending}
@@ -218,20 +223,41 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 				{sending ? copy.enviando : copy.enviar}
 			</button>
 
+			{/* El badge de reCAPTCHA va oculto (globals.css), y Google exige este
+			 * aviso cuando no se muestra. */}
+			{sitekey && (
+				<p className='m-0 font-pieza text-[10px] leading-relaxed text-mielina'>
+					{copy.proteccion}{" "}
+					<a
+						href='https://policies.google.com/privacy'
+						target='_blank'
+						rel='noreferrer'
+						className={linkClass}
+					>
+						{copy.privacidad}
+					</a>{" "}
+					{copy.y}{" "}
+					<a
+						href='https://policies.google.com/terms'
+						target='_blank'
+						rel='noreferrer'
+						className={linkClass}
+					>
+						{copy.terminos}
+					</a>{" "}
+					{copy.deGoogle}
+				</p>
+			)}
+
 			{/* La región live existe SIEMPRE en el DOM, aunque esté vacía: un
 			 * lector de pantalla solo anuncia cambios dentro de una live region
-			 * que ya estaba montada. Si se monta junto con su contenido (como
-			 * hacía antes), el usuario envía el formulario y no se entera de
-			 * nada — ni del éxito ni del error. */}
+			 * que ya estaba montada. Montada junto con su contenido, el usuario
+			 * envía y no se entera de nada — ni del éxito ni del error. */}
 			<p
 				role='status'
 				aria-live='polite'
 				className={`m-0 font-rotulo text-[15px] leading-relaxed ${
-					state.ok === null
-						? "sr-only"
-						: state.ok
-							? "text-mielina"
-							: "text-impulso"
+					state.ok === null ? "sr-only" : state.ok ? "text-mielina" : "text-impulso"
 				}`}
 			>
 				{state.message}

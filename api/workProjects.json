@@ -1,24 +1,35 @@
 [
 	{
-		"id": 1,
-		"name": "Fitness management platform",
-		"company": "Independent",
-		"period": "Nov 2023 – Feb 2024",
-		"description": "Fitness user management platform facilitating communication between trainers and clients. Built frontend architecture and backend integration using Next.js 13, Zustand for state management, Tailwind CSS and NextAuth for authentication.",
+		"id": 8,
+		"name": {
+			"en": "Investment portfolio tool (vibecoding, SDD + TDD)",
+			"es": "Herramienta de carteras de inversión (vibecoding, SDD + TDD)"
+		},
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": {
+			"en": "I designed and drove the full development process of an investment portfolio tool combining generative AI with real engineering rigor: specification first (SDD), tests as a contract before implementation (TDD). This isn't “just prompting a chatbot” — it's a pipeline where every line of code comes from a verified requirement and gets validated before touching production, non-negotiable when what's on the line are financial calculations.",
+			"es": "Diseñé y llevé adelante el proceso de desarrollo de una herramienta de carteras de inversión combinando IA generativa con rigor de ingeniería: especificación primero (SDD), tests como contrato antes de implementar (TDD). No es “escribirle a un chat” — es un pipeline donde cada línea de código nace de un requisito verificado y se valida antes de tocar producción, algo no negociable cuando lo que está en juego son cálculos financieros."
+		},
 		"skills": [
 			"Next.js",
-			"Tailwind CSS",
-			"Zustand",
-			"Axios",
-			"React.js"
+			"TypeScript",
+			"SDD",
+			"TDD"
 		]
 	},
 	{
 		"id": 2,
-		"name": "Web3 payments platform",
+		"name": {
+			"en": "Web3 payments platform",
+			"es": "Plataforma de pagos Web3"
+		},
 		"company": "It-techgroup",
 		"period": "Feb 2022 – Jul 2022",
-		"description": "Web3 platform with cryptocurrency payments. Built pixel-perfect UI with Styled Components based on Figma designs and integrated game interaction logic.",
+		"description": {
+			"en": "Web3 platform with cryptocurrency payments. Built pixel-perfect UI with Styled Components based on Figma designs and integrated game interaction logic.",
+			"es": "Plataforma Web3 con pagos en criptomonedas. Construí una UI pixel-perfect con Styled Components a partir de diseños de Figma e integré la lógica de interacción del juego."
+		},
 		"skills": [
 			"Styled Components",
 			"React.js",
@@ -27,10 +38,16 @@
 	},
 	{
 		"id": 3,
-		"name": "Booking platform",
+		"name": {
+			"en": "Booking platform",
+			"es": "Plataforma de reservas"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Web platform for cabin reservations. Served as technical lead, responsible for architecture selection, supporting trainees, and leading frontend migration from Angular to Next.js 15 with Bootstrap styling.",
+		"description": {
+			"en": "Web platform for cabin reservations. Served as technical lead, responsible for architecture selection, supporting trainees, and leading frontend migration from Angular to Next.js 15 with Bootstrap styling.",
+			"es": "Plataforma web para reservas de cabañas. Me desempeñé como líder técnico, a cargo de la selección de arquitectura, el acompañamiento de trainees y la migración del frontend de Angular a Next.js 15 con estilos en Bootstrap."
+		},
 		"skills": [
 			"Next.js",
 			"Bootstrap",
@@ -39,10 +56,16 @@
 	},
 	{
 		"id": 4,
-		"name": "Financial data platform",
+		"name": {
+			"en": "Financial data platform",
+			"es": "Plataforma de datos financieros"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
+		"description": {
+			"en": "Web application for processing and massive data visualization. Developed login with form validation using ChakraUI, connected backend APIs for data visualization, and ensured responsiveness across devices.",
+			"es": "Aplicación web para procesamiento y visualización masiva de datos. Desarrollé el login con validación de formularios usando ChakraUI, conecté las APIs del backend para la visualización de datos y adapté la interfaz a cualquier dispositivo."
+		},
 		"skills": [
 			"ChakraUI",
 			"React.js",
@@ -52,10 +75,16 @@
 	},
 	{
 		"id": 5,
-		"name": "Digital wallet",
+		"name": {
+			"en": "Digital wallet",
+			"es": "Billetera digital"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Virtual wallet web project. Led architecture selection, frontend development and backend integration with Zustand, Next.js 14, Sass, and NextAuth. Also led backend migration from ASP.NET Core to a RESTful .NET API.",
+		"description": {
+			"en": "Virtual wallet web project. Led architecture selection, frontend development and backend integration with Zustand, Next.js 14, Sass, and NextAuth. Also led backend migration from ASP.NET Core to a RESTful .NET API.",
+			"es": "Proyecto web de billetera virtual. Lideré la selección de arquitectura, el desarrollo frontend y la integración con el backend usando Zustand, Next.js 14, Sass y NextAuth. También lideré la migración del backend de ASP.NET Core a una API RESTful en .NET."
+		},
 		"skills": [
 			"ASP.NET",
 			"Next.js",
@@ -68,16 +97,58 @@
 	},
 	{
 		"id": 6,
-		"name": "Investment platform",
+		"name": {
+			"en": "Investment platform",
+			"es": "Plataforma de inversiones"
+		},
 		"company": "La Mutual de AMR",
 		"period": "",
-		"description": "Web platform for investment management. Created reusable components, adapted the site to multiple devices, consumed backend APIs, styled with SASS, and contributed to backend changes with C# and .NET.",
+		"description": {
+			"en": "Web platform for investment management. Created reusable components, adapted the site to multiple devices, consumed backend APIs, styled with SASS, and contributed to backend changes with C# and .NET.",
+			"es": "Plataforma web para la gestión de inversiones. Creé componentes reutilizables, adapté el sitio a múltiples dispositivos, consumí APIs del backend, apliqué estilos con SASS y contribuí a cambios en el backend con C# y .NET."
+		},
 		"skills": [
 			"ASP.NET",
 			"Next.js",
 			"Sass",
 			"React.js",
 			"Zustand"
+		]
+	},
+	{
+		"id": 7,
+		"name": {
+			"en": "Company-wide UI component library",
+			"es": "Librería de componentes UI para toda la empresa"
+		},
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": {
+			"en": "Reusable UI component library adopted across every product in the company, unifying design and eliminating duplicated UI code between teams.",
+			"es": "Librería de componentes UI reutilizables adoptada en todos los productos de la empresa, unificando el diseño y eliminando el código de UI duplicado entre equipos."
+		},
+		"skills": [
+			"Next.js",
+			"TypeScript",
+			"React.js"
+		]
+	},
+	{
+		"id": 9,
+		"name": {
+			"en": "E-commerce migration from Razor to Next.js",
+			"es": "Migración de ecommerce de Razor a Next.js"
+		},
+		"company": "La Mutual de AMR",
+		"period": "",
+		"description": {
+			"en": "Migrated an e-commerce platform from ASP.NET Razor (CSHTML) to Next.js, modernizing the frontend architecture and improving maintainability.",
+			"es": "Migré una plataforma de ecommerce de ASP.NET Razor (CSHTML) a Next.js, modernizando la arquitectura frontend y mejorando la mantenibilidad."
+		},
+		"skills": [
+			"Next.js",
+			"ASP.NET",
+			"React.js"
 		]
 	}
 ]

@@ -115,14 +115,5 @@
 				"name": "SiFramer"
 			}
 		]
-	},
-	{
-		"company": "Universidad del Gran Rosario",
-		"position": "IT Technician",
-		"time": "APRIL 2021 - JUNE 2022 · FUNES, SANTA FE",
-		"description": {
-			"en": "Hardware and network maintenance, diagnostics and technical support.",
-			"es": "Mantenimiento de hardware y redes, diagnóstico y soporte técnico."
-		}
 	}
 ]

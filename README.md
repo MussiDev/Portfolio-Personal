@@ -15,7 +15,7 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 | 3D | Three.js | ^0.186.0 |
 | CMS | Sanity (`next-sanity`) | ^12.1.0 / ^5.11.0 |
 | Contenido enriquecido | `@portabletext/react`, `react-markdown`, `mermaid` | — |
-| Formulario de contacto | EmailJS + Google reCAPTCHA | ^4.2.0 / ^3.1.0 |
+| Formulario de contacto | EmailJS + Google reCAPTCHA v3 | ^4.2.0 |
 | Tests | `node:test` (nativo, sin dependencias) | — |
 
 ## Características
@@ -26,7 +26,7 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 - **Bilingüe (ES/EN)** — español sin prefijo, inglés bajo `/en`, con `hreflang` y `<html lang>` correctos por ruta
 - **Blog conectado a Sanity** — posts en Portable Text o Markdown, con diagramas Mermaid embebidos
 - **OG image dinámica y localizada** — `next/og`, prerenderizada por idioma
-- **Formulario de contacto** — React 19 `useActionState`, EmailJS + reCAPTCHA diferido hasta que el usuario llega al formulario
+- **Formulario de contacto** — React 19 `useActionState`, EmailJS + reCAPTCHA v3 (invisible) diferido hasta que el usuario llega al formulario, verificado server-side en `/api/verify-captcha`
 - **Accesible** — reduced-motion respetado en cursor y animaciones, regiones de navegación como `<a>` dentro de `<nav>`, skip-link
 - **CI en GitHub Actions** — type-check, tests y build en cada push/PR
 
@@ -72,8 +72,9 @@ NEXT_PUBLIC_SERVICE_ID=tu_service_id
 NEXT_PUBLIC_TEMPLATE_ID=tu_template_id
 NEXT_PUBLIC_PUBLIC_KEY=tu_public_key
 
-# Google reCAPTCHA
+# Google reCAPTCHA v3
 NEXT_PUBLIC_FIRSTCAPTCHA=tu_site_key
+RECAPTCHA_SECRET_KEY=tu_secret_key
 ```
 
 `NEXT_PUBLIC_SITE_URL` define el dominio canónico usado en metadata, sitemap, robots y OG images (`entities/site.ts`). Si no está seteada, cae a `https://joaquinmussi.com.ar`. **Tiene que estar seteada en Railway** con el dominio de producción real — si apunta a un dominio que no resuelve, el canonical, el sitemap y las OG images quedan rotos en producción.

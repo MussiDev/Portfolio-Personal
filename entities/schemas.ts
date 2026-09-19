@@ -65,12 +65,14 @@ export type Recommendation = z.infer<typeof RecommendationSchema>;
 
 // api/workProjects.json — "los otros proyectos" listados bajo Trayectoria,
 // distinto del Project de entities/project.ts (que describe NorteAR).
+// name y description traducidos (es/en), como el resto del contenido:
+// antes eran texto plano en español y se mostraban así también en /en.
 export const WorkProjectSchema = z.object({
 	id: z.number(),
-	name: z.string(),
+	name: localizedText,
 	company: z.string(),
 	period: z.string(),
-	description: z.string(),
+	description: localizedText,
 	skills: z.array(z.string()),
 });
 export const WorkProjectsSchema = z.array(WorkProjectSchema);

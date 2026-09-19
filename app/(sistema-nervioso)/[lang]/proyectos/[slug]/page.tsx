@@ -163,7 +163,7 @@ const ProyectoPage = async ({ params }: Params) => {
 										className='inline-flex min-h-11 items-center font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
 									>
 										<span className='border-b border-current pb-0.5'>
-											{t(e.etiqueta, lang)} ↗
+											{t(e.etiqueta, lang)}
 										</span>
 									</a>
 								))}

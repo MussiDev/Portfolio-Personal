@@ -90,7 +90,6 @@ const HeroSection = ({
 					</span>
 					<span className='font-rotulo text-[13px] font-bold uppercase tracking-[.08em] text-senal transition-colors duration-500 ease-impulso group-data-[estado=activo]:text-impulso group-data-[estado=vinculado]:text-impulso/65'>
 						{s.label}
-						{s.external && " ↗"}
 					</span>
 					<span className='ml-auto font-pieza text-[9.5px] uppercase tracking-[.08em] text-mielina'>
 						{s.fact}

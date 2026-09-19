@@ -6,6 +6,7 @@ import {
 	CompaniesSchema,
 	ProjectSchema,
 	RecommendationsSchema,
+	WorkProjectsSchema,
 } from "./schemas.ts";
 
 test("CertificationsSchema acepta una lista bien formada", () => {
@@ -97,4 +98,34 @@ test("ProjectSchema valida el árbol completo de tiempos", () => {
 		},
 	});
 	assert.equal(invalidEstado.success, false);
+});
+
+test("cada archivo de api/ cumple su schema", async () => {
+	// Los datos y los schemas se editan por separado: un cambio de forma en
+	// un JSON (texto plano que pasa a ser {es, en}, por ejemplo) solo lo
+	// detectaba el build de la home, tarde y con un stack trace de Next. Acá
+	// falla con el nombre del archivo.
+	const fs = await import("node:fs");
+	const schemas = await import("./schemas.ts");
+	const archivos = {
+		"api/certifications.json": schemas.CertificationsSchema,
+		"api/languages.json": schemas.LanguageItemsSchema,
+		"api/experienceItems.json": schemas.CompaniesSchema,
+		"api/recommendations.json": schemas.RecommendationsSchema,
+		"api/workProjects.json": schemas.WorkProjectsSchema,
+		"api/descartes.json": schemas.DescartesSchema,
+		"api/projects.json": schemas.ProjectsSchema,
+	};
+	for (const [ruta, schema] of Object.entries(archivos)) {
+		const datos = JSON.parse(fs.readFileSync(ruta, "utf8"));
+		const r = schema.safeParse(datos);
+		assert.ok(r.success, `${ruta} no cumple su schema: ${r.success ? "" : r.error.message}`);
+	}
+});
+
+test("los proyectos de trabajo están traducidos, no en un solo idioma", () => {
+	const r = WorkProjectsSchema.safeParse([
+		{ id: 1, name: "Solo español", company: "X", period: "2024", description: "texto", skills: [] },
+	]);
+	assert.equal(r.success, false);
 });
