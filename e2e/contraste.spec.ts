@@ -63,6 +63,11 @@ const contrasteContraElFondo = async (page: Page, selector: string): Promise<num
 
 test.describe("texto sobre el cerebro", () => {
 	test.skip(({ isMobile }) => isMobile, "en mobile el tejido baja a 40% bajo los pasos");
+	// En CI no hay GPU: el cerebro (con bloom) se renderiza por software y
+	// cada frame ocupa el main thread. Los evaluate/screenshot quedan en cola
+	// detrás de esos frames y con 30s el test se quedaba sin tiempo antes de
+	// medir — timeouts, no fallas de contraste.
+	test.slow();
 
 	for (const paso of [1, 2, 3, 4, 5]) {
 		test(`el encabezado del paso ${paso} pasa AA contra lo que tiene detrás`, async ({ page }) => {

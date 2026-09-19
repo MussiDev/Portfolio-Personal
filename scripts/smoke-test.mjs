@@ -6,7 +6,7 @@
 //
 // Uso: node scripts/smoke-test.mjs  (arranca su propio `next start`)
 
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 const PORT = process.env.SMOKE_PORT ?? "4173";
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -118,9 +118,16 @@ async function run() {
 	}
 }
 
+// En Linux/macOS el server va en su propio grupo de procesos (detached): así
+// el cleanup puede matar el grupo entero. `npx next start` lanza a
+// next-server como hijo, y matar solo a npx dejaba a ese hijo vivo con
+// stdout/stderr abiertos — Node no podía terminar y el paso del CI quedaba
+// colgado hasta el timeout de GitHub (pasó en el primer run en Linux: 19
+// minutos colgado). En Windows ya lo resolvía taskkill /t.
 const server = spawn("npx", ["next", "start", "-p", PORT], {
 	stdio: ["ignore", "pipe", "pipe"],
 	shell: process.platform === "win32",
+	detached: process.platform !== "win32",
 });
 
 let serverOutput = "";
@@ -129,9 +136,15 @@ server.stderr?.on("data", (d) => (serverOutput += d));
 
 const cleanup = () => {
 	if (process.platform === "win32") {
-		spawn("taskkill", ["/pid", String(server.pid), "/f", "/t"]);
+		// Sync: el process.exit del final no puede adelantarse a taskkill.
+		spawnSync("taskkill", ["/pid", String(server.pid), "/f", "/t"]);
 	} else {
-		server.kill("SIGTERM");
+		try {
+			// PID negativo = todo el grupo: npx y el next-server que lanzó.
+			process.kill(-server.pid, "SIGTERM");
+		} catch {
+			server.kill("SIGTERM");
+		}
 	}
 };
 
@@ -157,3 +170,8 @@ if (failures.length > 0) {
 } else if (process.exitCode !== 1) {
 	console.log("\nSmoke test OK.");
 }
+
+// Red de seguridad: el resultado ya está decidido. Si algún proceso hijo
+// sobrevivió al cleanup y mantiene abierto un pipe, esto no puede volver a
+// colgar el CI.
+process.exit(process.exitCode ?? 0);
