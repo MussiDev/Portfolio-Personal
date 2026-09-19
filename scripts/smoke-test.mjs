@@ -10,7 +10,10 @@ import { spawn } from "node:child_process";
 
 const PORT = process.env.SMOKE_PORT ?? "4173";
 const ORIGIN = `http://127.0.0.1:${PORT}`;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://joaquinmussi.com.ar";
+// `||` y no `??`: en GitHub Actions un secret que no existe llega como "".
+// Con `??` SITE_URL quedaba vacío, y todo `x.startsWith("")` da true: los
+// chequeos de dominio pasaban sin verificar nada.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://joaquinmussi.com.ar";
 
 const failures = [];
 const fail = (msg) => failures.push(msg);
@@ -62,15 +65,20 @@ async function run() {
 		}
 	}
 
-	const sitekeyConfigured = homeHtml.includes("captcha");
+	// Con reCAPTCHA v3 no hay widget ni contenedor .captcha: lo que se
+	// renderiza cuando hay sitekey es el aviso que Google exige al ocultar el
+	// badge. Antes esto buscaba la palabra "captcha" en todo el HTML, que
+	// aparece igual (en "reCAPTCHA", en nombres de chunks) y daba OK siempre.
+	const sitekeyConfigured = homeHtml.includes("policies.google.com/privacy");
 	if (sitekeyConfigured) {
-		ok("contenedor .captcha presente (NEXT_PUBLIC_FIRSTCAPTCHA configurada)");
+		ok("aviso de reCAPTCHA presente (NEXT_PUBLIC_FIRSTCAPTCHA configurada)");
 	} else {
 		console.warn(
-			"  ⚠ No se encontró el contenedor .captcha en la home. " +
+			"  ⚠ No aparece el aviso de reCAPTCHA en la home. " +
 				"Si NEXT_PUBLIC_FIRSTCAPTCHA no está seteada en este entorno, es " +
-				"esperable — pero VERIFICAR que sí lo esté en Railway: sin ella, " +
-				"el formulario bloquea todos los envíos (fail-closed).",
+				"esperable — pero VERIFICAR que en Railway estén NEXT_PUBLIC_FIRSTCAPTCHA " +
+				"y RECAPTCHA_SECRET_KEY: sin cualquiera de las dos, el formulario " +
+				"bloquea todos los envíos (fail-closed).",
 		);
 	}
 
