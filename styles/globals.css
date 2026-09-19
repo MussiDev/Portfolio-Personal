@@ -38,7 +38,7 @@ carga tiene que ser del mismo material que la superficie que reemplaza. */
 	color-scheme: dark;
 	background-color: rgb(var(--tejido));
 	color: rgb(var(--senal));
-	font-family: theme("fontFamily.nota");
+	font-family: theme("fontFamily.rotulo");
 
 	background-image:
 		radial-gradient(120% 70% at 50% -10%, rgb(var(--sinapsis) / 0.12) 0%, transparent 60%),

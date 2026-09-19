@@ -25,7 +25,7 @@ const BlogSection = ({
 }) => (
 	<Step n={4} title={d.blog.titulo} gloss={d.blog.glosa} fact={postsCount}>
 		<div className='flex flex-col gap-4'>
-			<p className='m-0 max-w-[60ch] font-nota text-[15px] leading-relaxed text-mielina'>
+			<p className='m-0 max-w-[60ch] font-rotulo text-[15px] leading-relaxed text-mielina'>
 				{d.blog.bajada}
 			</p>
 

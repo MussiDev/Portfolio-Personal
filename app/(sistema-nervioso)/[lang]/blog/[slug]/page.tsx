@@ -226,7 +226,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 							<span className='font-pieza text-[10px] uppercase tracking-[.14em] text-sinapsis'>
 								← {d.blog.anterior}
 							</span>
-							<span className='font-nota text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
+							<span className='font-rotulo text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
 								{olderPost.title}
 							</span>
 						</Link>
@@ -241,7 +241,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 							<span className='font-pieza text-[10px] uppercase tracking-[.14em] text-sinapsis'>
 								{d.blog.siguiente} →
 							</span>
-							<span className='font-nota text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
+							<span className='font-rotulo text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
 								{newerPost.title}
 							</span>
 						</Link>

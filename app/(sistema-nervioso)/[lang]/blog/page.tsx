@@ -66,7 +66,7 @@ const BlogIndexPage = async ({ params }: { params: Promise<{ lang: Language }> }
 					<span className='font-glosa text-lg italic leading-none text-mielina'>
 						{d.blog.glosa}
 					</span>
-					<p className='m-0 mt-2 max-w-[60ch] font-nota text-[15px] leading-relaxed text-mielina'>
+					<p className='m-0 mt-2 max-w-[60ch] font-rotulo text-[15px] leading-relaxed text-mielina'>
 						{d.blog.bajada}
 					</p>
 				</header>

@@ -126,7 +126,7 @@ const OpenProject = ({
 								{body.map((p) => (
 									<p
 										key={p.slice(0, 40)}
-										className='m-0 max-w-[68ch] font-nota text-[14px] leading-relaxed text-mielina'
+										className='m-0 max-w-[68ch] font-rotulo text-[14px] leading-relaxed text-mielina'
 									>
 										{p}
 									</p>

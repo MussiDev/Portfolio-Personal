@@ -9,7 +9,6 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				rotulo: ["var(--font-rotulo)", "Helvetica Neue", "Arial", "sans-serif"],
-				nota: ["var(--font-rotulo)", "Helvetica Neue", "Arial", "sans-serif"],
 				glosa: ["var(--font-glosa)", "Georgia", "Times New Roman", "serif"],
 				pieza: ["var(--font-pieza)", "SFMono-Regular", "Consolas", "monospace"],
 			},

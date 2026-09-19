@@ -225,7 +225,7 @@ const NervousSystem = ({
 								</span>
 								{sections[active].label}
 							</p>
-							<p className='m-0 mt-2 font-nota text-[13px] leading-relaxed text-mielina'>
+							<p className='m-0 mt-2 font-rotulo text-[13px] leading-relaxed text-mielina'>
 								{sections[active].summary}
 							</p>
 							{/* Los nombres van en el mismo naranja tenue que reciben

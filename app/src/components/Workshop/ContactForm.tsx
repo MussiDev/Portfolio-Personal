@@ -38,7 +38,7 @@ export type FormCopy = {
 };
 
 const fieldClass =
-	"w-full border border-sinapsis bg-membrana px-4 py-2.5 font-nota text-base text-senal placeholder:text-mielina/70 focus:border-impulso focus:outline-none focus:ring-2 focus:ring-impulso/40 transition-colors duration-200 ease-impulso";
+	"w-full border border-sinapsis bg-membrana px-4 py-2.5 font-rotulo text-base text-senal placeholder:text-mielina/70 focus:border-impulso focus:outline-none focus:ring-2 focus:ring-impulso/40 transition-colors duration-200 ease-impulso";
 
 const labelClass =
 	"font-rotulo text-[11px] uppercase tracking-[.14em] text-mielina";
@@ -226,7 +226,7 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 			<p
 				role='status'
 				aria-live='polite'
-				className={`m-0 font-nota text-[15px] leading-relaxed ${
+				className={`m-0 font-rotulo text-[15px] leading-relaxed ${
 					state.ok === null
 						? "sr-only"
 						: state.ok

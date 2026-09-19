@@ -75,7 +75,7 @@ const TrayectoriaSection = ({
 												{r.time}
 											</span>
 										</div>
-										<p className='m-0 font-nota text-[14px] leading-relaxed text-mielina'>
+										<p className='m-0 font-rotulo text-[14px] leading-relaxed text-mielina'>
 											{r.description[lang] ?? r.description.es}
 										</p>
 										{r.highlights && (
@@ -83,7 +83,7 @@ const TrayectoriaSection = ({
 												{(r.highlights[lang] ?? r.highlights.es).map((h) => (
 													<li
 														key={h}
-														className='flex gap-2 font-nota text-[14px] leading-relaxed text-mielina'
+														className='flex gap-2 font-rotulo text-[14px] leading-relaxed text-mielina'
 													>
 														<span aria-hidden='true' className='text-impulso'>
 															·
@@ -122,7 +122,7 @@ const TrayectoriaSection = ({
 										{p.company} · {p.period}
 									</span>
 								</div>
-								<p className='m-0 font-nota text-[13px] leading-relaxed text-mielina'>
+								<p className='m-0 font-rotulo text-[13px] leading-relaxed text-mielina'>
 									{p.description}
 								</p>
 								<p className='m-0 font-pieza text-[10px] text-sinapsis'>
@@ -143,7 +143,7 @@ const TrayectoriaSection = ({
 						{d.sobreMi.bio.map((p) => (
 							<p
 								key={p.slice(0, 40)}
-								className='m-0 max-w-[52ch] font-nota text-[13px] leading-relaxed text-mielina'
+								className='m-0 max-w-[52ch] font-rotulo text-[13px] leading-relaxed text-mielina'
 							>
 								{p}
 							</p>
@@ -158,7 +158,7 @@ const TrayectoriaSection = ({
 								key={i.id}
 								className='flex items-baseline justify-between gap-3 border-b border-sinapsis/15 pb-1 last:border-b-0'
 							>
-								<span className='font-nota text-[13px] text-senal'>
+								<span className='font-rotulo text-[13px] text-senal'>
 									{t(i.nombre, lang)}
 								</span>
 								<span className='font-pieza text-[10px] text-mielina'>
@@ -183,7 +183,7 @@ const TrayectoriaSection = ({
 							key={c.id}
 							className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b border-sinapsis/15 px-6 py-2 last:border-b-0'
 						>
-							<span className='font-nota text-[13px] text-senal'>
+							<span className='font-rotulo text-[13px] text-senal'>
 								{c.name}
 							</span>
 							<span className='font-pieza text-[10px] text-mielina'>
