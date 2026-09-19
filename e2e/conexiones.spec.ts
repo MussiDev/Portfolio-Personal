@@ -21,7 +21,12 @@ test.describe("conexiones del cerebro", () => {
 	test("al posarse en una sección se iluminan sus vinculadas, y solo esas", async ({ page }) => {
 		const etiquetas = etiquetasDelCerebro(page);
 		await etiquetas.first().hover();
-		await page.waitForTimeout(600);
+		// Esperar el estado, no un tiempo fijo: en CI el cerebro se renderiza
+		// sin GPU y 600ms no siempre alcanzaban para que el hover llegara.
+		await expect(etiquetas.first().locator("span").first()).toHaveCSS(
+			"color",
+			"rgb(255, 106, 58)",
+		);
 
 		const colores = await etiquetas.evaluateAll((nodes) =>
 			nodes.map((n) => getComputedStyle(n.querySelector("span")!).color),
@@ -39,24 +44,22 @@ test.describe("conexiones del cerebro", () => {
 
 	test("se dibuja una línea por cada vínculo que el panel nombra", async ({ page }) => {
 		await etiquetasDelCerebro(page).first().hover();
-		await page.waitForTimeout(600);
 
-		const nombrados = await page
-			.locator("p", { hasText: /conectado con/i })
-			.first()
-			.innerText();
-		const cuantos = nombrados.split("·").length;
+		const panel = page.locator("p", { hasText: /conectado con/i }).first();
+		await expect(panel).toBeVisible();
+		const cuantos = (await panel.innerText()).split("·").length;
 
-		const visibles = await page
-			.locator("svg line")
-			.evaluateAll((ls) =>
-				ls.filter((l) => Number(l.getAttribute("opacity") ?? 0) > 0.5).length,
-			);
-
-		expect(
-			visibles,
-			`el panel nombra ${cuantos} vínculos y se dibujan ${visibles} líneas`,
-		).toBe(cuantos);
+		await expect
+			.poll(
+				() =>
+					page
+						.locator("svg line")
+						.evaluateAll((ls) =>
+							ls.filter((l) => Number(l.getAttribute("opacity") ?? 0) > 0.5).length,
+						),
+				{ message: `el panel nombra ${cuantos} vínculos` },
+			)
+			.toBe(cuantos);
 	});
 
 	test("sin sección activa no hay ninguna conexión encendida", async ({ page }) => {
