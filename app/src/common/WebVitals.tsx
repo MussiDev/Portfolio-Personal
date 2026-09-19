@@ -12,19 +12,24 @@ import { useReportWebVitals } from "next/web-vitals";
  * poder responder esa pregunta con un número.
  *
  * A propósito NO trae un vendor: `useReportWebVitals` es de Next, cero
- * dependencias nuevas, cero scripts de terceros, cero cookies. Elegir a
- * dónde mandar los datos es una decisión de producto (privacidad, costo,
- * hosting) y se toma con una variable de entorno:
+ * dependencias nuevas, cero scripts de terceros, cero cookies. Por defecto
+ * las métricas van a /api/vitals, que las deja en los logs del servidor.
+ * Antes el destino dependía de una variable de entorno que nunca se
+ * definió, así que el reporte estaba instalado y no medía nada.
  *
- *   NEXT_PUBLIC_VITALS_ENDPOINT=https://…  → POST por sendBeacon
- *   (sin definir)                          → no se envía nada
+ *   (sin definir)                          → POST a /api/vitals
+ *   NEXT_PUBLIC_VITALS_ENDPOINT=https://…  → POST a ese destino
  *
  * Si el endpoint es de otro origen, next.config.js lo agrega solo a
  * connect-src de la CSP: sin eso el beacon se bloquearía en silencio y esto
  * parecería andar sin andar.
  */
 
-const ENDPOINT = process.env.NEXT_PUBLIC_VITALS_ENDPOINT;
+const ENDPOINT = process.env.NEXT_PUBLIC_VITALS_ENDPOINT || "/api/vitals";
+
+// Next también reporta métricas propias (hidratación, render de rutas).
+// Solo viajan las Core Web Vitals, que es lo que /api/vitals acepta.
+const WEB_VITALS = new Set(["LCP", "INP", "CLS", "FCP", "TTFB", "FID"]);
 
 const WebVitals = (): null => {
 	useReportWebVitals((metric) => {
@@ -37,7 +42,7 @@ const WebVitals = (): null => {
 			return;
 		}
 
-		if (!ENDPOINT) return;
+		if (!WEB_VITALS.has(metric.name)) return;
 
 		const body = JSON.stringify({
 			name: metric.name,
