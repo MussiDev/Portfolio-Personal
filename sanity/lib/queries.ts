@@ -20,7 +20,6 @@ export const postBySlugQuery = groq`
     title,
     "slug": slug.current,
     publishedAt,
-    coverImage,
     tags,
     body,
     markdownBody

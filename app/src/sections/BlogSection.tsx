@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { localizedPath, type Language } from "../../../entities/i18n";
+import { limpiarTitulo } from "../components/Blog/title";
 import type { Dict } from "../i18n/dict";
 import { Step } from "./StepLayout";
 
@@ -46,7 +47,7 @@ const BlogSection = ({
 							</span>
 							<div className='flex min-w-0 flex-col gap-1'>
 								<h3 className='m-0 text-base leading-tight transition-colors duration-200 ease-impulso group-hover:text-impulso md:text-lg'>
-									{post.title}
+									{limpiarTitulo(post.title)}
 								</h3>
 								<div className='flex flex-wrap items-baseline gap-x-3 font-pieza text-[10px] text-mielina'>
 									<span className='tabular-nums'>

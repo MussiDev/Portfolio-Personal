@@ -6,6 +6,7 @@ import { alternates } from "../../../src/i18n/meta";
 import { getDict } from "../../../src/i18n/dict";
 import { client } from "../../../../sanity/lib/client";
 import { postsQuery } from "../../../../sanity/lib/queries";
+import { limpiarTitulo } from "../../../src/components/Blog/title";
 
 type Post = {
 	_id: string;
@@ -91,7 +92,7 @@ const BlogIndexPage = async ({ params }: { params: Promise<{ lang: Language }> }
 										className='group'
 									>
 										<h2 className='m-0 text-base leading-tight transition-colors duration-200 ease-impulso group-hover:text-impulso md:text-lg'>
-											{post.title}
+											{limpiarTitulo(post.title)}
 										</h2>
 									</Link>
 									<div className='flex flex-wrap items-baseline gap-x-3 font-pieza text-[10px] text-mielina'>

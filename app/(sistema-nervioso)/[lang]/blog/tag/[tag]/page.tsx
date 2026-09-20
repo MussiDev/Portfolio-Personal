@@ -7,6 +7,7 @@ import { alternates } from "../../../../../src/i18n/meta";
 import { getDict } from "../../../../../src/i18n/dict";
 import { client } from "../../../../../../sanity/lib/client";
 import { allTagsQuery, postsByTagQuery } from "../../../../../../sanity/lib/queries";
+import { limpiarTitulo } from "../../../../../src/components/Blog/title";
 
 type Post = {
 	_id: string;
@@ -94,7 +95,7 @@ const TagPage = async ({ params }: PageProps) => {
 							<div className='flex min-w-0 flex-col gap-1'>
 								<Link href={localizedPath(lang, `/blog/${post.slug}`)} className='group'>
 									<h2 className='m-0 text-base leading-tight transition-colors duration-200 ease-impulso group-hover:text-impulso md:text-lg'>
-										{post.title}
+										{limpiarTitulo(post.title)}
 									</h2>
 								</Link>
 								<span className='font-pieza text-[10px] tabular-nums text-mielina'>

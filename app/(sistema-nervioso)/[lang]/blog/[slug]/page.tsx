@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense, cache } from "react";
 import { client } from "../../../../../sanity/lib/client";
@@ -14,24 +13,19 @@ import { getDict } from "../../../../src/i18n/dict";
 import { alternates } from "../../../../src/i18n/meta";
 import { notFound } from "next/navigation";
 import { postBySlugQuery, postsQuery } from "../../../../../sanity/lib/queries";
-import { urlFor } from "../../../../../sanity/lib/image";
-import type { SanityImageObject } from "@sanity/image-url";
 import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
 import PostBody from "../../../../src/components/Blog/PostBody";
+import PostCover from "../../../../src/components/Blog/PostCover";
+import { limpiarTitulo } from "../../../../src/components/Blog/title";
 import {
 	extractExcerpt,
 	type PortableTextBlock,
 } from "../../../../src/components/Blog/excerpt";
 
-interface CoverImage extends SanityImageObject {
-	alt?: string;
-}
-
 interface Post {
 	_updatedAt?: string;
 	title: string;
 	publishedAt: string;
-	coverImage?: CoverImage;
 	body?: PortableTextBlock[];
 	markdownBody?: string;
 	tags?: string[];
@@ -66,30 +60,30 @@ export async function generateMetadata({ params }: PageProps) {
 	if (!post) return { title: "Post not found" };
 
 	const description = extractExcerpt(post);
-	const ogImage = post.coverImage
-		? urlFor(post.coverImage).width(1200).height(630).url()
-		: undefined;
+	const title = limpiarTitulo(post.title);
 
 	return {
-		title: `${post.title} — Joaquín Mussi`,
+		title: `${title} — Joaquín Mussi`,
 		description,
 		// El blog vive en Sanity solo en español: no declarar un hreflang "en"
 		// que no tiene traducción real detrás (ver proxy.ts).
 		alternates: alternates(lang, `/blog/${slug}`, false),
+		// Sin `images`: la tarjeta la pone opengraph-image.tsx de esta misma
+		// carpeta, y declarar el campo acá —aunque sea con []— le gana al
+		// archivo y deja la nota sin imagen al compartirla. Mismo trato que
+		// en proyectos/[slug].
 		openGraph: {
-			title: post.title,
+			title,
 			description,
 			url: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, `/blog/${slug}`)}`,
 			type: "article",
 			publishedTime: post.publishedAt,
 			authors: ["Joaquín Mussi"],
-			images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: post.title,
+			title,
 			description,
-			images: ogImage ? [ogImage] : [],
 		},
 	};
 }
@@ -100,6 +94,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 	if (!post) return notFound();
 
 	const d = getDict(lang);
+	const title = limpiarTitulo(post.title);
 	const breadcrumbJsonLd = {
 		"@context": "https://schema.org",
 		"@type": "BreadcrumbList",
@@ -117,7 +112,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 			{
 				"@type": "ListItem",
 				position: 3,
-				name: post.title,
+				name: title,
 				item: `${BASE_URL}${localizedPath(DEFAULT_LANGUAGE, `/blog/${slug}`)}`,
 			},
 		],
@@ -126,7 +121,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 	const jsonLd = {
 		"@context": "https://schema.org",
 		"@type": "BlogPosting",
-		headline: post.title,
+		headline: title,
 		description: extractExcerpt(post),
 		author: {
 			"@type": "Person",
@@ -146,9 +141,13 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 		dateModified: post._updatedAt ?? post.publishedAt ?? undefined,
 		// El contenido del blog es español, siempre — no lo que declare la ruta.
 		inLanguage: DEFAULT_LANGUAGE,
-		...(post.coverImage && {
-			image: urlFor(post.coverImage).width(1200).height(630).url(),
-		}),
+		// Sin `image`: la portada ahora la genera opengraph-image.tsx, y Next
+		// le pone al archivo un sufijo y un hash propios
+		// (…/opengraph-image-1lndgs?fb20b39…) que no se pueden escribir a
+		// mano — armar la URL acá daba un 404 dentro del structured data.
+		// La tarjeta igual viaja en og:image, que es de donde Google la
+		// levanta. Mismo criterio que proyectos/[slug]: un schema incompleto
+		// es mejor que uno inventado.
 	};
 
 	const allPosts = await getAllPosts();
@@ -168,7 +167,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 				dangerouslySetInnerHTML={{ __html: toJsonLdScript(breadcrumbJsonLd) }}
 			/>
 			<h1 className='m-0 mb-4 text-3xl leading-tight md:text-5xl'>
-				{post.title}
+				{title}
 			</h1>
 
 			{post.publishedAt && (
@@ -177,23 +176,11 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 				</p>
 			)}
 
-			{post.coverImage && (
-				<div className='relative mb-10 h-64 w-full overflow-hidden border border-sinapsis/30 md:h-96'>
-					{/* Esta imagen es el LCP de la página del post: está arriba de
-					todo y es el elemento más grande. Sin `priority` arranca lazy
-					(o sea, el LCP espera a que el scanner la descubra), y sin
-					`sizes` un `fill` hace que Next asuma 100vw y sirva el candidato
-					más grande del srcset para una columna que nunca pasa de 760px. */}
-					<Image
-						src={urlFor(post.coverImage).width(1200).height(600).url()}
-						alt={post.coverImage.alt || post.title}
-						fill
-						priority
-						sizes='(max-width: 832px) 100vw, 760px'
-						className='object-cover'
-					/>
-				</div>
-			)}
+			{/* La portada sale del tejido del propio sitio, no de un banco de
+			imágenes (ver PostCover.tsx). Es SVG en el HTML del server: ya no
+			hay una imagen que descargar, así que tampoco hace falta pelearle
+			al LCP con `priority` y `sizes` como con la portada anterior. */}
+			<PostCover slug={slug} tagCount={post.tags?.length ?? 0} />
 
 			<PostBody body={post.body} markdownBody={post.markdownBody} />
 
@@ -227,7 +214,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 								← {d.blog.anterior}
 							</span>
 							<span className='font-rotulo text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
-								{olderPost.title}
+								{limpiarTitulo(olderPost.title)}
 							</span>
 						</Link>
 					)}
@@ -242,7 +229,7 @@ async function PostContent({ slug, lang }: { slug: string; lang: Language }) {
 								{d.blog.siguiente} →
 							</span>
 							<span className='font-rotulo text-sm text-mielina transition-colors duration-200 ease-impulso group-hover:text-impulso'>
-								{newerPost.title}
+								{limpiarTitulo(newerPost.title)}
 							</span>
 						</Link>
 					)}

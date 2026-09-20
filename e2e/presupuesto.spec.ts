@@ -120,7 +120,17 @@ test.describe("desktop", () => {
 	});
 });
 
-test("la portada del post no es lazy y declara sizes", async ({ page }) => {
+test("la portada del post sale del tejido, sin pedir una imagen", async ({ page }) => {
+	// Antes la portada era una ilustración de stock de Sanity, y este test
+	// cuidaba que no arrancara lazy ni sirviera el candidato equivocado del
+	// srcset. Ahora se genera del propio tejido y viaja como SVG en el HTML
+	// del server, así que lo que hay que cuidar es otra cosa: que no vuelva
+	// a aparecer una imagen que descargar arriba de la nota.
+	const imagenes: string[] = [];
+	page.on("request", (req) => {
+		if (req.resourceType() === "image") imagenes.push(req.url());
+	});
+
 	await page.goto("/blog");
 	const primerPost = page
 		.locator('a[href*="/blog/"]')
@@ -129,10 +139,36 @@ test("la portada del post no es lazy y declara sizes", async ({ page }) => {
 	await primerPost.click();
 	await page.waitForLoadState("networkidle");
 
-	const portada = page.locator("article img.object-cover").first();
-	if ((await portada.count()) === 0) test.skip(true, "este post no tiene portada");
+	const portada = page.locator("article svg[role='presentation']").first();
+	await expect(portada).toHaveCount(1);
+	// El recorte tiene tejido de verdad, no un SVG vacío.
+	expect(await portada.locator("circle").count()).toBeGreaterThan(20);
 
-	// Es el LCP de la página: con loading="lazy" el navegador la posterga.
-	await expect(portada).not.toHaveAttribute("loading", "lazy");
-	await expect(portada).toHaveAttribute("sizes", /.+/);
+	expect(
+		imagenes.filter((u) => u.includes("cdn.sanity.io") || u.includes("/_next/image")),
+		"la portada volvió a ser una imagen descargada",
+	).toEqual([]);
+
+	// Y es decoración declarada: nada que anunciarle a un lector de pantalla.
+	expect(
+		await page.locator("article [aria-hidden='true'] svg[role='presentation']").count(),
+		"la portada dejó de estar marcada como decorativa",
+	).toBe(1);
+});
+
+test("ningún título del blog llega con emoji a la pantalla", async ({ page }) => {
+	// Una de las notas se llama "🚀 SEO para devs…" en Sanity. El cohete se
+	// limpia al renderizar (title.ts), y se limpia en TODOS lados: el
+	// listado, el h1, la navegación entre notas y el <title>.
+	const pictogramas = /[\p{Extended_Pictographic}]/u;
+
+	await page.goto("/blog");
+	for (const t of await page.locator("article h2").allInnerTexts()) {
+		expect(t, `"${t}" llegó con emoji al listado`).not.toMatch(pictogramas);
+	}
+
+	await page.locator('a[href*="/blog/"]').filter({ hasNotText: /^$/ }).first().click();
+	await page.waitForLoadState("domcontentloaded");
+	expect(await page.locator("h1").innerText()).not.toMatch(pictogramas);
+	expect(await page.title()).not.toMatch(pictogramas);
 });
