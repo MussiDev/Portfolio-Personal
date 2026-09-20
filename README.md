@@ -15,7 +15,7 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 | 3D | Three.js | ^0.186.0 |
 | CMS | Sanity (`next-sanity`) | ^12.1.0 / ^5.11.0 |
 | Contenido enriquecido | `@portabletext/react`, `react-markdown`, `mermaid` | — |
-| Formulario de contacto | EmailJS + Google reCAPTCHA v3 | ^4.2.0 |
+| Formulario de contacto | EmailJS (API REST, desde el servidor) + Google reCAPTCHA v3 | — |
 | Tests | `node:test` (nativo, sin dependencias) | — |
 
 ## Características
@@ -26,7 +26,7 @@ Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegabl
 - **Bilingüe (ES/EN)** — español sin prefijo, inglés bajo `/en`, con `hreflang` y `<html lang>` correctos por ruta
 - **Blog conectado a Sanity** — posts en Portable Text o Markdown, con diagramas Mermaid embebidos
 - **OG image dinámica y localizada** — `next/og`, prerenderizada por idioma
-- **Formulario de contacto** — React 19 `useActionState`, EmailJS + reCAPTCHA v3 (invisible) diferido hasta que el usuario llega al formulario, verificado server-side en `/api/verify-captcha`
+- **Formulario de contacto** — React 19 `useActionState` + reCAPTCHA v3 (invisible) diferido hasta que el usuario llega al formulario. `/api/contact` valida el mensaje, verifica el captcha y recién entonces envía por la API REST de EmailJS con la private key: el navegador nunca habla con EmailJS
 - **Accesible** — reduced-motion respetado en cursor y animaciones, regiones de navegación como `<a>` dentro de `<nav>`, skip-link
 - **CI en GitHub Actions** — type-check, tests y build en cada push/PR
 
@@ -67,15 +67,18 @@ NEXT_PUBLIC_SANITY_PROJECT_ID=tu_project_id
 NEXT_PUBLIC_SANITY_DATASET=production
 STUDIO_SECRET=un_secreto_para_acceder_a_/studio
 
-# EmailJS
+# EmailJS (se usan solo desde /api/contact, en el servidor)
 NEXT_PUBLIC_SERVICE_ID=tu_service_id
 NEXT_PUBLIC_TEMPLATE_ID=tu_template_id
 NEXT_PUBLIC_PUBLIC_KEY=tu_public_key
+EMAILJS_PRIVATE_KEY=tu_private_key
 
 # Google reCAPTCHA v3
 NEXT_PUBLIC_FIRSTCAPTCHA=tu_site_key
 RECAPTCHA_SECRET_KEY=tu_secret_key
 ```
+
+**EmailJS desde el servidor:** en el dashboard de EmailJS (Account → Security) activar *"Allow EmailJS API for non-browser applications"* (sin esto rechaza los envíos de `/api/contact`) y *"Use Private Key"* (sin esto cualquiera puede seguir mandando mails con la public key, salteando el captcha). Sin `EMAILJS_PRIVATE_KEY` el formulario responde error: falla cerrado.
 
 `NEXT_PUBLIC_SITE_URL` define el dominio canónico usado en metadata, sitemap, robots y OG images (`entities/site.ts`). Si no está seteada, cae a `https://joaquinmussi.com.ar`. **Tiene que estar seteada en Railway** con el dominio de producción real — si apunta a un dominio que no resuelve, el canonical, el sitemap y las OG images quedan rotos en producción.
 

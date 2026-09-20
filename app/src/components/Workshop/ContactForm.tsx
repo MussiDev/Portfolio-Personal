@@ -3,7 +3,7 @@
 import Script from "next/script";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-import { shouldBlockSubmission } from "./captchaGate";
+import { CAPTCHA_ACTION } from "../../../../entities/contact";
 
 type State = { ok: boolean | null; message: string };
 
@@ -15,8 +15,6 @@ declare global {
 		};
 	}
 }
-
-const CAPTCHA_ACTION = "contact";
 
 /**
  * El copy llega por props desde ContactoSection (server component), que ya
@@ -51,8 +49,7 @@ const linkClass = "underline decoration-sinapsis/50 hover:text-impulso";
  * reCAPTCHA v3: no hay widget. La clave registrada en Google es v3, y un
  * widget v2 (el checkbox de antes) Google se niega a montarlo con una clave
  * v3 — por eso el captcha nunca apareció en producción. Acá se pide un token
- * al enviar y se verifica en el server (/api/verify-captcha) con umbral de
- * score y chequeo de acción.
+ * al enviar; /api/contact lo verifica y recién entonces manda el mail.
  */
 const getCaptchaToken = async (siteKey: string): Promise<string | null> => {
 	if (!window.grecaptcha) return null;
@@ -64,23 +61,6 @@ const getCaptchaToken = async (siteKey: string): Promise<string | null> => {
 		});
 	} catch {
 		return null;
-	}
-};
-
-const verifyCaptcha = async (siteKey: string): Promise<boolean> => {
-	const token = await getCaptchaToken(siteKey);
-	if (!token) return false;
-	try {
-		const res = await fetch("/api/verify-captcha", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ token }),
-		});
-		if (!res.ok) return false;
-		const data = (await res.json()) as { success: boolean };
-		return data.success;
-	} catch {
-		return false;
 	}
 };
 
@@ -114,36 +94,24 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 		async (_prev, formData) => {
 			if (formData.get("lastName")) return { ok: true, message: copy.ok };
 
-			const serviceId = process.env.NEXT_PUBLIC_SERVICE_ID;
-			const templateId = process.env.NEXT_PUBLIC_TEMPLATE_ID;
-			const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
-			if (!serviceId || !templateId || !publicKey) {
-				return { ok: false, message: copy.error };
-			}
-
-			// Fail closed: sin sitekey no hay forma de verificar nada, así que se
-			// bloquea en vez de mandar sin captcha. Es una regresión que ya pasó
-			// una vez (la variable ausente dejaba pasar cualquier envío) y que
-			// captchaGate.test.ts fija.
-			const verificado = sitekey ? await verifyCaptcha(sitekey) : false;
-			if (shouldBlockSubmission(sitekey, verificado)) {
-				return { ok: false, message: copy.captcha };
-			}
+			// Without a token there is nothing the server could verify: skip the
+			// round trip. The server rejects a missing token anyway (fail closed).
+			const token = sitekey ? await getCaptchaToken(sitekey) : null;
+			if (!token) return { ok: false, message: copy.captcha };
 
 			try {
-				// Se importa recién al enviar: no pesa en el bundle de quien solo mira.
-				const { default: emailjs } = await import("@emailjs/browser");
-				await emailjs.send(
-					serviceId,
-					templateId,
-					{
-						user_name: String(formData.get("user_name") ?? ""),
-						user_email: String(formData.get("user_email") ?? ""),
+				const res = await fetch("/api/contact", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						name: String(formData.get("user_name") ?? ""),
+						email: String(formData.get("user_email") ?? ""),
 						message: String(formData.get("message") ?? ""),
-					},
-					publicKey,
-				);
-				return { ok: true, message: copy.ok };
+						token,
+					}),
+				});
+				if (res.ok) return { ok: true, message: copy.ok };
+				return { ok: false, message: res.status === 403 ? copy.captcha : copy.error };
 			} catch {
 				return { ok: false, message: copy.error };
 			}

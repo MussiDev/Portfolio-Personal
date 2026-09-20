@@ -48,7 +48,7 @@ const CSP = [
 	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 	"font-src 'self' https://fonts.gstatic.com",
 	"img-src 'self' data: https://cdn.sanity.io",
-	`connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://api.emailjs.com https://www.google.com https://fonts.googleapis.com${vitalsOrigin ? ` ${vitalsOrigin}` : ""}`,
+	`connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://www.google.com https://fonts.googleapis.com${vitalsOrigin ? ` ${vitalsOrigin}` : ""}`,
 	"frame-src https://www.google.com",
 	"frame-ancestors 'none'",
 	"object-src 'none'",

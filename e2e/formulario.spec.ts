@@ -44,7 +44,7 @@ test("sin captcha resuelto el envío se bloquea y lo dice en la región live", a
 	await page.fill("#message", "Mensaje de prueba automatizada.");
 	await page.click('form button[type="submit"]');
 
-	// captchaGate hace fail-closed: sin sitekey o sin captcha resuelto,
+	// Fail closed (ContactForm + /api/contact): sin sitekey o sin captcha resuelto,
 	// bloquea. En cualquiera de los dos casos el usuario tiene que recibir
 	// un mensaje, no un silencio.
 	const live = page.locator('form [aria-live="polite"]');
