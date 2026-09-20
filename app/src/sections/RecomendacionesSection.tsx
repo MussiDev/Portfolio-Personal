@@ -1,3 +1,4 @@
+import { formatMonth } from "../../../entities/dates";
 import { t, type Language } from "../../../entities/i18n";
 import type { Recommendation } from "../../../entities/schemas";
 import type { Dict } from "../i18n/dict";
@@ -36,7 +37,7 @@ const RecomendacionesSection = ({
 							{recommendationList[0].role}
 						</span>
 						<span className='font-pieza text-[10px] uppercase tracking-[.1em] text-sinapsis'>
-							{t(recommendationList[0].relation, lang)} · {recommendationList[0].date}
+							{t(recommendationList[0].relation, lang)} · {formatMonth(recommendationList[0].date, lang)}
 						</span>
 					</figcaption>
 				</figure>
@@ -61,7 +62,7 @@ const RecomendacionesSection = ({
 								{r.role}
 							</span>
 							<span className='ml-auto font-pieza text-[10px] uppercase tracking-[.1em] text-sinapsis'>
-								{t(r.relation, lang)} · {r.date}
+								{t(r.relation, lang)} · {formatMonth(r.date, lang)}
 							</span>
 						</figcaption>
 					</figure>

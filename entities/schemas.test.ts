@@ -11,21 +11,21 @@ import {
 
 test("CertificationsSchema acepta una lista bien formada", () => {
 	const result = CertificationsSchema.safeParse([
-		{ id: 1, platform: "Platzi", name: "Curso", date: "Oct 2022" },
+		{ id: 1, platform: "Platzi", name: "Curso", date: "2022-10" },
 	]);
 	assert.equal(result.success, true);
 });
 
 test("CertificationsSchema rechaza un id que no es número", () => {
 	const result = CertificationsSchema.safeParse([
-		{ id: "1", platform: "Platzi", name: "Curso", date: "Oct 2022" },
+		{ id: "1", platform: "Platzi", name: "Curso", date: "2022-10" },
 	]);
 	assert.equal(result.success, false);
 });
 
 test("CertificationsSchema ignora campos extra (credentialId, icons)", () => {
 	const result = CertificationsSchema.safeParse([
-		{ id: 1, platform: "Platzi", name: "Curso", date: "Oct 2022", credentialId: "x" },
+		{ id: 1, platform: "Platzi", name: "Curso", date: "2022-10", credentialId: "x" },
 	]);
 	assert.equal(result.success, true);
 });
@@ -34,13 +34,13 @@ test("CompaniesSchema acepta tanto el shape con roles como el shape plano", () =
 	const result = CompaniesSchema.safeParse([
 		{
 			company: "Acme",
-			totalTime: "2022 - hoy",
-			roles: [{ position: "Dev", time: "2022", description: { es: "x", en: "y" } }],
+			totalTime: { from: "2022-01", to: null },
+			roles: [{ position: "Dev", time: { from: "2022-01", to: null }, description: { es: "x", en: "y" } }],
 		},
 		{
 			company: "Beta",
 			position: "Dev",
-			time: "2021",
+			time: { from: "2021-01", to: "2021-12" },
 			description: { es: "x", en: "y" },
 		},
 	]);
@@ -49,7 +49,7 @@ test("CompaniesSchema acepta tanto el shape con roles como el shape plano", () =
 
 test("RecommendationsSchema exige relation y text bilingües", () => {
 	const missing = RecommendationsSchema.safeParse([
-		{ id: 1, name: "A", role: "B", relation: { es: "x" }, date: "2022", text: { es: "x", en: "y" } },
+		{ id: 1, name: "A", role: "B", relation: { es: "x" }, date: "2022-01", text: { es: "x", en: "y" } },
 	]);
 	assert.equal(missing.success, false);
 });
@@ -128,4 +128,11 @@ test("los proyectos de trabajo están traducidos, no en un solo idioma", () => {
 		{ id: 1, name: "Solo español", company: "X", period: "2024", description: "texto", skills: [] },
 	]);
 	assert.equal(r.success, false);
+});
+
+test("dates are data: a display string is rejected", () => {
+	const result = CertificationsSchema.safeParse([
+		{ id: 1, platform: "Platzi", name: "Curso", date: "Oct 2022" },
+	]);
+	assert.equal(result.success, false);
 });

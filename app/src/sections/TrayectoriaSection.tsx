@@ -1,3 +1,4 @@
+import { formatMonth, formatPeriod } from "../../../entities/dates";
 import { t, type Language } from "../../../entities/i18n";
 import type {
 	Certification,
@@ -9,16 +10,17 @@ import type {
 import type { Dict } from "../i18n/dict";
 import { Card, Step } from "./StepLayout";
 
-const normalize = (e: Company): { period: string; roles: Role[] } => ({
-	period: e.totalTime ?? e.time ?? "",
-	roles: e.roles ?? [
-		{
-			position: e.position ?? "",
-			time: e.time ?? "",
-			description: e.description ?? {},
-		},
-	],
-});
+const normalize = (e: Company, lang: Language): { period: string; roles: Role[] } => {
+	const span = e.totalTime ?? e.time;
+	return {
+		period: [span && formatPeriod(span, lang), t(e.mode, lang)].filter(Boolean).join(" · "),
+		roles:
+			e.roles ??
+			(e.time
+				? [{ position: e.position ?? "", time: e.time, description: e.description ?? {} }]
+				: []),
+	};
+};
 
 const TrayectoriaSection = ({
 	d,
@@ -48,7 +50,7 @@ const TrayectoriaSection = ({
 		<div className='flex flex-col gap-4'>
 			<div className='relative flex flex-col gap-6 border-l-2 border-sinapsis/25 pl-6 sm:pl-8'>
 				{companies.map((e) => {
-					const { period, roles } = normalize(e);
+					const { period, roles } = normalize(e, lang);
 					return (
 						<div key={e.company} className='relative'>
 							<span
@@ -64,15 +66,15 @@ const TrayectoriaSection = ({
 								</div>
 								{roles.map((r) => (
 									<div
-										key={r.position + r.time}
+										key={r.position + r.time.from}
 										className='flex flex-col gap-1.5'
 									>
 										<div className='flex flex-wrap items-baseline gap-x-3'>
 											<h4 className='m-0 text-sm text-impulso'>
 												{r.position}
 											</h4>
-											<span className='font-pieza text-[10px] tabular-nums text-mielina'>
-												{r.time}
+											<span className='font-pieza text-[10px] uppercase tabular-nums text-mielina'>
+												{formatPeriod(r.time, lang)}
 											</span>
 										</div>
 										<p className='m-0 font-rotulo text-[14px] leading-relaxed text-mielina'>
@@ -119,7 +121,9 @@ const TrayectoriaSection = ({
 								<div className='flex flex-wrap items-baseline gap-x-3'>
 									<h4 className='m-0 text-sm'>{t(p.name, lang)}</h4>
 									<span className='font-pieza text-[10px] text-mielina'>
-										{p.company} · {p.period}
+										{[p.company, p.period && formatPeriod(p.period, lang)]
+											.filter(Boolean)
+											.join(" · ")}
 									</span>
 								</div>
 								<p className='m-0 font-rotulo text-[13px] leading-relaxed text-mielina'>
@@ -187,7 +191,7 @@ const TrayectoriaSection = ({
 								{c.name}
 							</span>
 							<span className='font-pieza text-[10px] text-mielina'>
-								{c.platform} · {c.date}
+								{c.platform} · {formatMonth(c.date, lang)}
 							</span>
 						</li>
 					))}

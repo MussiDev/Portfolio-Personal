@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { YEAR_MONTH } from "./dates.ts";
+
 /**
  * Validación en runtime de los JSON de api/*.json. Antes se importaban con
  * `as Tipo[]` directo: un JSON mal editado a mano rompía silenciosamente
@@ -12,12 +14,18 @@ import { z } from "zod";
 
 const localizedText = z.object({ es: z.string(), en: z.string() });
 
+// Dates are data, formatted per language in entities/dates.ts. A display
+// string like "Jun 2022" fails here instead of leaking into the other
+// language's page.
+const yearMonth = z.string().regex(YEAR_MONTH, 'expected "YYYY-MM"');
+const period = z.object({ from: yearMonth, to: yearMonth.nullable() });
+
 // api/certifications.json
 export const CertificationSchema = z.object({
 	id: z.number(),
 	platform: z.string(),
 	name: z.string(),
-	date: z.string(),
+	date: yearMonth,
 });
 export const CertificationsSchema = z.array(CertificationSchema);
 export type Certification = z.infer<typeof CertificationSchema>;
@@ -35,14 +43,16 @@ export type LanguageItem = z.infer<typeof LanguageItemSchema>;
 // de un único rol al nivel superior (ver normalize() en page.tsx).
 const RoleSchema = z.object({
 	position: z.string(),
-	time: z.string(),
+	time: period,
 	description: z.record(z.string(), z.string()),
 	highlights: z.record(z.string(), z.array(z.string())).optional(),
 });
 export const CompanySchema = z.object({
 	company: z.string(),
-	totalTime: z.string().optional(),
-	time: z.string().optional(),
+	totalTime: period.optional(),
+	time: period.optional(),
+	/** "Remote", "Part-time": shown next to the company's period. */
+	mode: localizedText.optional(),
 	position: z.string().optional(),
 	description: z.record(z.string(), z.string()).optional(),
 	roles: z.array(RoleSchema).optional(),
@@ -57,7 +67,7 @@ export const RecommendationSchema = z.object({
 	name: z.string(),
 	role: z.string(),
 	relation: localizedText,
-	date: z.string(),
+	date: yearMonth,
 	text: localizedText,
 });
 export const RecommendationsSchema = z.array(RecommendationSchema);
@@ -71,7 +81,7 @@ export const WorkProjectSchema = z.object({
 	id: z.number(),
 	name: localizedText,
 	company: z.string(),
-	period: z.string(),
+	period: period.nullable(),
 	description: localizedText,
 	skills: z.array(z.string()),
 });
