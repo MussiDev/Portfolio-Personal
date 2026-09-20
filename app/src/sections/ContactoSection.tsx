@@ -4,16 +4,6 @@ import type { Dict } from "../i18n/dict";
 import ContactForm from "../components/Workshop/ContactForm";
 import { Step } from "./StepLayout";
 
-const STACK = [
-	"Next.js",
-	"React",
-	"TypeScript",
-	"Arquitectura frontend",
-	"Performance",
-	"APIs .NET",
-	"Clean Architecture",
-];
-
 const ContactoSection = ({
 	d,
 	lang,
@@ -66,7 +56,7 @@ const ContactoSection = ({
 							{d.campos.stack}
 						</dt>
 						<dd className='m-0 font-pieza text-xs leading-relaxed text-sinapsis'>
-							{STACK.join(" · ")}
+							{d.stack.join(" · ")}
 						</dd>
 					</div>
 				</dl>
