@@ -42,9 +42,22 @@ const vitalsOrigin = (() => {
 	}
 })();
 
+// React en modo desarrollo usa eval() para reconstruir callstacks que vienen
+// de otro entorno (el server, un worker). La CSP es la misma en dev y en
+// producción, así que sin esto `next dev` escupe en cada carga:
+// "eval() is not supported in this environment… React requires eval() in
+// development mode". No es un warning inofensivo: apaga esas herramientas
+// de debug justo donde hacen falta.
+//
+// Va SOLO en desarrollo. 'unsafe-eval' en producción es de las concesiones
+// más caras que se le pueden hacer a una CSP — convierte cualquier inyección
+// de string en ejecución de código — y React no lo usa nunca en producción,
+// así que ahí no compra nada a cambio.
+const DEV = process.env.NODE_ENV === "development";
+
 const CSP = [
 	"default-src 'self'",
-	"script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com",
+	`script-src 'self' 'unsafe-inline'${DEV ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com`,
 	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 	"font-src 'self' https://fonts.gstatic.com",
 	"img-src 'self' data: https://cdn.sanity.io",
