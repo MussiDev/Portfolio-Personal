@@ -7,6 +7,12 @@ module.exports = {
 	],
 	theme: {
 		extend: {
+			screens: {
+				// Same query as DESKTOP_QUERY (app/src/common/desktopQuery.ts):
+				// wide AND hover-capable. Only for the 3D-index UI; layout
+				// widths keep using md/lg.
+				desk: { raw: "(min-width: 768px) and (hover: hover) and (pointer: fine)" },
+			},
 			fontFamily: {
 				rotulo: ["var(--font-rotulo)", "Helvetica Neue", "Arial", "sans-serif"],
 				glosa: ["var(--font-glosa)", "Georgia", "Times New Roman", "serif"],

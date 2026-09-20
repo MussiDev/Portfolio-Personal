@@ -10,6 +10,8 @@ import {
 	puntosDelCallout,
 } from "./brainLayout";
 import { crearMarcadores } from "./brainMarkers";
+import { cloudRadius, walkTrace } from "./brainTrace";
+import { crearTraza, type Traza } from "./brainTraceObject";
 import { crearEscenaDelCerebro } from "./brainScene";
 import { construirTejido, type Tejido } from "./brainTissue";
 import { relatedTo } from "./relations";
@@ -26,9 +28,17 @@ export type Section = {
 	 * tiene una relación real de contenido — no decorativa. Ver page.tsx
 	 * para qué conexiones existen y por qué. */
 	related?: number[];
+	/** The region's own page, language-agnostic ("/proyectos/nortear"). Only
+	 * regions whose content has a URL of its own have one; escena.ts uses it
+	 * to know which region a route belongs to. */
+	route?: string;
 };
 
 const BASE_ROTATION = -Math.PI / 2;
+
+/** The six beats of a case: problem, decision, mechanism, trade-off,
+ * result, afterwards (see STAGES in projects.ts). */
+const BEATS = 6;
 
 const Z_HERO = 3.6;
 const Z_STEP = 4.3;
@@ -40,6 +50,9 @@ const Brain3D = ({
 	onActive,
 	onGo,
 	inHero,
+	/** On a case: which of the six beats is on screen, or null elsewhere.
+	 * Drives the decision trace over the tissue. */
+	beat,
 	anchorRef,
 	loadingText,
 	activityText,
@@ -52,6 +65,7 @@ const Brain3D = ({
 	onActive: (i: number | null) => void;
 	onGo: (i: number) => void;
 	inHero: boolean;
+	beat: number | null;
 	anchorRef: MutableRefObject<{ x: number; y: number; ready: boolean }>;
 	loadingText: string;
 	activityText: string;
@@ -77,10 +91,12 @@ const Brain3D = ({
 	const callbacksRef = useRef({ onProgress, onReady });
 	const activeRef = useRef<number | null>(active);
 	const inHeroRef = useRef(inHero);
+	const beatRef = useRef<number | null>(beat);
 	useEffect(() => {
 		callbacksRef.current = { onProgress, onReady };
 		activeRef.current = active;
 		inHeroRef.current = inHero;
+		beatRef.current = beat;
 	});
 
 	const half = Math.ceil(sections.length / 2);
@@ -135,6 +151,40 @@ const Brain3D = ({
 
 		let alive = true;
 		let tejido: Tejido | null = null;
+
+		/**
+		 * The decision trace, built the first time a case asks for one and
+		 * rebuilt only if another region takes the focus. The walk costs one
+		 * pass over the cloud per step, so it happens once — never per frame.
+		 */
+		let traza: Traza | null = null;
+		let trazaDe: number | null = null;
+		const mirada = new THREE.Vector3();
+		const matrizInversa = new THREE.Matrix4();
+		const asegurarTraza = (region: number) => {
+			if (!tejido || trazaDe === region) return;
+			traza?.destruir();
+			const anchor = anchors[region] ?? anchors[0];
+			// The camera's line of sight, expressed in the model's own space:
+			// the walk uses it to stay in the plane the reader is looking at
+			// instead of heading into depth, where six steps project as two.
+			camera.getWorldDirection(mirada);
+			matrizInversa.copy(group.matrixWorld).invert();
+			mirada.transformDirection(matrizInversa).normalize();
+			// One tenth of the radius per beat left the six steps knotted
+			// around the anchor; at a fifth the trace crosses real tissue and
+			// reads as a path.
+			const paso = cloudRadius(tejido.posiciones) * 0.2;
+			const ruta = walkTrace(
+				tejido.posiciones,
+				[anchor.x, anchor.y, anchor.z],
+				BEATS,
+				paso,
+				[mirada.x, mirada.y, mirada.z],
+			);
+			traza = crearTraza(group, ruta, { reducedMotion });
+			trazaDe = region;
+		};
 
 		let intersecting = true;
 		let pageVisible = document.visibilityState !== "hidden";
@@ -321,6 +371,7 @@ const Brain3D = ({
 
 			tejido?.latir(frame);
 
+
 			const zHero = Math.max(Z_HERO, escena.zMinima);
 			const zStep = Math.max(Z_STEP, escena.zMinima);
 			const z = zHero + (zStep - zHero) * shift;
@@ -346,7 +397,13 @@ const Brain3D = ({
 			}
 			if (weight > 0.001) blend.divideScalar(weight);
 
-			const choosing = inHeroRef.current && activeNow !== null;
+			// Two ways of holding a region: picking one in the hero, and
+			// reading the case that belongs to it. Without the second, a case
+			// left the camera in its wandering state and `settled` at 0, so
+			// the axon, the pin and the trace all stayed invisible.
+			const beatNow = beatRef.current;
+			const leyendoCaso = beatNow !== null && activeNow !== null;
+			const choosing = (inHeroRef.current || leyendoCaso) && activeNow !== null;
 
 			if (choosing && activeNow !== null) {
 				anchorWorld
@@ -356,7 +413,9 @@ const Brain3D = ({
 				targetCamera
 					.copy(anchorWorld)
 					.normalize()
-					.multiplyScalar(0.95)
+					// Reading a case needs room for the whole trace, not the
+					// close-up the hero uses to present one region.
+					.multiplyScalar(leyendoCaso ? 2.3 : 0.95)
 					.add(anchorWorld)
 					.setZ(Math.max(anchorWorld.z + z * 0.45, z * 0.45));
 			} else {
@@ -366,6 +425,15 @@ const Brain3D = ({
 			}
 
 			const settled = choosing ? 1 : strength;
+
+			// The decision trace only exists while a case is being read; on
+			// the home `beat` is null and nothing gets built.
+			if (leyendoCaso && activeNow !== null) {
+				asegurarTraza(activeNow);
+				traza?.dibujar(beatNow, settled, frame);
+			} else {
+				traza?.dibujar(null, 0, frame);
+			}
 			if (!reducedMotion) {
 				group.rotation.y =
 					BASE_ROTATION + Math.sin(frame / 260) * 0.28 * (1 - settled);
@@ -432,6 +500,7 @@ const Brain3D = ({
 		return () => {
 			alive = false;
 			tejido?.cancelar();
+			traza?.destruir();
 			if (bloomIdle) {
 				if (typeof cancelIdleCallback === "function") cancelIdleCallback(bloomIdle);
 				else clearTimeout(bloomIdle);
@@ -528,7 +597,7 @@ const Brain3D = ({
 
 			<svg
 				ref={svgRef}
-				className={`pointer-events-none absolute inset-0 hidden h-full w-full transition-opacity duration-700 ease-impulso md:block ${
+				className={`pointer-events-none absolute inset-0 hidden h-full w-full transition-opacity duration-700 ease-impulso desk:block ${
 					inHero ? "opacity-100" : "opacity-0"
 				}`}
 				preserveAspectRatio='none'
@@ -607,7 +676,7 @@ const Brain3D = ({
 
 			<nav
 				aria-label={navLabel}
-				className={`absolute inset-0 z-10 hidden items-center justify-between px-8 transition-opacity duration-700 ease-impulso md:flex lg:px-14 ${
+				className={`absolute inset-0 z-10 hidden items-center justify-between px-8 transition-opacity duration-700 ease-impulso desk:flex lg:px-14 ${
 					inHero ? "opacity-100" : "pointer-events-none opacity-0"
 				}`}
 			>

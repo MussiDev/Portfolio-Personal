@@ -32,6 +32,7 @@ export const buildSections = (
 		href: "#paso-2",
 		step: 2,
 		related: [0],
+		route: `/proyectos/${mainProject.slug}`,
 	},
 	{
 		label: d.campos.recomendaciones,

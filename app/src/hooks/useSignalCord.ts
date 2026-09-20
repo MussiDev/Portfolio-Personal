@@ -29,8 +29,12 @@ export const useSignalCord = (
 	anchorRef: RefObject<Anchor>,
 	activeRef: RefObject<number | null>,
 	sections: Section[],
+	/** The cord ends at a step's badge; with no steps on screen there is
+	 * nothing to draw and no reason to keep a loop alive. */
+	activo: boolean,
 ) => {
 	useEffect(() => {
+		if (!activo) return;
 		const reducedMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
@@ -101,5 +105,5 @@ export const useSignalCord = (
 			window.clearTimeout(idleTimer);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sections]);
+	}, [sections, activo]);
 };

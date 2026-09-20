@@ -12,6 +12,7 @@ import ReadingProgress from "../../../../src/components/Blog/ReadingProgress";
 import { getDict, type Dict } from "../../../../src/i18n/dict";
 import { alternates } from "../../../../src/i18n/meta";
 import NorteArFigura from "../../../../src/sections/NorteArFigura";
+import TissuePreload from "../../../../src/common/TissuePreload";
 
 /**
  * El caso completo de un proyecto, en su propia URL.
@@ -111,9 +112,14 @@ const ProyectoPage = async ({ params }: Params) => {
 	};
 
 	return (
-		<main className='sistema min-h-screen px-5 py-12 md:px-16 md:py-16'>
+		<main className='min-h-screen px-5 py-12 md:px-16 md:py-16'>
+			<TissuePreload />
 			<ReadingProgress targetId='caso' />
-			<div className='mx-auto flex max-w-[760px] flex-col gap-8'>
+			{/* Right-hand column, the same rhythm the home's steps use: the
+			 * left half belongs to the tissue, where the decision trace runs.
+			 * Centred, the column sat on top of the brain and the trace had
+			 * nowhere to be seen. */}
+			<div className='ml-auto flex w-full max-w-[42rem] flex-col gap-8 md:w-[56%]'>
 				<div className='entra entra-1 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-sinapsis/20 pb-4'>
 					{/* Vuelve al paso de donde se viene, no al tope de la home. */}
 					<Link

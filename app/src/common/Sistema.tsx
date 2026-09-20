@@ -1,7 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
+import { useActiveBeat } from "../hooks/useActiveBeat";
 import { useActiveStep } from "../hooks/useActiveStep";
 import { useHashEntry } from "../hooks/useHashEntry";
 import { useIsDesktop } from "../hooks/useIsDesktop";
@@ -11,6 +13,7 @@ import { PARTICLES, useSignalCord } from "../hooks/useSignalCord";
 import { useStepKeyboard } from "../hooks/useStepKeyboard";
 import { useStepLinks } from "../hooks/useStepLinks";
 import BrainCanvas from "./BrainLazy";
+import { escenaDeRuta } from "./escena";
 import { relatedTo } from "./relations";
 import type { Section } from "./Brain3D";
 import NervousSystemMobile from "./NervousSystemMobile";
@@ -18,7 +21,16 @@ import NervousSystemMobile from "./NervousSystemMobile";
 /** Cuánto dura encendida cada región en el recorrido del hero en mobile. */
 const CICLO_MS = 2800;
 
-const NervousSystem = ({
+/**
+ * The nervous system, mounted once in the [lang] layout.
+ *
+ * Living in the layout is the point: navigating from the home to a case no
+ * longer unmounts the brain, so the same WebGL session and the same tissue
+ * carry over instead of the world going dark between pages. Which scene a
+ * route wants comes from escena.ts; a route that wants none (the blog, the
+ * 404) renders its children and nothing else — no canvas, no listeners.
+ */
+const Sistema = ({
 	sections,
 	children,
 	loadingText,
@@ -51,6 +63,11 @@ const NervousSystem = ({
 	const [hover, setHover] = useState<number | null>(null);
 	const isDesktop = useIsDesktop();
 
+	const pathname = usePathname();
+	const escena = useMemo(() => escenaDeRuta(pathname, sections), [pathname, sections]);
+	const esHome = escena.modo === "home";
+	const conCerebro = escena.modo !== "ninguna";
+
 	const withStep = sections.filter((section) => section.step !== undefined);
 
 	// El hash se escribe, no se borra: es la única URL que identifica a una
@@ -59,20 +76,38 @@ const NervousSystem = ({
 	// pushState para no llenar el historial con un paso por cada scroll:
 	// el back del navegador sigue saliendo del sitio, no recorriendo pasos.
 	const goToStep = useCallback((step: number) => {
-		document.getElementById(`paso-${step}`)?.scrollIntoView({
+		const target = document.getElementById(`paso-${step}`);
+		target?.scrollIntoView({
 			behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
 				? "auto"
 				: "smooth",
 			block: "start",
 		});
+		// Scrolling alone leaves focus on the control that was activated, so
+		// the next Tab continued through the step dots instead of entering
+		// the section. preventScroll: the smooth scroll above is already
+		// under way and a focus jump would cut it short.
+		target?.focus({ preventScroll: true });
 		const { pathname, search } = window.location;
 		history.replaceState(null, "", step === 0 ? pathname + search : `${pathname}${search}#paso-${step}`);
 	}, []);
 
-	const activeStep = useActiveStep(containerRef, sections, setHover);
+	// `pathname` is a dependency, not decoration: the hooks below read the
+	// DOM of the page being shown, and with the system in the layout that DOM
+	// is replaced under them on every client navigation.
+	const activeStep = useActiveStep(containerRef, sections, setHover, pathname, esHome);
+	// Reading a case is what moves the signal: each beat on screen lights one
+	// more segment of the trace over the tissue.
+	const beat = useActiveBeat(pathname, escena.modo === "caso");
 
-	const active = hover ?? activeStep;
-	const inHero = activeStep === null;
+	const active = esHome
+		? (hover ?? activeStep)
+		: escena.modo === "caso"
+			? escena.region
+			: null;
+	// The hero is the home's first screen and nothing else: on a case the
+	// index steps aside and the region that owns the page holds the focus.
+	const inHero = esHome && activeStep === null;
 
 	/**
 	 * El concepto en mobile.
@@ -155,11 +190,11 @@ const NervousSystem = ({
 		[sections, goToStep],
 	);
 
-	useHashEntry();
+	useHashEntry(pathname);
 	useStepLinks(goToStep, setHover);
-	useReveal();
-	useStepKeyboard(containerRef, activeRef, sections, goToStep, setHover);
-	useSignalCord(streamRef, cordRef, particlesRef, anchorRef, activeRef, sections);
+	useReveal(pathname);
+	useStepKeyboard(containerRef, activeRef, sections, goToStep, setHover, esHome);
+	useSignalCord(streamRef, cordRef, particlesRef, anchorRef, activeRef, sections, esHome);
 
 	const liftVeil = useCallback(() => setReady(true), []);
 
@@ -173,16 +208,48 @@ const NervousSystem = ({
 	// falla. Ya no hace falta revelarlo a mano al detectar mobile; el
 	// timeout de 8s de arriba sigue como red.
 
+	// The blog, the 404: they render inside the same shell but ask for no
+	// brain, so nothing here mounts — no canvas, no scroll listeners, no
+	// tissue downloaded.
+	if (!conCerebro) return <>{children}</>;
+
+	/*
+	 * DOM order and visual order differ on purpose. The page goes first in
+	 * the DOM so the tab order is name → CTA → language → brain index →
+	 * steps; with the brain layer first, the six labels came before the H1.
+	 * `order` puts the sticky layer back on top visually, and the content
+	 * rises over it with -mt-[100svh].
+	 */
 	return (
-		<div ref={containerRef} className='relative'>
+		// `sistema` sits here, not on the page's <main>: the brain layer, the
+		// cord and the rail live in this subtree now, and the class is what
+		// carries the world's surface and its focus styles.
+		<div ref={containerRef} className='sistema relative flex flex-col'>
+			{/* pointer-events-none only on the home, where the page is a column
+			 * beside the brain and every block opts back in: that is what lets
+			 * the mouse reach the regions through the gaps. A case is a plain
+			 * document over the tissue, so it keeps its events. */}
+			<div
+				className={`relative z-10 order-2 -mt-[100svh] ${
+					esHome ? "pointer-events-none" : ""
+				}`}
+			>
+				{children}
+			</div>
+
 			<div
 				// En mobile el tejido va a plena intensidad mientras es el hero
 				// (no hay nada encima que leer) y recién baja a 40% cuando el
 				// contenido de un paso se le pone arriba. Antes estaba fijo en
 				// 40%, así que la construcción del tejido se veía a media luz
 				// justo en el momento en que es el protagonista.
-				className={`barrido pointer-events-none sticky top-0 z-0 h-[100svh] overflow-hidden transition-opacity duration-700 ease-impulso md:opacity-100 ${
-					inHero ? "opacity-100" : "opacity-40"
+				className={`barrido pointer-events-none sticky top-0 z-0 order-1 h-[100svh] shrink-0 overflow-hidden transition-opacity duration-700 ease-impulso ${
+					esHome
+						? `desk:opacity-100 ${inHero ? "opacity-100" : "opacity-40"}`
+						: // A case keeps its column on the right, so the tissue
+							// holds the left at full strength on a wide screen and
+							// dims on a phone, where the text runs over it.
+							"opacity-40 desk:opacity-100"
 				} ${ready ? "" : "!opacity-0"}`}
 			>
 				{isDesktop && (
@@ -192,6 +259,7 @@ const NervousSystem = ({
 						onActive={(i) => setHover(inHero ? i : null)}
 						onGo={go}
 						inHero={inHero}
+						beat={beat}
 						anchorRef={anchorRef}
 						loadingText={loadingText}
 						activityText={activityText}
@@ -211,7 +279,7 @@ const NervousSystem = ({
 				)}
 
 				<div
-					className={`absolute bottom-20 left-0 z-20 hidden max-w-[22rem] px-8 transition-all duration-700 ease-impulso md:block lg:px-14 ${
+					className={`absolute bottom-20 left-0 z-20 hidden max-w-[22rem] px-8 transition-all duration-700 ease-impulso desk:block lg:px-14 ${
 						inHero && active !== null
 							? "translate-y-0 opacity-100"
 							: "pointer-events-none translate-y-2 opacity-0"
@@ -249,9 +317,13 @@ const NervousSystem = ({
 				</div>
 			</div>
 
+			{/* Below the content layer (z-10) without the 3D index: on a phone the
+			 * card column covers the screen, and above it the cord's particles
+			 * ran across the text. On desktop the column leaves the brain side
+			 * free, so the cord can travel over everything. */}
 			<svg
 				ref={streamRef}
-				className='pointer-events-none fixed inset-0 z-30 h-full w-full transition-opacity duration-300'
+				className='pointer-events-none fixed inset-0 z-[5] h-full w-full transition-opacity duration-300 desk:z-30'
 				aria-hidden='true'
 				opacity='0'
 			>
@@ -277,13 +349,10 @@ const NervousSystem = ({
 				))}
 			</svg>
 
-			<div className='pointer-events-none relative z-10 -mt-[100svh]'>
-				{children}
-			</div>
-
+			{esHome && (
 			<nav
 				aria-label={stepsLabel}
-				className='pointer-events-none fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex'
+				className='pointer-events-none fixed left-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-3 desk:flex'
 			>
 				<span className='font-pieza text-[10px] tabular-nums text-mielina'>
 					{String(inHero ? 0 : (activeStep ?? 0) + 1).padStart(2, "0")}
@@ -319,9 +388,12 @@ const NervousSystem = ({
 					{String(withStep.length).padStart(2, "0")}
 				</span>
 			</nav>
+			)}
 
+			{esHome && (
+			<>
 			<div
-				className={`pointer-events-none fixed bottom-6 left-8 z-40 hidden items-center gap-6 transition-all duration-500 ease-impulso md:flex ${
+				className={`pointer-events-none fixed bottom-6 left-8 z-40 hidden items-center gap-6 transition-all duration-500 ease-impulso desk:flex ${
 					active === null
 						? "translate-y-3 opacity-0"
 						: "translate-y-0 opacity-100"
@@ -352,7 +424,7 @@ const NervousSystem = ({
 			<button
 				type='button'
 				onClick={() => goToStep(1)}
-				className={`pointer-events-none fixed bottom-6 left-8 z-40 hidden flex-col items-center gap-1.5 transition-all duration-500 ease-impulso md:flex ${
+				className={`pointer-events-none fixed bottom-6 left-8 z-40 hidden flex-col items-center gap-1.5 transition-all duration-500 ease-impulso desk:flex ${
 					active === null
 						? "pointer-events-auto translate-y-0 opacity-100"
 						: "translate-y-3 opacity-0"
@@ -365,6 +437,8 @@ const NervousSystem = ({
 					⌄
 				</span>
 			</button>
+			</>
+			)}
 		</div>
 	);
 };
@@ -409,4 +483,4 @@ const LiveKey = ({
 	);
 };
 
-export default NervousSystem;
+export default Sistema;

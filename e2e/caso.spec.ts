@@ -107,3 +107,60 @@ test("el diagrama se nombra, se enfoca y se recorre con el teclado cuando no ent
 	await page.keyboard.press("ArrowRight");
 	await expect.poll(() => diagrama.evaluate((el) => el.scrollLeft)).toBeGreaterThan(antes);
 });
+
+/**
+ * El cerebro vive en el layout, no en la home: ir al caso no lo desmonta.
+ *
+ * Es la diferencia entre "otra página con fondo parecido" y un mundo que no
+ * se corta, y se rompe sin hacer ruido — basta con que alguien mueva el
+ * sistema nervioso de vuelta adentro de una página, o que el server y el
+ * cliente elijan escenas distintas (pasó: proxy.ts reescribe / a /es).
+ */
+test.describe("continuidad entre la home y el caso", () => {
+	test.skip(({ isMobile }) => isMobile, "el tejido 3D es de desktop");
+
+	test("el mismo canvas sobrevive a la navegación y el tejido se baja una sola vez", async ({
+		page,
+	}) => {
+		const tejido: string[] = [];
+		page.on("request", (r) => {
+			if (/cerebro\.[a-f0-9]+\.bin/.test(r.url())) tejido.push(r.url());
+		});
+
+		await page.goto("/");
+		await esperarTejido(page);
+		expect(tejido, "el tejido se pide una vez en la home").toHaveLength(1);
+
+		// Marca sobre el elemento vivo: si React lo desmonta y lo vuelve a
+		// montar, el dataset se pierde con él.
+		await page.evaluate(() => {
+			document.querySelector("canvas")!.dataset.marca = "mismo-canvas";
+		});
+
+		await page.locator('a[href$="/proyectos/nortear"]').first().click();
+		await expect(page).toHaveURL(/\/proyectos\/nortear$/);
+		await expect(page.locator("h1")).toHaveText("NorteAR");
+
+		await expect
+			.poll(() => page.evaluate(() => document.querySelector("canvas")?.dataset.marca))
+			.toBe("mismo-canvas");
+		expect(tejido, "no se vuelve a bajar el tejido al navegar").toHaveLength(1);
+	});
+
+	test("los seis tiempos se anuncian al cerebro para mover la traza", async ({ page }) => {
+		await page.goto("/proyectos/nortear");
+		// Uno por tiempo: es lo que lee useActiveBeat para avanzar la señal.
+		await expect(page.locator("[data-tiempo]")).toHaveCount(6);
+	});
+
+	test("el blog no monta el cerebro ni baja el tejido", async ({ page }) => {
+		const tejido: string[] = [];
+		page.on("request", (r) => {
+			if (/cerebro(-2d)?\.[a-f0-9]+\.bin/.test(r.url())) tejido.push(r.url());
+		});
+		await page.goto("/blog");
+		await page.waitForTimeout(1500);
+		expect(await page.locator("canvas").count()).toBe(0);
+		expect(tejido, `el blog pidió tejido:\n${tejido.join("\n")}`).toEqual([]);
+	});
+});

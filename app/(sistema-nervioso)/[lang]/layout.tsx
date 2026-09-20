@@ -5,13 +5,13 @@ import { notFound } from "next/navigation";
 import React from "react";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 
-import { BRAIN2D_PATH } from "../../src/common/brain2dAsset";
-import { BRAIN_BIN_PATH } from "../../src/common/brainAsset";
 import Cursor from "../../src/common/Cursor";
+import Sistema from "../../src/common/Sistema";
+import { getSiteData } from "../../src/common/siteData";
 import WebVitals from "../../src/common/WebVitals";
 import { getDict } from "../../src/i18n/dict";
 import { LANGUAGES, isLanguage, type Language } from "../../../entities/i18n";
-import { SITE_URL } from "../../../entities/site";
+import { PERSON_ID, SITE_URL } from "../../../entities/site";
 import { toJsonLdScript } from "../../../entities/jsonLd";
 
 const label = Archivo({
@@ -79,9 +79,12 @@ export const generateMetadata = async ({
 			// ignora y hace una captura de la página en su lugar.
 			apple: "/icons/apple-touch-icon.png",
 		},
+		// No `url`: a child page that doesn't define openGraph (home, /en, the
+		// blog index) inherited the root URL. Without og:url, scrapers use the
+		// URL they fetched, which is right everywhere. Pages with their own
+		// openGraph (posts, cases) still set theirs.
 		openGraph: {
 			type: "website",
-			url: BASE_URL,
 			title,
 			description: d.presentacion,
 			siteName: "Joaquín Mussi Portfolio",
@@ -114,6 +117,8 @@ export const generateMetadata = async ({
 const jsonLd = (lang: Language) => ({
 	"@context": "https://schema.org",
 	"@type": "Person",
+	// Referenced by the home's ProfilePage (page.tsx) as its mainEntity.
+	"@id": PERSON_ID,
 	name: "Joaquín Mussi",
 	url: BASE_URL,
 	email: "joakoomussi@gmail.com",
@@ -148,34 +153,11 @@ const websiteJsonLd = {
 	url: BASE_URL,
 };
 
-/**
- * Corre durante el parseo del HTML, antes de cualquier hidratación.
- *
- * Además de marcar que hay JS (de lo que dependen las animaciones de
- * entrada en globals.css), arranca la descarga del tejido del cerebro.
- *
- * El .bin pesa 466 KB y se pedía recién al final de una cascada de siete
- * pasos en serie: HTML → bundle → hidratación → efecto de useIsDesktop →
- * import dinámico de Brain3D → chunk de three.js → fetch. Medido: el
- * documento queda interactivo a los ~32ms y el .bin no arrancaba hasta los
- * ~487ms.
- *
- * ¿Por qué acá y no un <link rel="preload"> en el JSX? Porque React lo
- * descarta silenciosamente (no llega al HTML), y su API soportada,
- * ReactDOM.preload(), no acepta `media` — sin eso, mobile se bajaría los
- * 466 KB que d3d9cb0 decidió no descargar. El matchMedia de acá mantiene
- * esa decisión intacta.
- *
- * `crossOrigin` no es decorativo: sin él el preload queda en modo no-cors,
- * no matchea el fetch() de Brain3D, y el archivo se descarga dos veces.
- */
-// Cada viewport precarga SU cerebro: el 3D (466 KB) en desktop, la
-// proyección 2D (~27 KB) en mobile. Nunca los dos.
-const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si";
-var l=document.createElement("link");
-l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";
-l.href=matchMedia("(min-width: 768px)").matches?${JSON.stringify(BRAIN_BIN_PATH)}:${JSON.stringify(BRAIN2D_PATH)};
-document.head.appendChild(l);`;
+// Runs while the HTML is still parsing: marks that there is JS, which the
+// entrance animations in globals.css depend on. The tissue preload used to
+// live here too; it now sits in the pages that actually show the brain
+// (see TissuePreload.tsx), so the blog doesn't pay for it.
+const BOOTSTRAP_SCRIPT = `document.documentElement.dataset.js="si";`;
 
 const NervousSystemLayout = async ({
 	children,
@@ -187,6 +169,10 @@ const NervousSystemLayout = async ({
 	const { lang } = await params;
 	if (!isLanguage(lang)) notFound();
 	const d = getDict(lang);
+	// The index of the six regions: the brain lives here now, so the layout
+	// is what knows them. `cache` keeps this from costing a second request
+	// when the home asks for the same data.
+	const { sections } = await getSiteData(lang);
 
 	return (
 		<html
@@ -210,7 +196,19 @@ const NervousSystemLayout = async ({
 					type='application/ld+json'
 					dangerouslySetInnerHTML={{ __html: toJsonLdScript(websiteJsonLd) }}
 				/>
-				{children}
+				<Sistema
+					sections={sections}
+					loadingText={d.hero.cargando}
+					activityText={d.hero.actividad}
+					openText={d.hero.abrir}
+					backText={d.hero.volver}
+					stepsLabel={d.hero.pasos}
+					scrollHintText={d.hero.bajar}
+					navLabel={d.hero.navegacion}
+					connectedLabel={d.hero.conectadoCon}
+				>
+					{children}
+				</Sistema>
 				<Cursor />
 				<WebVitals />
 			</body>

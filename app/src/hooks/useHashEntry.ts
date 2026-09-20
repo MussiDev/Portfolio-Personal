@@ -18,7 +18,7 @@ import { useEffect } from "react";
  * suave desde el hero hasta el paso 5 en la primera carga es un viaje
  * largo por contenido que el usuario no pidió ver.
  */
-export const useHashEntry = (): void => {
+export const useHashEntry = (pathname: string): void => {
 	useEffect(() => {
 		const match = /^#paso-(\d+)$/.exec(window.location.hash);
 		if (!match) return;
@@ -33,5 +33,5 @@ export const useHashEntry = (): void => {
 			target.scrollIntoView({ behavior: "auto", block: "start" });
 		});
 		return () => cancelAnimationFrame(raf);
-	}, []);
+	}, [pathname]);
 };

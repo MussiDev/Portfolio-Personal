@@ -114,6 +114,13 @@ html:has(.sistema) *::-webkit-scrollbar-thumb {
 	outline-offset: 3px;
 }
 
+/* Steps receive focus programmatically (goToStep) so the next Tab starts
+ * inside them. A full-screen outline would only add noise: the scroll
+ * already shows where you are. */
+.sistema [data-step][tabindex="-1"]:focus {
+	outline: none;
+}
+
 @layer base {
 	.sistema h1,
 	.sistema h2,

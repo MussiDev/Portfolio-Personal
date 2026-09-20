@@ -1,5 +1,6 @@
 "use client";
 
+import { DESKTOP_QUERY } from "../common/desktopQuery";
 import { useMediaQuery } from "./useMediaQuery";
 
 /**
@@ -12,5 +13,4 @@ import { useMediaQuery } from "./useMediaQuery";
  * Antes era useState + useEffect(setIsDesktop(...)), que produce un render
  * en cascada en cada montaje. La suscripción vive ahora en useMediaQuery.
  */
-export const useIsDesktop = (breakpointPx = 768): boolean | null =>
-	useMediaQuery(`(min-width: ${breakpointPx}px)`);
+export const useIsDesktop = (): boolean | null => useMediaQuery(DESKTOP_QUERY);

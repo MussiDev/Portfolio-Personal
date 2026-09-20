@@ -9,3 +9,6 @@
  */
 export const SITE_URL =
 	process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://joaquinmussi.com.ar";
+
+/** JSON-LD node id of the site's Person, so pages can reference it. */
+export const PERSON_ID = `${SITE_URL}/#person`;

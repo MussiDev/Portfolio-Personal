@@ -15,6 +15,7 @@ const HeroSection = ({
 	<section
 		id='paso-0'
 		data-step={0}
+		tabIndex={-1}
 		className='pointer-events-none relative h-[100svh] min-h-[34rem]'
 	>
 		{/* data-tejido-desde / data-tejido-hasta: en mobile, el tejido se
@@ -66,7 +67,7 @@ const HeroSection = ({
 			</div>
 		</div>
 
-		<nav data-tejido-hasta className='entra entra-3 pointer-events-auto absolute bottom-0 left-0 right-0 flex flex-col gap-px border-t border-sinapsis/25 bg-tejido/85 backdrop-blur-sm md:hidden'>
+		<nav data-tejido-hasta className='entra entra-3 pointer-events-auto absolute bottom-0 left-0 right-0 flex flex-col gap-px border-t border-sinapsis/25 bg-tejido/85 backdrop-blur-sm desk:hidden'>
 			{sections.map((s, i) => (
 				<a
 					key={s.href + s.label}

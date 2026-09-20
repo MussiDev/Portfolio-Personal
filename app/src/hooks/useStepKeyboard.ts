@@ -15,8 +15,12 @@ export const useStepKeyboard = (
 	sections: Section[],
 	goToStep: (step: number) => void,
 	setHover: (v: number | null) => void,
+	/** The shortcuts belong to the walkthrough: on a case page Backspace is
+	 * the browser's, not ours. */
+	activo: boolean,
 ) => {
 	useEffect(() => {
+		if (!activo) return;
 		const onKeyDown = (e: KeyboardEvent) => {
 			const target = e.target as HTMLElement | null;
 			if (
@@ -54,5 +58,5 @@ export const useStepKeyboard = (
 		window.addEventListener("keydown", onKeyDown);
 		return () => window.removeEventListener("keydown", onKeyDown);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sections, goToStep]);
+	}, [sections, goToStep, activo]);
 };

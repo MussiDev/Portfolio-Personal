@@ -100,7 +100,9 @@ const OpenProject = ({
 				const hasContent = stageHasContent(stage);
 
 				return (
-					<li key={key} className='relative'>
+					// data-tiempo: the brain reads which beat is on screen to
+					// advance the decision trace (useActiveBeat).
+					<li key={key} data-tiempo={i} className='relative'>
 						<span
 							aria-hidden='true'
 							className='absolute -left-[calc(2.25rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulso shadow-[0_0_0_3px_rgb(24_32_46)] sm:-left-[calc(2.75rem+5px)]'

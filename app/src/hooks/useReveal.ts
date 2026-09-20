@@ -9,7 +9,7 @@ import { useEffect } from "react";
  * ambas son limpieza de la coreografía de entrada, con el mismo timeout
  * de seguridad por si algo no dispara.
  */
-export const useReveal = () => {
+export const useReveal = (pathname: string) => {
 	useEffect(() => {
 		const blocks = Array.from(
 			document.querySelectorAll<HTMLElement>("[data-revelar]"),
@@ -40,7 +40,10 @@ export const useReveal = () => {
 			window.clearTimeout(safetyTimer);
 			observer.disconnect();
 		};
-	}, []);
+		// The blocks belong to the page, and this hook lives in the layout:
+		// without re-running per route, a page reached by client navigation
+		// would keep every [data-revelar] block at opacity 0 forever.
+	}, [pathname]);
 
 	useEffect(() => {
 		const safetyTimer = window.setTimeout(() => {
@@ -49,5 +52,5 @@ export const useReveal = () => {
 				.forEach((el) => el.classList.remove("entra"));
 		}, 2500);
 		return () => window.clearTimeout(safetyTimer);
-	}, []);
+	}, [pathname]);
 };

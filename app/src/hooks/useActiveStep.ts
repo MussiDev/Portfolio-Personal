@@ -13,10 +13,16 @@ export const useActiveStep = (
 	containerRef: RefObject<HTMLDivElement | null>,
 	sections: Section[],
 	setHover: (v: number | null) => void,
+	/** Current route: the steps live in the page, and the page is replaced
+	 * under this hook on every client navigation. */
+	pathname: string,
+	/** Only the home has steps to spy on. */
+	activo: boolean,
 ): number | null => {
 	const [activeStep, setActiveStep] = useState<number | null>(null);
 
 	useEffect(() => {
+		if (!activo) return;
 		const container = containerRef.current;
 		if (!container) return;
 
@@ -73,7 +79,10 @@ export const useActiveStep = (
 			window.removeEventListener("resize", onScroll);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sections]);
+	}, [sections, pathname, activo]);
 
-	return activeStep;
+	// Derived, not stored: a scene without steps has no active step, and
+	// writing that into state from the effect only buys a cascading render.
+	// Coming back to the home re-runs the effect, which measures at once.
+	return activo ? activeStep : null;
 };

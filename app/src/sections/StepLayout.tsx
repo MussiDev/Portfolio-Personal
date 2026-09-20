@@ -16,6 +16,7 @@ export const Step = ({
 	<section
 		id={`paso-${n}`}
 		data-step={n}
+		tabIndex={-1}
 		className='pointer-events-none flex min-h-[100svh] items-center px-5 py-16 md:px-10 md:py-24 lg:px-16'
 	>
 		<div
