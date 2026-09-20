@@ -1,6 +1,6 @@
 # Joaquín Mussi — Portfolio
 
-**Live:** [joaquinmussi.vercel.app](https://joaquinmussi.vercel.app)
+**Live:** [joaquinmussi.com.ar](https://joaquinmussi.com.ar)
 
 Portfolio personal construido como un "sistema nervioso": un cerebro 3D navegable (Three.js) funciona como índice del sitio, con scroll continuo entre secciones, señales visuales que conectan el cerebro con el contenido, y contenido bilingüe (ES/EN) servido desde Sanity CMS.
 
