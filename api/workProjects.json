@@ -2,8 +2,8 @@
 	{
 		"id": 8,
 		"name": {
-			"en": "Investment portfolio tool (vibecoding, SDD + TDD)",
-			"es": "Herramienta de carteras de inversión (vibecoding, SDD + TDD)"
+			"en": "Investment portfolio tool (spec-driven, SDD + TDD)",
+			"es": "Herramienta de carteras de inversión (spec-driven, SDD + TDD)"
 		},
 		"company": "La Mutual de AMR",
 		"period": null,

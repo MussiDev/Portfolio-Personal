@@ -87,7 +87,7 @@ const DICT = {
 			conectadoCon: "Conectado con",
 			secciones: {
 				proyectos:
-					"Sistemas que construí o modernicé, abiertos en seis tiempos: problema, decisión, mecanismo, trade-off, resultado y qué haría distinto.",
+					"Un producto propio, abierto en seis tiempos: problema, decisión, mecanismo, trade-off, resultado y qué haría distinto.",
 				experiencia: "Dónde trabajé y qué construí ahí, ordenado por tiempo.",
 				recomendaciones:
 					"Lo que dijeron de trabajar conmigo quienes lo hicieron, con nombre, rol y relación.",
@@ -215,7 +215,7 @@ const DICT = {
 			conectadoCon: "Connected to",
 			secciones: {
 				proyectos:
-					"Systems I built or modernised, opened in six beats: problem, decision, mechanism, trade-off, result and what I would do differently.",
+					"A product of my own, opened in six beats: problem, decision, mechanism, trade-off, result and what I would do differently.",
 				experiencia: "Where I worked and what I built there, ordered by time.",
 				recomendaciones:
 					"What the people who actually worked with me said, with name, role and relation.",
