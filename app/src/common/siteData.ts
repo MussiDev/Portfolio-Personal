@@ -17,7 +17,7 @@ import { client } from "../../../sanity/lib/client";
 import { postsQuery } from "../../../sanity/lib/queries";
 import { getDict } from "../i18n/dict";
 import type { Post } from "../sections/BlogSection";
-import { getProjects } from "./projects";
+import { getProjects, stagesWritten } from "./projects";
 import { buildSections } from "./sections";
 
 /**
@@ -53,6 +53,18 @@ export const getSiteData = cache(async (lang: Language) => {
 		recommendationsCount: `${recommendationList.length} ${d.ui.personas}`,
 	};
 
+	// The brain seeds one mark per item, so these are the numbers behind the
+	// tissue — the same ones the sections below the fold render. Trayectoria
+	// counts both lists it shows: the companies and the projects built at
+	// them. Contact has no list of its own; see sections.ts.
+	const evidence = {
+		trayectoria: companies.length + projects.length,
+		proyecto: stagesWritten(mainProject),
+		recomendaciones: recommendationList.length,
+		blog: posts.length,
+		cv: certificationList.length,
+	};
+
 	return {
 		d,
 		mainProject,
@@ -63,6 +75,7 @@ export const getSiteData = cache(async (lang: Language) => {
 		certificationList,
 		languageItems,
 		counts,
-		sections: buildSections(d, mainProject, counts),
+		evidence,
+		sections: buildSections(d, mainProject, counts, evidence),
 	};
 });

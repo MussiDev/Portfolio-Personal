@@ -16,6 +16,18 @@ export const buildSections = (
 		postsCount: string;
 		recommendationsCount: string;
 	},
+	/**
+	 * How many countable items back each region, in the same order. The brain
+	 * seeds one mark per item (see brainDensity.ts), so these numbers are the
+	 * ones a visitor can check against the sections further down the page.
+	 */
+	evidence: {
+		trayectoria: number;
+		proyecto: number;
+		recomendaciones: number;
+		blog: number;
+		cv: number;
+	},
 ): Section[] => [
 	{
 		label: d.sobreMi.trayectoria,
@@ -24,6 +36,7 @@ export const buildSections = (
 		href: "#paso-1",
 		step: 1,
 		related: [1, 2],
+		evidence: evidence.trayectoria,
 	},
 	{
 		label: mainProject.nombre,
@@ -32,6 +45,7 @@ export const buildSections = (
 		href: "#paso-2",
 		step: 2,
 		related: [0],
+		evidence: evidence.proyecto,
 		route: `/proyectos/${mainProject.slug}`,
 	},
 	{
@@ -41,6 +55,7 @@ export const buildSections = (
 		href: "#paso-3",
 		step: 3,
 		related: [0],
+		evidence: evidence.recomendaciones,
 	},
 	{
 		label: d.nav.blog,
@@ -48,6 +63,7 @@ export const buildSections = (
 		summary: d.hero.secciones.blog,
 		href: "#paso-4",
 		step: 4,
+		evidence: evidence.blog,
 	},
 	{
 		label: d.nav.contacto,
@@ -55,6 +71,11 @@ export const buildSections = (
 		summary: d.hero.secciones.contacto,
 		href: "#paso-5",
 		step: 5,
+		// Contact is the only region with nothing to count: there is no list
+		// of items behind it, and inventing one would be the decoration this
+		// whole movement is removing. It reads as the quiet region, which is
+		// what it is.
+		evidence: 0,
 	},
 	{
 		label: d.nav.cv,
@@ -62,5 +83,6 @@ export const buildSections = (
 		summary: d.hero.secciones.cv,
 		href: "/pdf.pdf",
 		external: true,
+		evidence: evidence.cv,
 	},
 ];

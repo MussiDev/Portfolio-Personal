@@ -11,7 +11,7 @@
 		"start": "next start",
 		"lint": "eslint .",
 		"brain": "node --experimental-strip-types scripts/prepare-brain.mjs",
-		"test": "node --experimental-strip-types --test app/src/common/brainTrace.test.ts app/src/common/escena.test.ts entities/dates.test.ts entities/i18n.test.ts entities/jsonLd.test.ts entities/schemas.test.ts entities/site.test.ts app/src/common/binFormat.test.ts app/src/common/tissueReveal.test.ts app/src/common/brain2dFormat.test.ts app/src/common/relations.test.ts app/src/common/tissueLoader.test.ts app/src/common/brainLayout.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Blog/postDate.test.ts entities/contact.test.ts",
+		"test": "node --experimental-strip-types --test app/src/common/brainTrace.test.ts app/src/common/brainDensity.test.ts app/src/common/escena.test.ts entities/dates.test.ts entities/i18n.test.ts entities/jsonLd.test.ts entities/schemas.test.ts entities/site.test.ts app/src/common/binFormat.test.ts app/src/common/tissueReveal.test.ts app/src/common/brain2dFormat.test.ts app/src/common/relations.test.ts app/src/common/tissueLoader.test.ts app/src/common/brainLayout.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Blog/postDate.test.ts entities/contact.test.ts",
 		"smoke": "node scripts/smoke-test.mjs",
 		"e2e": "playwright test",
 		"e2e:ui": "playwright test --ui",

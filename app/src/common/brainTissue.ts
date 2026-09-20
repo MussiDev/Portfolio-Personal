@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import { BIN_HEADER_SIZE, parseBinHeader, unpackVectors } from "./binFormat";
+import { seedRegionMarkers } from "./brainDensity";
 import { easeOutCubic, revealCounts } from "./tissueReveal";
 
 /**
@@ -17,7 +18,14 @@ import { easeOutCubic, revealCounts } from "./tissueReveal";
  */
 
 const REVEAL_MS = 900;
-const SPONTANEOUS = 120;
+
+/**
+ * How far from a region's anchor its marks may be drawn, in model units —
+ * the model is normalised so its longest side is 2, so this is roughly a
+ * sixth of the brain. Wide enough that nineteen certifications read as a
+ * cluster, tight enough that the cluster still belongs to one region.
+ */
+const REGION_SPREAD = 0.35;
 
 const TISSUE = new THREE.Color(0x7c98be);
 const IMPULSE = new THREE.Color(0xff6a3a);
@@ -26,6 +34,10 @@ export type Tejido = {
 	/** Posiciones de los puntos, para que quien quiera pueda sembrar cosas
 	 * sobre el tejido sin volver a parsear el buffer. */
 	readonly posiciones: Float32Array;
+	/** Cuántas marcas quedaron en cada región, en el orden de los anchors.
+	 * Es el conteo real colocado, no el pedido: lo que el readout muestra
+	 * es lo que se puede contar en pantalla. */
+	readonly marcasPorRegion: readonly number[];
 	/** Actualiza el color de las chispas espontáneas. No hace nada con
 	 * reduced-motion ni antes de que el tejido termine de construirse. */
 	latir: (frame: number) => void;
@@ -44,10 +56,16 @@ export const construirTejido = (
 		reducedMotion,
 		sigueVivo,
 		alTerminar,
+		anchors,
+		evidence,
 	}: {
 		reducedMotion: boolean;
 		sigueVivo: () => boolean;
 		alTerminar: () => void;
+		/** Los centros de las seis regiones, ya snapeados al tejido. */
+		anchors: readonly (readonly [number, number, number])[];
+		/** Cuántos items reales respalda cada región, en el mismo orden. */
+		evidence: readonly number[];
 	},
 ): Tejido => {
 	const { pointCount, edgeCount, min, range } = parseBinHeader(buffer);
@@ -92,18 +110,26 @@ export const construirTejido = (
 	nube.setDrawRange(0, reducedMotion ? pointCount : 0);
 	geoAristas.setDrawRange(0, reducedMotion ? edgeCount : 0);
 
-	// Chispas espontáneas sembradas sobre puntos reales del tejido: no
-	// afirman ninguna región concreta, son actividad de fondo.
-	const totalPuntos = posiciones.length / 3;
-	const posChispas = new Float32Array(SPONTANEOUS * 3);
-	const colChispas = new Float32Array(SPONTANEOUS * 3);
+	// Las marcas de cada región, sobre puntos reales del tejido. Antes eran
+	// 120 chispas sembradas al azar: se veía vivo y no decía nada. Ahora hay
+	// una marca por item contable — una empresa, un proyecto, un tiempo
+	// escrito del caso, una recomendación, una nota, una certificación — así
+	// que la densidad de una región se puede contrastar con la sección que
+	// indica.
+	const { positions: posChispas, region: regionDe, perRegion: marcasPorRegion } =
+		seedRegionMarkers(posiciones, anchors, evidence, REGION_SPREAD);
+	const marcas = regionDe.length;
+	const colChispas = new Float32Array(marcas * 3);
+	// La fase del destello sale del índice de la marca dentro de su región,
+	// no de Math.random: la misma región parpadea igual en cada visita, y dos
+	// marcas vecinas nunca laten al unísono.
 	const fases: number[] = [];
-	for (let i = 0; i < SPONTANEOUS; i += 1) {
-		const k = Math.floor(Math.random() * totalPuntos) * 3;
-		fases.push(Math.random() * Math.PI * 2);
-		posChispas[i * 3] = posiciones[k];
-		posChispas[i * 3 + 1] = posiciones[k + 1];
-		posChispas[i * 3 + 2] = posiciones[k + 2];
+	for (let i = 0, r = -1, k = 0; i < marcas; i += 1) {
+		if (regionDe[i] !== r) {
+			r = regionDe[i];
+			k = 0;
+		}
+		fases.push(((k += 1) * 2.399963) % (Math.PI * 2));
 	}
 	const geoChispas = new THREE.BufferGeometry();
 	geoChispas.setAttribute("position", new THREE.BufferAttribute(posChispas, 3));
@@ -122,6 +148,35 @@ export const construirTejido = (
 	);
 	chispas.visible = reducedMotion;
 	group.add(chispas);
+
+	const colorAux = new THREE.Color();
+	/**
+	 * El color de una marca para un pico de destello dado (0..1).
+	 *
+	 * Las marcas tienen piso: en reposo ya son un punto cálido, más claro
+	 * que el tejido. Antes el piso era 0.25 del azul del tejido y el
+	 * destello iba a pow(f, 7) — brevísimo —, así que en cualquier instante
+	 * se veían cinco o seis marcas de las 43. Como ambiente funcionaba;
+	 * como conteo no: una región de 19 certificaciones que muestra dos
+	 * puntos no se puede contar, que es justo lo que esta tanda promete.
+	 */
+	const colorDeMarca = (pico: number) =>
+		colorAux
+			.copy(TISSUE)
+			.lerp(IMPULSE, 0.45 + pico * 0.55)
+			.multiplyScalar(0.85 + pico * 0.9);
+
+	// Con reduced-motion no hay latido, así que el color se escribe una vez
+	// acá. Sin esto las marcas quedaban en el negro con el que nace el
+	// buffer de color: invisibles justo para quien pidió menos movimiento.
+	if (reducedMotion) {
+		const col = geoChispas.getAttribute("color") as THREE.BufferAttribute;
+		for (let i = 0; i < marcas; i += 1) {
+			colorDeMarca(0);
+			col.setXYZ(i, colorAux.r, colorAux.g, colorAux.b);
+		}
+		col.needsUpdate = true;
+	}
 
 	let revealRaf = 0;
 	if (reducedMotion) {
@@ -150,22 +205,18 @@ export const construirTejido = (
 		revealRaf = requestAnimationFrame(paso);
 	}
 
-	const colorAux = new THREE.Color();
-
 	return {
 		posiciones,
+		marcasPorRegion,
 		latir: (frame) => {
 			if (reducedMotion || !chispas.visible) return;
 			const col = geoChispas.getAttribute("color") as THREE.BufferAttribute;
-			for (let i = 0; i < SPONTANEOUS; i += 1) {
+			for (let i = 0; i < marcas; i += 1) {
 				// pow(f, 7) da destellos breves y separados en vez de un latido
 				// uniforme: el tejido parece disparar, no respirar.
 				const f = (Math.sin(frame / 42 + fases[i]) + 1) / 2;
 				const pico = f ** 7;
-				colorAux
-					.copy(TISSUE)
-					.lerp(IMPULSE, pico)
-					.multiplyScalar(0.25 + pico);
+				colorDeMarca(pico);
 				col.setXYZ(i, colorAux.r, colorAux.g, colorAux.b);
 			}
 			col.needsUpdate = true;

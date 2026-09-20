@@ -9,6 +9,7 @@ const seccion = (label: string, related?: number[]): Section => ({
 	fact: "",
 	summary: "",
 	href: `#${label}`,
+	evidence: 0,
 	related,
 });
 

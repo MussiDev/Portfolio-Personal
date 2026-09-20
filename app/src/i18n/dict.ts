@@ -80,7 +80,9 @@ const DICT = {
 			abrir: "Abrir",
 			volver: "Volver",
 			cargando: "Cargando tejido",
-			actividad: "regiones activas",
+			// El readout del cerebro: una marca por item contable, así que el
+			// número se puede verificar contra las secciones de abajo.
+			evidencia: "piezas de evidencia",
 			bajar: "Bajar al registro",
 			pasos: "Progreso del recorrido",
 			navegacion: "Navegación principal",
@@ -208,7 +210,7 @@ const DICT = {
 			abrir: "Open",
 			volver: "Back",
 			cargando: "Loading tissue",
-			actividad: "active regions",
+			evidencia: "pieces of evidence",
 			bajar: "Down to the record",
 			pasos: "Walkthrough progress",
 			navegacion: "Main navigation",

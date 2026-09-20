@@ -28,6 +28,12 @@ export type Section = {
 	 * tiene una relación real de contenido — no decorativa. Ver page.tsx
 	 * para qué conexiones existen y por qué. */
 	related?: number[];
+	/** How many countable items back this region: companies plus work
+	 * projects, written beats of the case, recommendations, posts,
+	 * certifications. The tissue gets one mark per item (brainDensity.ts),
+	 * so the cluster around a region can be checked against the section it
+	 * points at. Zero is a real answer — see sections.ts. */
+	evidence: number;
 	/** The region's own page, language-agnostic ("/proyectos/nortear"). Only
 	 * regions whose content has a URL of its own have one; escena.ts uses it
 	 * to know which region a route belongs to. */
@@ -210,9 +216,20 @@ const Brain3D = ({
 				tejido = construirTejido(group, buffer, {
 					reducedMotion,
 					sigueVivo: () => alive,
+					// One mark per countable item, clustered on the region it
+					// belongs to (brainDensity.ts). SNAPPED_ANCHORS is used here
+					// rather than the Vector3 `anchors` below because the seeding
+					// is plain arithmetic over the cloud — it needs no three.js.
+					anchors: SNAPPED_ANCHORS,
+					evidence: sections.map((section) => section.evidence),
 					alTerminar: () => {
 						if (readoutRef.current) {
-							readoutRef.current.textContent = `${sections.length} ${activityText}`;
+							// The readout used to say "6 active regions", which was
+							// sections.length wearing a lab coat. It now reports the
+							// marks actually placed on the tissue, so the number on
+							// screen is one a visitor can count.
+							const marcas = tejido?.marcasPorRegion.reduce((a, b) => a + b, 0) ?? 0;
+							readoutRef.current.textContent = `${marcas} ${activityText}`;
 						}
 						if (!alive) return;
 						callbacksRef.current.onReady();

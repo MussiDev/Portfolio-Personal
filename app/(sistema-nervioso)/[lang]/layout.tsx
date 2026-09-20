@@ -199,7 +199,7 @@ const NervousSystemLayout = async ({
 				<Sistema
 					sections={sections}
 					loadingText={d.hero.cargando}
-					activityText={d.hero.actividad}
+					activityText={d.hero.evidencia}
 					openText={d.hero.abrir}
 					backText={d.hero.volver}
 					stepsLabel={d.hero.pasos}
