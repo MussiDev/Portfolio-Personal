@@ -172,3 +172,37 @@ test("ningún título del blog llega con emoji a la pantalla", async ({ page }) 
 	expect(await page.locator("h1").innerText()).not.toMatch(pictogramas);
 	expect(await page.title()).not.toMatch(pictogramas);
 });
+
+test("llegar a la home por un link también precarga el tejido", async ({ page }) => {
+	// React nunca ejecuta un <script> que renderiza en el cliente, así que en
+	// navegación por cliente el preload de TissuePreload.tsx no corre. Desde
+	// /blog —la única página que a propósito no precarga— eso dejaba la
+	// descarga del tejido colgada de la cadena lenta (411 ms desde el click,
+	// contra 143 ms con TissuePreloadClient.tsx).
+	//
+	// Se mira el <link>, no el reloj: un umbral de tiempo que tolere una CI
+	// lenta es más flojo que la propia regresión y la deja pasar — probado.
+	// Sin TissuePreloadClient ese link no existe: el script es inerte y nadie
+	// más lo crea.
+	const tejido: string[] = [];
+	page.on("request", (r) => {
+		if (/cerebro(-2d)?\.[a-f0-9]+\.bin/.test(r.url())) tejido.push(r.url());
+	});
+
+	await page.goto("/blog");
+	await page.waitForTimeout(1500);
+	expect(tejido, "el blog no tiene que pedir tejido ni de reojo").toEqual([]);
+
+	await page.locator('a[href="/"], a[href="/es"]').first().click();
+	await page.waitForURL(/\/(es)?$/);
+
+	await expect
+		.poll(
+			() =>
+				page.evaluate(
+					() => !!document.querySelector('link[rel="preload"][href*="/image/cerebro"]'),
+				),
+			{ timeout: 5000, message: "nadie precargó el tejido al llegar por un link" },
+		)
+		.toBe(true);
+});
