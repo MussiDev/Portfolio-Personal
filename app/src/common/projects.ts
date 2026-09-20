@@ -1,12 +1,18 @@
 import projects from "../../../api/projects.json";
 import { DEFAULT_LANGUAGE, type Language } from "../../../entities/i18n";
 import Project, { ProjectStatus } from "../../../entities/project";
+import { ProjectsSchema } from "../../../entities/schemas";
+
+// Parsed once at module load, like every other api/*.json. The annotation is
+// the contract: if the schema and the Project interface drift apart, tsc
+// fails here instead of a cast hiding it.
+const PROJECTS: Project[] = ProjectsSchema.parse(projects);
 
 export const getProjects = (): Project[] =>
-	(projects as Project[]).slice().sort((a, b) => a.peso - b.peso);
+	PROJECTS.slice().sort((a, b) => a.peso - b.peso);
 
 export const getProject = (slug: string): Project | undefined =>
-	(projects as Project[]).find((m) => m.slug === slug);
+	PROJECTS.find((m) => m.slug === slug);
 
 export const STATUS_LABEL: Record<ProjectStatus, Record<Language, string>> = {
 	"en-construccion": { es: "En construcción", en: "Under construction" },
