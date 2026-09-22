@@ -105,8 +105,8 @@ const TrayectoriaSection = ({
 
 			<details className='see-more membrane flex flex-col-reverse'>
 				<summary className='flex cursor-pointer list-none items-center gap-3 border-t border-synapse/20 px-6 py-3 font-label text-[11px] font-semibold uppercase tracking-[.14em] text-synapse transition-colors duration-200 ease-impulse hover:text-impulse'>
-					<span className='mas'>{d.ui.seeProjects(projects.length)}</span>
-					<span className='menos'>{d.ui.seeLess}</span>
+					<span className='more'>{d.ui.seeProjects(projects.length)}</span>
+					<span className='less'>{d.ui.seeLess}</span>
 				</summary>
 				<div className='flex flex-col'>
 					{projects.map((p, i) => (
@@ -176,10 +176,10 @@ const TrayectoriaSection = ({
 
 			<details className='see-more membrane flex flex-col-reverse'>
 				<summary className='flex cursor-pointer list-none items-center gap-3 border-t border-synapse/20 px-6 py-3 font-label text-[11px] font-semibold uppercase tracking-[.14em] text-synapse transition-colors duration-200 ease-impulse hover:text-impulse'>
-					<span className='mas'>
+					<span className='more'>
 						{d.about.credentials} · {certificationList.length}
 					</span>
-					<span className='menos'>{d.ui.seeLess}</span>
+					<span className='less'>{d.ui.seeLess}</span>
 				</summary>
 				<ul className='m-0 flex list-none flex-col p-0'>
 					{certificationList.map((c) => (
