@@ -19,15 +19,16 @@ const LanguageSwitch = ({ current }: { current: Language }) => {
 	return (
 		<nav
 			aria-label='Idioma'
-			className='flex items-center gap-2 font-pieza text-xs'
+			className='flex items-center gap-2 font-mono text-xs'
 		>
 			{LANGUAGES.map((lang, i) => (
 				<span key={lang} className='flex items-center gap-2'>
-					{i > 0 && <span className='text-sinapsis/40'>/</span>}
-					{/* El área táctil vive en el <a> (min-h-11 = 44px) y el
-					subrayado en un <span> adentro: si el padding fuera al link,
-					el borde inferior se despegaría del texto. Antes estos links
-					medían 19px, y son la única forma de cambiar de idioma. */}
+					{i > 0 && <span className='text-synapse/40'>/</span>}
+					{/* The tap target lives on the <a> (min-h-11 = 44px) and the
+					underline on a <span> inside it: if the padding were on the
+					link, the bottom border would detach from the text. These
+					links used to measure 19px, and they're the only way to
+					change language. */}
 					<Link
 						href={pathFor(pathname, lang)}
 						hrefLang={lang}
@@ -37,8 +38,8 @@ const LanguageSwitch = ({ current }: { current: Language }) => {
 						<span
 							className={
 								lang === current
-									? "border-b border-impulso pb-0.5 text-impulso"
-									: "text-mielina hover:text-sinapsis"
+									? "border-b border-impulse pb-0.5 text-impulse"
+									: "text-myelin hover:text-synapse"
 							}
 						>
 							{lang.toUpperCase()}

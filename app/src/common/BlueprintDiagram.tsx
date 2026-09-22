@@ -3,56 +3,56 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 /**
- * Un diagrama de Mermaid a su tamaño real, con scroll horizontal si no
- * entra — a propósito: achicarlo hasta el ancho de la columna lo vuelve
- * ilegible.
+ * A Mermaid diagram at its real size, with horizontal scroll if it doesn't
+ * fit — on purpose: shrinking it down to the column's width makes it
+ * unreadable.
  *
- * Tres cosas que le faltaban y que no se veían desde el mouse:
- * - Nombre accesible. Tenía role="img" sin etiqueta: un lector de pantalla
- *   anunciaba "imagen" y nada más.
- * - Foco por teclado cuando desborda. Una zona que scrollea y no se puede
- *   enfocar deja el resto del diagrama fuera de alcance sin mouse ni
+ * Three things it was missing that weren't visible from the mouse:
+ * - Accessible name. It had role="img" with no label: a screen reader
+ *   announced "image" and nothing else.
+ * - Keyboard focus when it overflows. A zone that scrolls and can't be
+ *   focused leaves the rest of the diagram out of reach without a mouse or
  *   trackpad (WCAG 2.1.1).
- * - Una pista de que hay más a la derecha: un degradé en el borde y un
- *   "deslizá". Solo aparecen cuando de verdad desborda.
+ * - A hint that there's more to the right: a gradient on the edge and a
+ *   "scroll to see". They only appear when it actually overflows.
  */
 const BlueprintDiagram = ({
 	code,
 	label,
-	pista,
+	hint,
 }: {
 	code: string;
-	/** Qué es el diagrama, para quien no lo ve. */
+	/** What the diagram is, for anyone who can't see it. */
 	label: string;
-	/** Texto visible cuando el diagrama es más ancho que la columna. */
-	pista: string;
+	/** Visible text when the diagram is wider than the column. */
+	hint: string;
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const id = useId().replace(/:/g, "");
 	const [error, setError] = useState(false);
-	const [desborde, setDesborde] = useState({ hay: false, alInicio: true, alFinal: true });
+	const [overflow, setOverflow] = useState({ has: false, atStart: true, atEnd: true });
 
-	const medir = useCallback(() => {
+	const measure = useCallback(() => {
 		const el = scrollRef.current;
 		if (!el) return;
-		setDesborde({
-			hay: el.scrollWidth > el.clientWidth + 1,
-			alInicio: el.scrollLeft <= 1,
-			alFinal: el.scrollLeft + el.clientWidth >= el.scrollWidth - 1,
+		setOverflow({
+			has: el.scrollWidth > el.clientWidth + 1,
+			atStart: el.scrollLeft <= 1,
+			atEnd: el.scrollLeft + el.clientWidth >= el.scrollWidth - 1,
 		});
 	}, []);
 
-	// El ancho cambia con el viewport y cuando Mermaid termina de dibujar;
-	// ResizeObserver cubre los dos (también dispara al empezar a observar).
+	// The width changes with the viewport and when Mermaid finishes drawing;
+	// ResizeObserver covers both (it also fires as soon as it starts observing).
 	useEffect(() => {
 		const el = scrollRef.current;
 		if (!el) return;
-		const observer = new ResizeObserver(medir);
+		const observer = new ResizeObserver(measure);
 		observer.observe(el);
 		if (ref.current) observer.observe(ref.current);
 		return () => observer.disconnect();
-	}, [medir]);
+	}, [measure]);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -64,9 +64,9 @@ const BlueprintDiagram = ({
 			const channel = (name: string, fallback: string) =>
 				root.getPropertyValue(name).trim() || fallback;
 
-			const signalColor = `rgb(${channel("--senal", "232 237 245")})`;
-			const membraneColor = `rgb(${channel("--membrana", "12 17 26")})`;
-			const synapseChannels = channel("--sinapsis", "109 140 180");
+			const signalColor = `rgb(${channel("--signal", "232 237 245")})`;
+			const membraneColor = `rgb(${channel("--membrane", "12 17 26")})`;
+			const synapseChannels = channel("--synapse", "109 140 180");
 			const synapseColor = `rgb(${synapseChannels})`;
 			const synapseFaint = `rgb(${synapseChannels} / 0.45)`;
 
@@ -86,7 +86,7 @@ const BlueprintDiagram = ({
 					titleColor: signalColor,
 					clusterBkg: "transparent",
 					clusterBorder: synapseFaint,
-					fontFamily: "var(--font-pieza), SFMono-Regular, Consolas, monospace",
+					fontFamily: "var(--font-mono), SFMono-Regular, Consolas, monospace",
 					fontSize: "13px",
 					edgeLabelBackground: membraneColor,
 				},
@@ -115,7 +115,7 @@ const BlueprintDiagram = ({
 					svgEl.style.height = `${box.height}px`;
 					svgEl.style.maxWidth = "none";
 				}
-				medir();
+				measure();
 			} catch {
 				if (!cancelled) setError(true);
 			}
@@ -124,7 +124,7 @@ const BlueprintDiagram = ({
 		return () => {
 			cancelled = true;
 		};
-	}, [code, id, medir]);
+	}, [code, id, measure]);
 
 	if (error) return null;
 
@@ -133,35 +133,36 @@ const BlueprintDiagram = ({
 			<div className='relative'>
 				<div
 					ref={scrollRef}
-					onScroll={medir}
+					onScroll={measure}
 					role='img'
 					aria-label={label}
-					// Enfocable solo si hay algo que scrollear: un tab stop que no
-					// hace nada es ruido para quien navega con teclado.
-					tabIndex={desborde.hay ? 0 : undefined}
-					// px-3 en angosto: en mobile el diagrama ya se reordena en vertical
-					// para entrar, y con px-5 desbordaba por 14px de puro relleno —
-					// suficiente para mostrar una pista y un degradé que tapaban texto.
-					className='overflow-x-auto border border-sinapsis/30 bg-membrana-honda px-3 py-6 text-center sm:px-5'
+					// Focusable only if there's something to scroll: a tab stop
+					// that does nothing is noise for keyboard navigation.
+					tabIndex={overflow.has ? 0 : undefined}
+					// px-3 when narrow: on mobile the diagram already reflows
+					// vertically to fit, and with px-5 it overflowed by 14px of
+					// pure padding — enough to show a hint and a gradient that
+					// covered text.
+					className='overflow-x-auto border border-synapse/30 bg-membrane-deep px-3 py-6 text-center sm:px-5'
 				>
 					<div ref={ref} />
 				</div>
-				{desborde.hay && !desborde.alInicio && (
+				{overflow.has && !overflow.atStart && (
 					<div
 						aria-hidden='true'
-						className='pointer-events-none absolute inset-y-px left-px w-12 bg-gradient-to-r from-membrana-honda to-transparent'
+						className='pointer-events-none absolute inset-y-px left-px w-12 bg-gradient-to-r from-membrane-deep to-transparent'
 					/>
 				)}
-				{desborde.hay && !desborde.alFinal && (
+				{overflow.has && !overflow.atEnd && (
 					<div
 						aria-hidden='true'
-						className='pointer-events-none absolute inset-y-px right-px w-16 bg-gradient-to-l from-membrana-honda to-transparent'
+						className='pointer-events-none absolute inset-y-px right-px w-16 bg-gradient-to-l from-membrane-deep to-transparent'
 					/>
 				)}
 			</div>
-			{desborde.hay && (
-				<p className='m-0 font-pieza text-[10px] uppercase tracking-[.14em] text-mielina'>
-					{pista}
+			{overflow.has && (
+				<p className='m-0 font-mono text-[10px] uppercase tracking-[.14em] text-myelin'>
+					{hint}
 				</p>
 			)}
 		</div>

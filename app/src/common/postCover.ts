@@ -1,39 +1,39 @@
 import type { Brain2D } from "./brain2dFormat";
 
 /**
- * La portada de una nota, recortada del propio tejido.
+ * A post's cover, cropped from the tissue itself.
  *
- * Las cuatro notas traían ilustraciones de stock de Sanity: un cohete, unos
- * nodos azules, una captura de markdown. Cada una venía de un banco
- * distinto y ninguna tenía que ver con el material del resto del sitio —
- * el blog parecía otra web con el mismo header.
+ * The four posts used to carry Sanity stock illustrations: a rocket, some
+ * blue nodes, a markdown screenshot. Each came from a different bank and
+ * none had anything to do with the rest of the site's material — the blog
+ * looked like another site with the same header.
  *
- * Acá la portada es un recorte del cerebro que ya dibuja la home: los
- * mismos puntos y las mismas aristas, en una ventana distinta para cada
- * nota. No hay una imagen que descargar, no hay un banco de imágenes, y no
- * se puede elegir mal: el material es uno solo.
+ * Here the cover is a crop of the same brain the home draws: the same
+ * points and the same edges, in a different window for each post. There's
+ * no image to download, no image bank, and no way to pick badly: there's
+ * only one material.
  *
- * El recorte lo decide el slug, no el azar. La misma nota muestra siempre
- * la misma región — la portada es parte de su identidad, no un adorno que
- * cambia en cada visita.
+ * The crop is decided by the slug, not by chance. The same post always
+ * shows the same region — the cover is part of its identity, not a
+ * decoration that changes on every visit.
  *
- * Puro a propósito — nada de React ni de canvas acá — para poder testearlo.
+ * Pure on purpose — no React, no canvas here — so it can be tested.
  */
 
 export type Cover = {
-	/** Pares x,y en [0,1] sobre la ventana recortada. */
+	/** x,y pairs in [0,1] over the cropped window. */
 	readonly points: Float32Array;
-	/** Cuádruplas ax,ay,bx,by en [0,1] sobre la ventana recortada. */
+	/** ax,ay,bx,by quadruples in [0,1] over the cropped window. */
 	readonly edges: Float32Array;
-	/** Los puntos encendidos: uno por tag de la nota, con el mismo
-	 * significado que las marcas del cerebro — una marca, un item real. */
+	/** The lit points: one per post tag, with the same meaning as the
+	 * brain's marks — one mark, one real item. */
 	readonly marks: Float32Array;
 };
 
 /**
- * Hash estable de 32 bits (FNV-1a). No es criptográfico y no falta que lo
- * sea: solo tiene que dar el mismo número para el mismo slug en el server,
- * en el cliente y entre deploys.
+ * Stable 32-bit hash (FNV-1a). It isn't cryptographic and doesn't need to
+ * be: it only has to give the same number for the same slug on the
+ * server, on the client, and across deploys.
  */
 export const hashSeed = (seed: string): number => {
 	let h = 0x811c9dc5;
@@ -44,16 +44,16 @@ export const hashSeed = (seed: string): number => {
 	return h >>> 0;
 };
 
-const dentro = (v: number, min: number, span: number) => v >= min && v <= min + span;
+const within = (v: number, min: number, span: number) => v >= min && v <= min + span;
 
 /**
- * @param aspect ancho sobre alto de la portada, en píxeles. La ventana se
- * calcula con el aspect real del cerebro para que el tejido no salga
- * estirado: una portada apaisada recorta una banda ancha y baja, no el
- * cerebro entero achatado.
- * @param zoom qué fracción del alto del cerebro entra en la portada. Más
- * chico es más cerca: se ven menos puntos y más grandes.
- * @param markCount cuántos puntos encendidos, normalmente los tags.
+ * @param aspect the cover's width over height, in pixels. The window is
+ * computed with the brain's real aspect so the tissue doesn't come out
+ * stretched: a landscape cover crops a wide, short band, not the whole
+ * brain squashed.
+ * @param zoom what fraction of the brain's height fits in the cover.
+ * Smaller is closer: fewer, bigger points are visible.
+ * @param markCount how many lit points, normally the tags.
  */
 export const coverFromTissue = (
 	brain: Brain2D,
@@ -65,33 +65,34 @@ export const coverFromTissue = (
 	}: { aspect: number; zoom?: number; markCount?: number },
 ): Cover => {
 	const h = Math.min(1, zoom);
-	// El ancho en coordenadas del cerebro: para que un recorte de `aspect`
-	// píxeles no deforme el tejido, la ventana tiene que medir lo mismo en
-	// unidades reales, y el eje x del cerebro está comprimido por su aspect.
+	// The width in the brain's coordinates: for an `aspect`-pixel crop to
+	// not distort the tissue, the window has to measure the same in real
+	// units, and the brain's x axis is compressed by its aspect ratio.
 	const w = Math.min(1, (aspect * h) / brain.aspect);
 
 	const rng = hashSeed(seed);
-	// El centro no se sortea en el rectángulo: el cerebro no llena su caja y
-	// media ventana caería en el vacío. Se sortea un punto de tejido real y
-	// la ventana se cuelga de ahí, así siempre hay algo que dibujar.
+	// The center isn't rolled over the rectangle: the brain doesn't fill
+	// its box and half the window would land in empty space. A real tissue
+	// point is rolled instead and the window hangs off it, so there's
+	// always something to draw.
 	const totalPoints = brain.points.length / 2;
-	const centro = (rng % totalPoints) * 2;
-	const x0 = Math.max(0, Math.min(1 - w, brain.points[centro] - w / 2));
-	const y0 = Math.max(0, Math.min(1 - h, brain.points[centro + 1] - h / 2));
+	const center = (rng % totalPoints) * 2;
+	const x0 = Math.max(0, Math.min(1 - w, brain.points[center] - w / 2));
+	const y0 = Math.max(0, Math.min(1 - h, brain.points[center + 1] - h / 2));
 
 	const px = (v: number) => (v - x0) / w;
 	const py = (v: number) => (v - y0) / h;
 
-	const dentroPuntos: number[] = [];
+	const insidePoints: number[] = [];
 	for (let i = 0; i < brain.points.length; i += 2) {
-		if (dentro(brain.points[i], x0, w) && dentro(brain.points[i + 1], y0, h)) {
-			dentroPuntos.push(px(brain.points[i]), py(brain.points[i + 1]));
+		if (within(brain.points[i], x0, w) && within(brain.points[i + 1], y0, h)) {
+			insidePoints.push(px(brain.points[i]), py(brain.points[i + 1]));
 		}
 	}
 
-	// Una arista entra si entran sus dos extremos. Recortarla a la mitad
-	// dejaría segmentos que mueren en el borde apuntando a nada.
-	const dentroAristas: number[] = [];
+	// An edge is included if both its ends are. Cropping it in half would
+	// leave segments dying at the border, pointing at nothing.
+	const insideEdges: number[] = [];
 	for (let i = 0; i < brain.edges.length; i += 4) {
 		const [ax, ay, bx, by] = [
 			brain.edges[i],
@@ -100,32 +101,33 @@ export const coverFromTissue = (
 			brain.edges[i + 3],
 		];
 		if (
-			dentro(ax, x0, w) &&
-			dentro(ay, y0, h) &&
-			dentro(bx, x0, w) &&
-			dentro(by, y0, h)
+			within(ax, x0, w) &&
+			within(ay, y0, h) &&
+			within(bx, x0, w) &&
+			within(by, y0, h)
 		) {
-			dentroAristas.push(px(ax), py(ay), px(bx), py(by));
+			insideEdges.push(px(ax), py(ay), px(bx), py(by));
 		}
 	}
 
-	// Las marcas se reparten por la ventana en vez de caer juntas: se toman
-	// a paso fijo sobre los puntos que quedaron, con el mismo hash de
-	// arranque, así dos notas con tres tags no dibujan el mismo triángulo.
+	// The marks are spread across the window instead of falling together:
+	// they're taken at a fixed stride over the points that remain, with the
+	// same starting hash, so two posts with three tags don't draw the same
+	// triangle.
 	const marks: number[] = [];
-	const disponibles = dentroPuntos.length / 2;
-	if (disponibles > 0 && markCount > 0) {
-		const cuantas = Math.min(markCount, disponibles);
-		const paso = Math.max(1, Math.floor(disponibles / cuantas));
-		for (let k = 0; k < cuantas; k += 1) {
-			const i = ((rng + k * paso) % disponibles) * 2;
-			marks.push(dentroPuntos[i], dentroPuntos[i + 1]);
+	const available = insidePoints.length / 2;
+	if (available > 0 && markCount > 0) {
+		const howMany = Math.min(markCount, available);
+		const stride = Math.max(1, Math.floor(available / howMany));
+		for (let k = 0; k < howMany; k += 1) {
+			const i = ((rng + k * stride) % available) * 2;
+			marks.push(insidePoints[i], insidePoints[i + 1]);
 		}
 	}
 
 	return {
-		points: new Float32Array(dentroPuntos),
-		edges: new Float32Array(dentroAristas),
+		points: new Float32Array(insidePoints),
+		edges: new Float32Array(insideEdges),
 		marks: new Float32Array(marks),
 	};
 };

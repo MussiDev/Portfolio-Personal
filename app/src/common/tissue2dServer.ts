@@ -6,31 +6,32 @@ import { BRAIN2D_PATH } from "./brain2dAsset";
 import { parseBrain2D, type Brain2D } from "./brain2dFormat";
 
 /**
- * El tejido 2D leído del disco, para lo que se renderiza en el server.
+ * The 2D tissue read from disk, for whatever renders on the server.
  *
- * Mobile baja este mismo archivo por red porque lo dibuja en un canvas del
- * cliente. Las portadas del blog salen como SVG ya resuelto en el HTML: si
- * el server hiciera fetch a su propia URL pública, cada nota pagaría un
- * viaje de red para leer un archivo que tiene al lado. `cache` lo deja en
- * una sola lectura por request, y el módulo la reusa entre requests.
+ * Mobile downloads this same file over the network because it draws it on
+ * a client canvas. The blog's covers come out as SVG already resolved in
+ * the HTML: if the server fetched its own public URL, every post would pay
+ * for a network round trip to read a file sitting right next to it.
+ * `cache` keeps it to a single read per request, and the module reuses it
+ * across requests.
  *
- * Si el .bin no está (un build raro, un deploy a medias) devuelve null y la
- * página se dibuja sin portada. Una nota sin imagen se lee igual; una nota
- * que explota, no.
+ * If the .bin is missing (an odd build, a half-finished deploy) it returns
+ * null and the page draws with no cover. A post with no image still reads
+ * fine; one that crashes doesn't.
  */
 
-let enMemoria: Brain2D | null | undefined;
+let inMemory: Brain2D | null | undefined;
 
 export const getTissue2D = cache(async (): Promise<Brain2D | null> => {
-	if (enMemoria !== undefined) return enMemoria;
+	if (inMemory !== undefined) return inMemory;
 	try {
 		const file = path.join(process.cwd(), "public", BRAIN2D_PATH);
 		const buf = await readFile(file);
-		enMemoria = parseBrain2D(
+		inMemory = parseBrain2D(
 			buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer,
 		);
 	} catch {
-		enMemoria = null;
+		inMemory = null;
 	}
-	return enMemoria;
+	return inMemory;
 });

@@ -1,38 +1,38 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { limpiarTitulo } from "./title.ts";
+import { cleanTitle } from "./title.ts";
 
-test("saca el emoji del principio y el espacio que deja", () => {
+test("strips the emoji from the start and the space it leaves", () => {
 	assert.equal(
-		limpiarTitulo("🚀 SEO para devs: tu código puede marcar la diferencia"),
+		cleanTitle("🚀 SEO para devs: tu código puede marcar la diferencia"),
 		"SEO para devs: tu código puede marcar la diferencia",
 	);
 });
 
-test("no toca un título que ya está limpio", () => {
+test("doesn't touch a title that's already clean", () => {
 	const t = "El momento en que la web empezó a hablar en Markdown.";
-	assert.equal(limpiarTitulo(t), t);
+	assert.equal(cleanTitle(t), t);
 });
 
-test("respeta acentos, ñ y signos de puntuación", () => {
+test("respects accents, ñ and punctuation", () => {
 	assert.equal(
-		limpiarTitulo("De prompt engineering a context engineering: ¿el cambio real?"),
+		cleanTitle("De prompt engineering a context engineering: ¿el cambio real?"),
 		"De prompt engineering a context engineering: ¿el cambio real?",
 	);
 });
 
-test("saca un emoji del medio sin pegar las dos palabras", () => {
-	assert.equal(limpiarTitulo("Antes 🚀 después"), "Antes después");
+test("strips an emoji from the middle without gluing the two words together", () => {
+	assert.equal(cleanTitle("Antes 🚀 después"), "Antes después");
 });
 
-test("saca secuencias compuestas enteras, no la mitad", () => {
-	assert.equal(limpiarTitulo("👨‍💻 Código"), "Código");
-	assert.equal(limpiarTitulo("👍🏽 Bien"), "Bien");
-	assert.equal(limpiarTitulo("1️⃣ Primero"), "1 Primero");
+test("strips whole compound sequences, not half of them", () => {
+	assert.equal(cleanTitle("👨‍💻 Código"), "Código");
+	assert.equal(cleanTitle("👍🏽 Bien"), "Bien");
+	assert.equal(cleanTitle("1️⃣ Primero"), "1 Primero");
 });
 
-test("un título que es solo emoji queda vacío, no queda un espacio", () => {
-	assert.equal(limpiarTitulo("🚀"), "");
-	assert.equal(limpiarTitulo("  🚀  "), "");
+test("a title that's only emoji ends up empty, not with a leftover space", () => {
+	assert.equal(cleanTitle("🚀"), "");
+	assert.equal(cleanTitle("  🚀  "), "");
 });

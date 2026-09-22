@@ -1,52 +1,52 @@
 import type { LocalizedText } from "./i18n";
 
-export type ProjectStatus = "en-construccion" | "en-prueba" | "terminado";
+export type ProjectStatus = "in-progress" | "in-testing" | "done";
 
-export type ObjectType = "producto" | "maquina" | "en-obra";
+export type ObjectType = "product" | "machine" | "work-in-progress";
 
 export interface Stage {
-	parrafos: Record<string, string[]>;
-	pendiente?: LocalizedText;
+	paragraphs: Record<string, string[]>;
+	pending?: LocalizedText;
 }
 
 export interface Measurement {
-	etiqueta: LocalizedText;
-	valor: string | null;
+	label: LocalizedText;
+	value: string | null;
 }
 
 export interface MechanismStage extends Stage {
-	flujo?: Record<string, string[]>;
-	codigo?: string | null;
-	diagrama?: string;
+	flow?: Record<string, string[]>;
+	code?: string | null;
+	diagram?: string;
 }
 
 export interface ResultStage extends Stage {
-	medidas: Measurement[];
+	measurements: Measurement[];
 }
 
 export interface ProjectLink {
-	etiqueta: LocalizedText;
+	label: LocalizedText;
 	href: string;
-	externo?: boolean;
+	external?: boolean;
 }
 
 export default interface Project {
 	slug: string;
-	nombre: string;
-	tipo: ObjectType;
-	estado: ProjectStatus;
-	contexto: LocalizedText;
-	periodo: LocalizedText | null;
-	resumen: LocalizedText;
+	name: string;
+	type: ObjectType;
+	status: ProjectStatus;
+	context: LocalizedText;
+	period: LocalizedText | null;
+	summary: LocalizedText;
 	stack: string[];
-	enlaces: ProjectLink[];
-	peso: number;
-	tiempos: {
-		problema: Stage;
+	links: ProjectLink[];
+	weight: number;
+	stages: {
+		problem: Stage;
 		decision: Stage;
-		mecanismo: MechanismStage;
+		mechanism: MechanismStage;
 		tradeoff: Stage;
-		resultado: ResultStage;
-		despues: Stage;
+		result: ResultStage;
+		after: Stage;
 	};
 }

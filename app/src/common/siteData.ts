@@ -47,20 +47,20 @@ export const getSiteData = cache(async (lang: Language) => {
 	const languageItems = LanguageItemsSchema.parse(languages);
 
 	const counts = {
-		companiesCount: `${companies.length} ${d.ui.empresas}`,
-		projectsCount: `${projects.length} ${d.ui.proyectos}`,
-		postsCount: `${posts.length} ${d.ui.notas}`,
-		recommendationsCount: `${recommendationList.length} ${d.ui.personas}`,
+		companiesCount: `${companies.length} ${d.ui.companies}`,
+		projectsCount: `${projects.length} ${d.ui.projects}`,
+		postsCount: `${posts.length} ${d.ui.notes}`,
+		recommendationsCount: `${recommendationList.length} ${d.ui.people}`,
 	};
 
 	// The brain seeds one mark per item, so these are the numbers behind the
-	// tissue — the same ones the sections below the fold render. Trayectoria
+	// tissue — the same ones the sections below the fold render. Career
 	// counts both lists it shows: the companies and the projects built at
 	// them. Contact has no list of its own; see sections.ts.
 	const evidence = {
-		trayectoria: companies.length + projects.length,
-		proyecto: stagesWritten(mainProject),
-		recomendaciones: recommendationList.length,
+		career: companies.length + projects.length,
+		project: stagesWritten(mainProject),
+		recommendations: recommendationList.length,
 		blog: posts.length,
 		cv: certificationList.length,
 	};

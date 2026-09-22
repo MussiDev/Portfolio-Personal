@@ -1,10 +1,11 @@
 /**
- * Serializa un objeto JSON-LD para inyectarlo con dangerouslySetInnerHTML.
+ * Serializes a JSON-LD object for injection with dangerouslySetInnerHTML.
  *
- * JSON.stringify no escapa "</script>", así que un valor con esa secuencia
- * (un título de post, por ejemplo) corta el bloque de script y lo que sigue
- * se ejecuta como HTML/JS. `<` se escapa a su forma unicode: JSON la
- * interpreta igual, y el parser de HTML deja de reconocer el cierre.
+ * JSON.stringify doesn't escape "</script>", so a value containing that
+ * sequence (a post title, say) closes the script block early and whatever
+ * follows executes as HTML/JS. `<` gets escaped to its unicode form: JSON
+ * parses it the same way, and the HTML parser stops recognizing the
+ * closing tag.
  */
 export const toJsonLdScript = (data: unknown): string =>
 	JSON.stringify(data).replace(/</g, "\\u003c");

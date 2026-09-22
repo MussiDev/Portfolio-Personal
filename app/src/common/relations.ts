@@ -1,30 +1,31 @@
 import type { Section } from "./Brain3D";
 
 /**
- * Los índices de las secciones vinculadas a `i`.
+ * The indexes of the sections linked to `i`.
  *
- * `Section.related` se declara en una sola dirección en algunos casos
- * (NorteAR apunta a Trayectoria porque comparten stack; la relación es
- * mutua, pero está escrita una vez). Leerla en un solo sentido hacía que el
- * panel del hero y las etiquetas resaltadas pudieran mostrar conjuntos
- * distintos para la misma sección — la clase de inconsistencia que el
- * usuario nota aunque no sepa nombrarla.
+ * `Section.related` is declared in only one direction in some cases
+ * (NorteAR points to Career because they share a stack; the relationship
+ * is mutual, but it's written once). Reading it in a single direction let
+ * the hero's panel and the highlighted labels show different sets for the
+ * same section — the kind of inconsistency a user notices even without
+ * being able to name it.
  *
- * Función pura y compartida: el cerebro la usa para decidir qué iluminar y
- * NervousSystem para decidir qué nombrar. Una sola definición de "conectado".
+ * A pure, shared function: the brain uses it to decide what to light up
+ * and NervousSystem to decide what to name. One single definition of
+ * "connected".
  */
 export const relatedTo = (sections: Section[], i: number | null): number[] => {
 	if (i === null || !sections[i]) return [];
 
-	const vinculadas = new Set<number>(sections[i].related ?? []);
+	const linked = new Set<number>(sections[i].related ?? []);
 	sections.forEach((section, j) => {
-		if (section.related?.includes(i)) vinculadas.add(j);
+		if (section.related?.includes(i)) linked.add(j);
 	});
-	vinculadas.delete(i);
+	linked.delete(i);
 
-	// Ordenado para que el panel siempre nombre en el mismo orden, sin
-	// depender de en qué sección se declaró la relación.
-	return [...vinculadas]
+	// Sorted so the panel always names them in the same order, without
+	// depending on which section declared the relationship.
+	return [...linked]
 		.filter((j) => j >= 0 && j < sections.length)
 		.sort((a, b) => a - b);
 };

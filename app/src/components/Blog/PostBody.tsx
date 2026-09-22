@@ -11,18 +11,18 @@ import { prose } from "./prose";
 import type { PortableTextBlock } from "./excerpt";
 
 /**
- * El cuerpo de un post, venga como venga.
+ * A post's body, however it comes.
  *
- * Sanity guarda el contenido en dos formatos según cómo se escribió el post
- * (`body` en Portable Text, `markdownBody` en Markdown), así que hacen falta
- * dos renderers. Lo que se unifica acá es todo lo demás: los estilos salen
- * de `prose`, el bloque de Mermaid se resuelve igual en los dos caminos, y
- * la decisión de cuál usar vive en un solo lugar en vez de estar inline en
- * medio de la página.
+ * Sanity stores content in two formats depending on how the post was
+ * written (`body` in Portable Text, `markdownBody` in Markdown), so two
+ * renderers are needed. What gets unified here is everything else: the
+ * styles come from `prose`, the Mermaid block resolves the same way on
+ * both paths, and the decision of which to use lives in one single place
+ * instead of being inline in the middle of the page.
  *
- * Esto NO resuelve la deuda de fondo — tener dos modelos de contenido en
- * paralelo — pero la acota: ahora es un `if` en un archivo, no dos árboles
- * de componentes copiados que hay que mantener en sincronía a mano.
+ * This does NOT resolve the underlying debt — having two content models
+ * in parallel — but it bounds it: now it's an `if` in one file, not two
+ * copied component trees that have to be kept in sync by hand.
  */
 
 const MermaidDiagram = dynamic(() => import("./MermaidDiagram"), { ssr: true });
@@ -118,8 +118,8 @@ const markdownComponents = {
 		className?: string;
 		children?: React.ReactNode;
 	}) => {
-		// ```mermaid en Markdown es el mismo diagrama que el bloque
-		// `mermaidBlock` de Portable Text: un solo componente para los dos.
+		// ```mermaid in Markdown is the same diagram as Portable Text's
+		// `mermaidBlock` block: one single component for both.
 		const language = /language-(\w+)/.exec(className ?? "")?.[1];
 		if (language === "mermaid") {
 			return <MermaidDiagram code={String(children).trim()} />;

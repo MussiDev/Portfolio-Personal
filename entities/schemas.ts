@@ -3,13 +3,13 @@ import { z } from "zod";
 import { YEAR_MONTH } from "./dates.ts";
 
 /**
- * Validación en runtime de los JSON de api/*.json. Antes se importaban con
- * `as Tipo[]` directo: un JSON mal editado a mano rompía silenciosamente
- * (undefined en runtime) o el build de forma indirecta y confusa. Ahora
- * fallan acá, con un error de Zod que nombra el campo exacto.
+ * Runtime validation of the api/*.json files. They used to be imported with
+ * a direct `as Type[]`: a hand-edited JSON with a typo failed silently
+ * (undefined at runtime) or broke the build in an indirect, confusing way.
+ * Now they fail here, with a Zod error that names the exact field.
  *
- * No usan `.strict()`: los JSON tienen campos extra sin usar hoy
- * (`credentialId`, `icons`) que no vale la pena rechazar.
+ * They don't use `.strict()`: the JSON files carry extra fields that go
+ * unused today (`credentialId`, `icons`) that aren't worth rejecting.
  */
 
 const localizedText = z.object({ es: z.string(), en: z.string() });
@@ -33,14 +33,14 @@ export type Certification = z.infer<typeof CertificationSchema>;
 // api/languages.json
 export const LanguageItemSchema = z.object({
 	id: z.number(),
-	nombre: localizedText,
-	nivel: localizedText,
+	name: localizedText,
+	level: localizedText,
 });
 export const LanguageItemsSchema = z.array(LanguageItemSchema);
 export type LanguageItem = z.infer<typeof LanguageItemSchema>;
 
-// api/experienceItems.json — cada entrada trae *o* `roles`, *o* los campos
-// de un único rol al nivel superior (ver normalize() en page.tsx).
+// api/experienceItems.json — each entry carries *either* `roles`, *or* the
+// fields of a single role at the top level (see normalize() in page.tsx).
 const RoleSchema = z.object({
 	position: z.string(),
 	time: period,
@@ -73,10 +73,11 @@ export const RecommendationSchema = z.object({
 export const RecommendationsSchema = z.array(RecommendationSchema);
 export type Recommendation = z.infer<typeof RecommendationSchema>;
 
-// api/workProjects.json — "los otros proyectos" listados bajo Trayectoria,
-// distinto del Project de entities/project.ts (que describe NorteAR).
-// name y description traducidos (es/en), como el resto del contenido:
-// antes eran texto plano en español y se mostraban así también en /en.
+// api/workProjects.json — "the other projects" listed under Career, distinct
+// from the Project in entities/project.ts (which describes NorteAR).
+// name and description are translated (es/en), like the rest of the
+// content: they used to be plain Spanish text and showed up that way on
+// /en too.
 export const WorkProjectSchema = z.object({
 	id: z.number(),
 	name: localizedText,
@@ -90,55 +91,55 @@ export type WorkProject = z.infer<typeof WorkProjectSchema>;
 
 // api/descartes.json
 export const DescartesSchema = z.object({
-	descartado: z.object({
-		titulo: localizedText,
-		motivo: localizedText,
+	discarded: z.object({
+		title: localizedText,
+		reason: localizedText,
 	}),
 });
 export type Descartes = z.infer<typeof DescartesSchema>;
 
-// api/projects.json — mismo shape que entities/project.ts's Project.
-// Se valida pero no reemplaza esa interface (muchos componentes narrowean
-// con `"campo" in stage`, y quiero mantener ese contrato exactamente igual).
+// api/projects.json — same shape as entities/project.ts's Project. It gets
+// validated but doesn't replace that interface (many components narrow with
+// `"field" in stage`, and that contract should stay exactly the same).
 const stageSchema = z.object({
-	parrafos: z.record(z.string(), z.array(z.string())),
-	pendiente: localizedText.optional(),
+	paragraphs: z.record(z.string(), z.array(z.string())),
+	pending: localizedText.optional(),
 });
 const mechanismStageSchema = stageSchema.extend({
-	flujo: z.record(z.string(), z.array(z.string())).optional(),
-	codigo: z.string().nullable().optional(),
-	diagrama: z.string().optional(),
+	flow: z.record(z.string(), z.array(z.string())).optional(),
+	code: z.string().nullable().optional(),
+	diagram: z.string().optional(),
 });
 const measurementSchema = z.object({
-	etiqueta: localizedText,
-	valor: z.string().nullable(),
+	label: localizedText,
+	value: z.string().nullable(),
 });
 const resultStageSchema = stageSchema.extend({
-	medidas: z.array(measurementSchema),
+	measurements: z.array(measurementSchema),
 });
 const projectLinkSchema = z.object({
-	etiqueta: localizedText,
+	label: localizedText,
 	href: z.string(),
-	externo: z.boolean().optional(),
+	external: z.boolean().optional(),
 });
 export const ProjectSchema = z.object({
 	slug: z.string(),
-	nombre: z.string(),
-	tipo: z.enum(["producto", "maquina", "en-obra"]),
-	estado: z.enum(["en-construccion", "en-prueba", "terminado"]),
-	contexto: localizedText,
-	periodo: localizedText.nullable(),
-	resumen: localizedText,
+	name: z.string(),
+	type: z.enum(["product", "machine", "work-in-progress"]),
+	status: z.enum(["in-progress", "in-testing", "done"]),
+	context: localizedText,
+	period: localizedText.nullable(),
+	summary: localizedText,
 	stack: z.array(z.string()),
-	enlaces: z.array(projectLinkSchema),
-	peso: z.number(),
-	tiempos: z.object({
-		problema: stageSchema,
+	links: z.array(projectLinkSchema),
+	weight: z.number(),
+	stages: z.object({
+		problem: stageSchema,
 		decision: stageSchema,
-		mecanismo: mechanismStageSchema,
+		mechanism: mechanismStageSchema,
 		tradeoff: stageSchema,
-		resultado: resultStageSchema,
-		despues: stageSchema,
+		result: resultStageSchema,
+		after: stageSchema,
 	}),
 });
 export const ProjectsSchema = z.array(ProjectSchema);

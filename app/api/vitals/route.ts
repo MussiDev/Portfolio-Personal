@@ -1,22 +1,22 @@
 import { z } from "zod";
 
 /**
- * Destino propio de las Core Web Vitals que reporta WebVitals.tsx.
+ * WebVitals.tsx's own destination for the Core Web Vitals it reports.
  *
- * Sin esto el reporte estaba instalado pero no mandaba nada: dependía de una
- * variable de entorno que nunca se definió. Acá cada métrica real — medida
- * en el navegador de alguien que entró al sitio — queda como una línea JSON
- * en los logs del servidor, filtrable por `"tipo":"web-vital"`. Sin vendor,
- * sin cookies, sin scripts de terceros.
+ * Without this the report was installed but sending nothing: it depended
+ * on an environment variable that was never set. Here every real metric —
+ * measured in the browser of someone who visited the site — ends up as a
+ * JSON line in the server logs, filterable by `"type":"web-vital"`. No
+ * vendor, no cookies, no third-party scripts.
  *
- * Es un endpoint público que escribe en logs, así que desconfía de todo: un
- * tope de tamaño y un schema estricto. Lo que no es una métrica conocida con
- * valores razonables se descarta sin loguear nada.
+ * It's a public endpoint that writes to logs, so it distrusts everything: a
+ * size cap and a strict schema. Anything that isn't a known metric with
+ * reasonable values gets discarded without logging anything.
  */
 
 const MAX_BYTES = 1024;
 
-const Metrica = z.object({
+const Metric = z.object({
 	name: z.enum(["LCP", "INP", "CLS", "FCP", "TTFB", "FID"]),
 	value: z.number().nonnegative().max(600_000),
 	rating: z.enum(["good", "needs-improvement", "poor"]),
@@ -25,19 +25,19 @@ const Metrica = z.object({
 });
 
 export async function POST(request: Request) {
-	const cuerpo = await request.text();
-	if (cuerpo.length > MAX_BYTES) return new Response(null, { status: 413 });
+	const body = await request.text();
+	if (body.length > MAX_BYTES) return new Response(null, { status: 413 });
 
-	let metrica: z.infer<typeof Metrica>;
+	let metric: z.infer<typeof Metric>;
 	try {
-		metrica = Metrica.parse(JSON.parse(cuerpo));
+		metric = Metric.parse(JSON.parse(body));
 	} catch {
 		return new Response(null, { status: 400 });
 	}
 
 	console.log(
-		JSON.stringify({ tipo: "web-vital", ...metrica, recibido: new Date().toISOString() }),
+		JSON.stringify({ type: "web-vital", ...metric, receivedAt: new Date().toISOString() }),
 	);
-	// 204: sendBeacon no lee la respuesta, y no hay nada que devolver.
+	// 204: sendBeacon doesn't read the response, and there's nothing to return.
 	return new Response(null, { status: 204 });
 }

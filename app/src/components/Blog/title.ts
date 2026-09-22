@@ -1,21 +1,21 @@
 /**
- * El título de una nota, sin los emojis que trae de Sanity.
+ * A post's title, without the emoji it carries from Sanity.
  *
- * Una de las notas se llama "🚀 SEO para devs: tu código puede marcar la
- * diferencia". El cohete es de otro sitio: acá no hay un solo emoji más, ni
- * en la home, ni en el caso, ni en la navegación. Dejarlo en el listado del
- * blog hacía que esa fila hablara en un idioma distinto al de las otras
- * tres.
+ * One of the posts is called "🚀 SEO for devs: your code can make the
+ * difference". The rocket belongs to another site: there isn't a single
+ * other emoji here, not on the home, not on the case, not in the
+ * navigation. Leaving it in the blog listing made that row speak a
+ * different language than the other three.
  *
- * Se limpia al renderizar y no en el CMS a propósito: el contenido es del
- * autor, la tipografía del sitio es del sitio. Si mañana el título cambia,
- * no hay nada que volver a editar a mano.
+ * It's stripped on render and not in the CMS on purpose: the content
+ * belongs to the author, the site's typography belongs to the site. If
+ * the title changes tomorrow, there's nothing to re-edit by hand.
  *
- * No toca acentos, ñ, ni signos de puntuación — solo pictogramas, sus
- * selectores de variación y los ZWJ que pegan secuencias como 👨‍💻.
+ * It doesn't touch accents, ñ, or punctuation — only pictographs, their
+ * variation selectors, and the ZWJs that glue sequences like 👨‍💻.
  */
 
-const PICTOGRAMAS = /[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u{FE0F}\u{200D}\u{20E3}]/gu;
+const PICTOGRAPHS = /[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u{FE0F}\u{200D}\u{20E3}]/gu;
 
-export const limpiarTitulo = (titulo: string): string =>
-	titulo.replace(PICTOGRAMAS, "").replace(/\s+/g, " ").trim();
+export const cleanTitle = (title: string): string =>
+	title.replace(PICTOGRAPHS, "").replace(/\s+/g, " ").trim();

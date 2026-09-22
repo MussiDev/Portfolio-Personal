@@ -6,15 +6,15 @@ import { useEffect, useState } from "react";
  * Which of a case's six beats is on screen.
  *
  * Same rule as useActiveStep — the element covering the most viewport wins —
- * but over [data-tiempo] inside a case. It drives the decision trace in the
+ * but over [data-stage] inside a case. It drives the decision trace in the
  * brain, so reading the case IS what advances the signal.
  */
-export const useActiveBeat = (pathname: string, activo: boolean): number | null => {
+export const useActiveBeat = (pathname: string, active: boolean): number | null => {
 	const [beat, setBeat] = useState<number | null>(null);
 
 	useEffect(() => {
-		if (!activo) return;
-		const beats = Array.from(document.querySelectorAll<HTMLElement>("[data-tiempo]"));
+		if (!active) return;
+		const beats = Array.from(document.querySelectorAll<HTMLElement>("[data-stage]"));
 		if (!beats.length) return;
 
 		let requestId = 0;
@@ -33,7 +33,7 @@ export const useActiveBeat = (pathname: string, activo: boolean): number | null 
 			}
 			// Nothing on screen yet (the case opens above the beats): keep the
 			// first one lit rather than retracting the trace.
-			setBeat(best && maxVisible > 0 ? Number(best.dataset.tiempo) : 0);
+			setBeat(best && maxVisible > 0 ? Number(best.dataset.stage) : 0);
 		};
 
 		const onScroll = () => {
@@ -47,7 +47,7 @@ export const useActiveBeat = (pathname: string, activo: boolean): number | null 
 			window.removeEventListener("scroll", onScroll);
 			window.removeEventListener("resize", onScroll);
 		};
-	}, [pathname, activo]);
+	}, [pathname, active]);
 
-	return activo ? beat : null;
+	return active ? beat : null;
 };

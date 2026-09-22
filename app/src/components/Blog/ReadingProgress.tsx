@@ -35,12 +35,12 @@ const ReadingProgress = ({ targetId }: { targetId: string }) => {
 
 	return (
 		<div
-			className='fixed left-0 top-0 z-40 h-[2px] w-full bg-membrana-honda'
+			className='fixed left-0 top-0 z-40 h-[2px] w-full bg-membrane-deep'
 			aria-hidden='true'
 		>
 			<div
 				ref={barRef}
-				className='h-full origin-left bg-impulso transition-transform duration-100 ease-linear'
+				className='h-full origin-left bg-impulse transition-transform duration-100 ease-linear'
 				style={{ transform: "scaleX(var(--progreso, 0))" }}
 			/>
 		</div>

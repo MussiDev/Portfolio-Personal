@@ -2,27 +2,27 @@ import { coverFromTissue } from "../../common/postCover";
 import { getTissue2D } from "../../common/tissue2dServer";
 
 /**
- * La portada de una nota: un recorte del cerebro del sitio, en SVG.
+ * A post's cover: a crop of the site's brain, in SVG.
  *
- * Reemplaza las ilustraciones de stock que venían de Sanity. Sale resuelta
- * en el HTML del server, así que no hay una imagen que descargar ni un LCP
- * que espere a la red — que era justo el problema que la portada anterior
- * obligaba a manejar con `priority` y `sizes`.
+ * Replaces the stock illustrations that used to come from Sanity. It
+ * comes out resolved in the server's HTML, so there's no image to
+ * download and no LCP waiting on the network — which was exactly the
+ * problem the previous cover forced handling with `priority` and `sizes`.
  *
- * Es decoración y lo dice: aria-hidden. Lo que la nota tiene para decir
- * está en el título y en el cuerpo, no acá.
+ * It's decoration and says so: aria-hidden. What the post has to say is
+ * in the title and the body, not here.
  */
 
-const ANCHO = 1200;
-const ALTO = 380;
+const WIDTH = 1200;
+const HEIGHT = 380;
 
 /**
- * Qué fracción del alto del cerebro entra en la portada.
+ * What fraction of the brain's height fits in the cover.
  *
- * Con 0.38 entraba casi la silueta entera: se leía como un cerebro chiquito
- * y lejano, con medio recuadro en negro. Acá abajo el recorte es textura —
- * un pedazo de tejido bien de cerca, sin contorno reconocible — que es lo
- * que tiene que ser: material, no ilustración.
+ * At 0.38 almost the entire silhouette fit in: it read as a small, distant
+ * brain, with half the frame in black. Down here the crop is texture — a
+ * close-up piece of tissue with no recognizable outline — which is what it
+ * should be: material, not illustration.
  */
 const ZOOM = 0.2;
 
@@ -31,27 +31,27 @@ const PostCover = async ({ slug, tagCount }: { slug: string; tagCount: number })
 	if (!brain) return null;
 
 	const { points, edges, marks } = coverFromTissue(brain, slug, {
-		aspect: ANCHO / ALTO,
+		aspect: WIDTH / HEIGHT,
 		zoom: ZOOM,
 		markCount: tagCount,
 	});
 
-	const x = (v: number) => (v * ANCHO).toFixed(1);
-	const y = (v: number) => (v * ALTO).toFixed(1);
+	const x = (v: number) => (v * WIDTH).toFixed(1);
+	const y = (v: number) => (v * HEIGHT).toFixed(1);
 
 	return (
 		<div
 			aria-hidden='true'
-			className='relative mb-10 w-full overflow-hidden border border-sinapsis/30 bg-tejido-hondo'
+			className='relative mb-10 w-full overflow-hidden border border-synapse/30 bg-tissue-deep'
 		>
 			<svg
-				viewBox={`0 0 ${ANCHO} ${ALTO}`}
+				viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
 				className='block h-full w-full'
 				role='presentation'
 			>
-				{/* Las aristas van primero y tenues: son el fondo sobre el que
-				se leen los puntos, igual que en el cerebro de la home. */}
-				<g stroke='rgb(var(--sinapsis))' strokeWidth={1.1} opacity={0.38}>
+				{/* The edges go first and faint: they're the background the
+				points get read against, just like the home's brain. */}
+				<g stroke='rgb(var(--synapse))' strokeWidth={1.1} opacity={0.38}>
 					{Array.from({ length: edges.length / 4 }, (_, i) => (
 						<line
 							key={i}
@@ -62,14 +62,14 @@ const PostCover = async ({ slug, tagCount }: { slug: string; tagCount: number })
 						/>
 					))}
 				</g>
-				<g fill='rgb(var(--sinapsis))' opacity={0.85}>
+				<g fill='rgb(var(--synapse))' opacity={0.85}>
 					{Array.from({ length: points.length / 2 }, (_, i) => (
 						<circle key={i} cx={x(points[i * 2])} cy={y(points[i * 2 + 1])} r={2.4} />
 					))}
 				</g>
-				{/* Una marca por tag, en el naranja del impulso: el mismo
-				significado que en el cerebro — una marca, un item real. */}
-				<g fill='rgb(var(--impulso))'>
+				{/* One mark per tag, in the impulse's orange: the same meaning
+				as on the brain — one mark, one real item. */}
+				<g fill='rgb(var(--impulse))'>
 					{Array.from({ length: marks.length / 2 }, (_, i) => (
 						<circle key={i} cx={x(marks[i * 2])} cy={y(marks[i * 2 + 1])} r={5.5} />
 					))}

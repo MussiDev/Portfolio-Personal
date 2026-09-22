@@ -1,12 +1,12 @@
 /**
- * Curva pura de la construcción del tejido: dado un progreso 0→1, cuántos
- * puntos y aristas mostrar. Separado de Brain3D.tsx (que no se puede testear
- * sin un contexto WebGL) para poder verificar la curva en sí — monótona,
- * dentro de rango, sin partir un segmento de arista a la mitad.
+ * Pure curve for the tissue's build-up: given a 0→1 progress, how many
+ * points and edges to show. Separated from Brain3D.tsx (which can't be
+ * tested without a WebGL context) so the curve itself can be verified —
+ * monotonic, within range, never splitting an edge segment in half.
  *
- * Los puntos aparecen en el primer 70% del progreso; las aristas arrancan
- * al 25% y terminan al 100%, solapando con los puntos ("se tienden
- * después", no "después de que terminan los puntos").
+ * Points appear over the first 70% of progress; edges start at 25% and
+ * finish at 100%, overlapping with the points ("they stretch out
+ * afterward", not "after the points are done").
  */
 export const revealCounts = (
 	t: number,
@@ -18,12 +18,12 @@ export const revealCounts = (
 	const points = Math.floor(pointCount * Math.min(1, clamped / 0.7));
 
 	const edgeT = Math.max(0, Math.min(1, (clamped - 0.25) / 0.75));
-	// Los pares de vértices de una arista no pueden partirse a la mitad.
+	// An edge's vertex pair can't be split in half.
 	const edges = Math.floor((edgeCount * edgeT) / 2) * 2;
 
 	return { points, edges };
 };
 
-/** Ease-out cúbico: arranca rápido, se asienta suave — evita que la
- * construcción se sienta lineal/mecánica. */
+/** Cubic ease-out: starts fast, settles smoothly — keeps the build-up from
+ * feeling linear/mechanical. */
 export const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3;

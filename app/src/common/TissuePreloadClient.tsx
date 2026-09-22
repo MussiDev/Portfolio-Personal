@@ -7,41 +7,42 @@ import { BRAIN_BIN_PATH } from "./brainAsset";
 import { DESKTOP_QUERY } from "./desktopQuery";
 
 /**
- * La mitad de TissuePreload que cubre la navegación por cliente.
+ * The half of TissuePreload that covers client-side navigation.
  *
- * React NUNCA ejecuta un <script> que renderiza en el cliente (avisa por
- * consola en dev: "Scripts inside React components are never executed when
- * rendering on the client"). O sea que al llegar a esta página por un link
- * —sin recargar— el script de TissuePreload.tsx no hace nada, y la descarga
- * del tejido volvía a caer en la cadena lenta. Medido en el build de
- * producción, desde el click, llegando a la home desde /blog (la única
- * página que a propósito no precarga el tejido): 411 ms sin esto, 128 ms
- * con esto.
+ * React NEVER executes a <script> that renders on the client (it warns in
+ * the console during dev: "Scripts inside React components are never
+ * executed when rendering on the client"). Meaning: on reaching this page
+ * via a link — without a reload — TissuePreload.tsx's script does nothing,
+ * and the tissue's download fell back to the slow chain. Measured on the
+ * production build, from the click, arriving at the home from /blog (the
+ * only page that deliberately doesn't preload the tissue): 411 ms without
+ * this, 128 ms with it.
  *
- * Por qué un efecto y no ReactDOM.preload(), que sería más declarativo y
- * además ya acepta `media` en React 19: el hint viaja dentro del payload
- * RSC, y Next PREFETCHEA los links que están a la vista. Con preload() el
- * blog empezaba a bajar los 466 KB del cerebro 3D solo por tener un link a
- * la home en pantalla — medido: prefetch de / a los 119 ms, .bin a los 171
- * ms. Justo lo que d3d9cb0 decidió no hacer, y lo que cuida el test "el
- * blog no monta el cerebro ni baja el tejido".
+ * Why an effect and not ReactDOM.preload(), which would be more
+ * declarative and already accepts `media` in React 19: the hint travels
+ * inside the RSC payload, and Next PREFETCHES links that are in view. With
+ * preload(), the blog would start downloading the 3D brain's 466 KB just
+ * from having a link to the home on screen — measured: prefetch of / at
+ * 119 ms, .bin at 171 ms. Exactly what d3d9cb0 decided not to do, and what
+ * the "the blog doesn't mount the brain or download the tissue" test
+ * guards.
  *
- * Un efecto es imperativo: corre solo si la página de verdad se monta,
- * nunca durante un prefetch.
+ * An effect is imperative: it only runs if the page actually mounts, never
+ * during a prefetch.
  */
 const TissuePreloadClient = () => {
 	useEffect(() => {
 		const href = matchMedia(DESKTOP_QUERY).matches ? BRAIN_BIN_PATH : BRAIN2D_PATH;
-		// En carga directa el <script> ya lo creó durante el parseo del HTML:
-		// acá no hay nada que hacer. El selector va por href y no por
-		// [as="fetch"] a secas porque Next usa ese mismo `as` para sus propios
-		// preloads, y un guard más ancho cortaba de más.
+		// On a direct load the <script> already created it while parsing the
+		// HTML: there's nothing to do here. The selector matches on href and
+		// not on [as="fetch"] alone because Next uses that same `as` for its
+		// own preloads, and a wider guard cut too much.
 		if (document.querySelector(`link[rel="preload"][href="${href}"]`)) return;
 		const l = document.createElement("link");
 		l.rel = "preload";
 		l.as = "fetch";
-		// Sin crossOrigin el preload queda no-cors, no matchea el fetch() de
-		// Brain3D, y el archivo se descarga dos veces.
+		// Without crossOrigin the preload stays no-cors, doesn't match
+		// Brain3D's fetch(), and the file downloads twice.
 		l.crossOrigin = "anonymous";
 		l.href = href;
 		document.head.appendChild(l);

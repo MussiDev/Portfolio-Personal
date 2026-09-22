@@ -1,104 +1,108 @@
 /**
- * Matemática de layout del cerebro, sin three.js ni DOM.
+ * Brain layout math, with no three.js and no DOM.
  *
- * Son las dos cuentas que deciden qué ve el usuario — por dónde pasa la
- * línea que une una etiqueta con su región, y hacia dónde apunta la cámara
- * mientras se scrollea — y vivían sueltas dentro del useEffect de WebGL,
- * donde no se podían ejercitar sin una GPU. Acá son funciones puras.
+ * These are the two calculations that decide what the user sees — where the
+ * line runs that joins a label to its region, and where the camera points
+ * while scrolling — and they used to live loose inside the WebGL
+ * useEffect, where they couldn't be exercised without a GPU. Here they're
+ * pure functions.
  */
 
-/** Cuánto se separa el codo de la etiqueta antes de girar hacia la región. */
-const CODO = 26;
+/** How far the elbow sits from the label before turning toward the region. */
+const ELBOW = 26;
 
-export type Caja = { left: number; right: number; top: number; height: number };
-export type Origen = { left: number; top: number };
+export type Box = { left: number; right: number; top: number; height: number };
+export type Origin = { left: number; top: number };
 
 /**
- * Los tres puntos de la polilínea que va de una etiqueta a su región:
- * sale horizontal del borde de la etiqueta, hace un codo, y de ahí tira
- * recto al anclaje.
+ * The three points of the polyline that runs from a label to its region: it
+ * leaves horizontally from the label's edge, makes an elbow, and from there
+ * heads straight to the anchor.
  *
- * `haciaLaDerecha` es para la columna izquierda, que sale por su borde
- * derecho; la columna derecha es espejada.
+ * `towardRight` is for the left column, which leaves from its right edge;
+ * the right column is mirrored.
  */
-export const puntosDelCallout = (
-	etiqueta: Caja,
-	anclaje: { x: number; y: number },
-	origen: Origen,
-	haciaLaDerecha: boolean,
+export const calloutPoints = (
+	label: Box,
+	anchor: { x: number; y: number },
+	origin: Origin,
+	towardRight: boolean,
 ): string => {
-	const bx = (haciaLaDerecha ? etiqueta.right : etiqueta.left) - origen.left;
-	const by = etiqueta.top + etiqueta.height / 2 - origen.top;
-	const codo = haciaLaDerecha ? bx + CODO : bx - CODO;
-	return `${bx},${by} ${codo},${by} ${anclaje.x},${anclaje.y}`;
+	const bx = (towardRight ? label.right : label.left) - origin.left;
+	const by = label.top + label.height / 2 - origin.top;
+	const elbow = towardRight ? bx + ELBOW : bx - ELBOW;
+	return `${bx},${by} ${elbow},${by} ${anchor.x},${anchor.y}`;
 };
 
-/** Proyecta una coordenada normalizada de clip (-1..1) al píxel del canvas. */
-export const aPantalla = (
+/** Projects a normalised clip coordinate (-1..1) to the canvas pixel. */
+export const toScreen = (
 	clip: { x: number; y: number },
-	tamaño: { width: number; height: number },
+	size: { width: number; height: number },
 ): { x: number; y: number } => ({
-	x: (clip.x * 0.5 + 0.5) * tamaño.width,
-	y: (-clip.y * 0.5 + 0.5) * tamaño.height,
+	x: (clip.x * 0.5 + 0.5) * size.width,
+	y: (-clip.y * 0.5 + 0.5) * size.height,
 });
 
-export type PesoDePaso = { index: number; peso: number };
+export type StepWeight = { index: number; weight: number };
 
 /**
- * Cuánto "pesa" cada paso según qué fracción del viewport ocupa ahora mismo.
+ * How much each step "weighs" based on what fraction of the viewport it
+ * currently occupies.
  *
- * La cámara no salta de una sección a la otra: apunta al promedio ponderado
- * de las regiones visibles, así que en la transición entre dos pasos mira a
- * un punto intermedio. `fuerza` es cuánta autoridad tiene ese promedio — con
- * el hero en pantalla es ~0 y la cámara vuelve a su posición de reposo.
+ * The camera doesn't jump from one section to another: it points at the
+ * weighted average of the visible regions, so during the transition between
+ * two steps it looks at a point in between. `strength` is how much
+ * authority that average has — with the hero on screen it's ~0 and the
+ * camera returns to its resting position.
  *
- * El umbral de 0.001 descarta pasos apenas asomados: sin él, un borde de un
- * píxel tironea la cámara de una sección que el usuario no está mirando.
+ * The 0.001 threshold discards barely-visible steps: without it, a
+ * one-pixel edge would tug the camera toward a section the user isn't
+ * looking at.
  */
-export const pesosVisibles = (
-	pasos: { index: number; top: number; bottom: number }[],
-	altoViewport: number,
-): { pesos: PesoDePaso[]; total: number; fuerza: number } => {
-	const pesos: PesoDePaso[] = [];
+export const visibleWeights = (
+	steps: { index: number; top: number; bottom: number }[],
+	viewportHeight: number,
+): { weights: StepWeight[]; total: number; strength: number } => {
+	const weights: StepWeight[] = [];
 	let total = 0;
 
-	for (const { index, top, bottom } of pasos) {
-		const visible = Math.max(0, Math.min(bottom, altoViewport) - Math.max(top, 0));
-		const peso = altoViewport > 0 ? visible / altoViewport : 0;
-		if (peso <= 0.001) continue;
-		pesos.push({ index, peso });
-		total += peso;
+	for (const { index, top, bottom } of steps) {
+		const visible = Math.max(0, Math.min(bottom, viewportHeight) - Math.max(top, 0));
+		const weight = viewportHeight > 0 ? visible / viewportHeight : 0;
+		if (weight <= 0.001) continue;
+		weights.push({ index, weight });
+		total += weight;
 	}
 
-	return { pesos, total, fuerza: Math.min(1, total) };
+	return { weights, total, strength: Math.min(1, total) };
 };
 
 /**
- * Qué fracción del viaje del pulso se pasa en el primer tramo del callout
- * (el horizontal, que sale de la etiqueta hasta el codo). Es corto en
- * píxeles pero se le da más de un tercio del tiempo: así el pulso "sale"
- * de la etiqueta de forma visible antes de tirarse hacia el tejido.
+ * What fraction of the pulse's travel is spent on the callout's first leg
+ * (the horizontal one, from the label to the elbow). It's short in pixels
+ * but gets more than a third of the time: that way the pulse visibly
+ * "leaves" the label before heading toward the tissue.
  */
-const PRIMER_TRAMO = 0.35;
+const FIRST_LEG = 0.35;
 
 /**
- * Dónde está el pulso sobre la polilínea del callout para un progreso 0..1.
- * `null` si los puntos no son una polilínea de tres vértices (el callout
- * todavía no se midió, o la etiqueta no está en pantalla).
+ * Where the pulse sits on the callout's polyline for a 0..1 progress.
+ * `null` if the points aren't a three-vertex polyline (the callout hasn't
+ * been measured yet, or the label isn't on screen).
  */
-export const puntoSobreCallout = (
-	puntos: string | null | undefined,
-	progreso: number,
+export const pointOnCallout = (
+	points: string | null | undefined,
+	progress: number,
 ): { x: number; y: number } | null => {
-	const p = puntos?.split(" ").map((q) => q.split(",").map(Number));
+	const p = points?.split(" ").map((q) => q.split(",").map(Number));
 	if (!p || p.length !== 3 || p.some((v) => v.length !== 2 || v.some(Number.isNaN))) {
 		return null;
 	}
 	const [p0, p1, p2] = p;
-	const enPrimero = progreso < PRIMER_TRAMO;
-	const [a, b] = enPrimero ? [p0, p1] : [p1, p2];
-	const u = enPrimero
-		? progreso / PRIMER_TRAMO
-		: (progreso - PRIMER_TRAMO) / (1 - PRIMER_TRAMO);
+	const inFirstLeg = progress < FIRST_LEG;
+	const [a, b] = inFirstLeg ? [p0, p1] : [p1, p2];
+	const u = inFirstLeg
+		? progress / FIRST_LEG
+		: (progress - FIRST_LEG) / (1 - FIRST_LEG);
 	return { x: a[0] + (b[0] - a[0]) * u, y: a[1] + (b[1] - a[1]) * u };
 };

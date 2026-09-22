@@ -10,15 +10,15 @@ import { traceHead, type Route } from "./brainTrace";
  * tested. What is here is only geometry and easing.
  */
 
-const IMPULSO = new THREE.Color(0xff6a3a);
+const IMPULSE = new THREE.Color(0xff6a3a);
 
-export type Traza = {
+export type Trace = {
 	/**
 	 * @param beat index of the beat on screen, or null to retract the trace.
 	 * @param settled 0..1, how settled the camera is on the region.
 	 */
-	dibujar: (beat: number | null, settled: number, frame: number) => void;
-	destruir: () => void;
+	draw: (beat: number | null, settled: number, frame: number) => void;
+	destroy: () => void;
 };
 
 /**
@@ -26,11 +26,11 @@ export type Traza = {
  * coordinates, so it has to inherit the group's rotation and position —
  * added to the scene it drew a path detached from the tissue it walked.
  */
-export const crearTraza = (
+export const createTrace = (
 	parent: THREE.Object3D,
 	route: Route,
 	{ reducedMotion }: { reducedMotion: boolean },
-): Traza => {
+): Trace => {
 	const segments = route.length / 3 - 1;
 
 	// The drawn copy: every vertex but the head is the route's; the head is
@@ -39,7 +39,7 @@ export const crearTraza = (
 	const geo = new THREE.BufferGeometry();
 	geo.setAttribute("position", new THREE.BufferAttribute(drawn, 3));
 	const mat = new THREE.LineBasicMaterial({
-		color: IMPULSO,
+		color: IMPULSE,
 		transparent: true,
 		opacity: 0,
 		blending: THREE.AdditiveBlending,
@@ -52,7 +52,7 @@ export const crearTraza = (
 	const headGeo = new THREE.BufferGeometry();
 	headGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3), 3));
 	const headMat = new THREE.PointsMaterial({
-		color: IMPULSO,
+		color: IMPULSE,
 		size: 0.05,
 		sizeAttenuation: true,
 		transparent: true,
@@ -68,7 +68,7 @@ export const crearTraza = (
 	let shown = 0;
 
 	return {
-		dibujar: (beat, settled, frame) => {
+		draw: (beat, settled, frame) => {
 			// One segment per beat read: beat 0 lights the first.
 			const target = beat === null ? 0 : Math.min(segments, beat + 1);
 			shown += (target - shown) * (reducedMotion ? 1 : 0.07);
@@ -96,10 +96,10 @@ export const crearTraza = (
 			const hp = headGeo.getAttribute("position") as THREE.BufferAttribute;
 			hp.setXYZ(0, headPos[0], headPos[1], headPos[2]);
 			hp.needsUpdate = true;
-			const latido = reducedMotion ? 1 : 0.75 + Math.sin(frame / 22) * 0.25;
-			headMat.opacity += (wanted * latido - headMat.opacity) * 0.14;
+			const beatPulse = reducedMotion ? 1 : 0.75 + Math.sin(frame / 22) * 0.25;
+			headMat.opacity += (wanted * beatPulse - headMat.opacity) * 0.14;
 		},
-		destruir: () => {
+		destroy: () => {
 			parent.remove(line, head);
 			geo.dispose();
 			mat.dispose();

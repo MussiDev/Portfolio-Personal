@@ -12,9 +12,9 @@ type Entry = {
 	lastModified?: Date;
 	changeFrequency?: MetadataRoute.Sitemap[number]["changeFrequency"];
 	priority?: number;
-	/** false para contenido que solo existe en DEFAULT_LANGUAGE (p. ej. el
-	 * blog, que vive en Sanity sin traducción): emite una sola entrada, sin
-	 * hreflang a idiomas que no existen. */
+	/** false for content that only exists in DEFAULT_LANGUAGE (e.g. the
+	 * blog, which lives in Sanity untranslated): emits a single entry,
+	 * with no hreflang to languages that don't exist. */
 	translated?: boolean;
 };
 
@@ -58,10 +58,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 	return entries([
 		{ path: "/", changeFrequency: "weekly", priority: 1 },
-		// Traducidos de verdad (projects.json tiene es y en en cada tiempo):
-		// a diferencia del blog, van con hreflang a los dos idiomas.
+		// Actually translated (projects.json has es and en for every beat):
+		// unlike the blog, these go with hreflang for both languages.
 		...getProjects().map((project) => ({
-			path: `/proyectos/${project.slug}`,
+			path: `/projects/${project.slug}`,
 			changeFrequency: "monthly" as const,
 			priority: 0.9,
 		})),

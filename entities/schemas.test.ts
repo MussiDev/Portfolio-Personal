@@ -9,28 +9,28 @@ import {
 	WorkProjectsSchema,
 } from "./schemas.ts";
 
-test("CertificationsSchema acepta una lista bien formada", () => {
+test("CertificationsSchema accepts a well-formed list", () => {
 	const result = CertificationsSchema.safeParse([
 		{ id: 1, platform: "Platzi", name: "Curso", date: "2022-10" },
 	]);
 	assert.equal(result.success, true);
 });
 
-test("CertificationsSchema rechaza un id que no es número", () => {
+test("CertificationsSchema rejects an id that isn't a number", () => {
 	const result = CertificationsSchema.safeParse([
 		{ id: "1", platform: "Platzi", name: "Curso", date: "2022-10" },
 	]);
 	assert.equal(result.success, false);
 });
 
-test("CertificationsSchema ignora campos extra (credentialId, icons)", () => {
+test("CertificationsSchema ignores extra fields (credentialId, icons)", () => {
 	const result = CertificationsSchema.safeParse([
 		{ id: 1, platform: "Platzi", name: "Curso", date: "2022-10", credentialId: "x" },
 	]);
 	assert.equal(result.success, true);
 });
 
-test("CompaniesSchema acepta tanto el shape con roles como el shape plano", () => {
+test("CompaniesSchema accepts both the roles shape and the flat shape", () => {
 	const result = CompaniesSchema.safeParse([
 		{
 			company: "Acme",
@@ -47,67 +47,67 @@ test("CompaniesSchema acepta tanto el shape con roles como el shape plano", () =
 	assert.equal(result.success, true);
 });
 
-test("RecommendationsSchema exige relation y text bilingües", () => {
+test("RecommendationsSchema requires bilingual relation and text", () => {
 	const missing = RecommendationsSchema.safeParse([
 		{ id: 1, name: "A", role: "B", relation: { es: "x" }, date: "2022-01", text: { es: "x", en: "y" } },
 	]);
 	assert.equal(missing.success, false);
 });
 
-test("ProjectSchema valida el árbol completo de tiempos", () => {
+test("ProjectSchema validates the full stages tree", () => {
 	const valid = ProjectSchema.safeParse({
 		slug: "x",
-		nombre: "X",
-		tipo: "producto",
-		estado: "en-construccion",
-		contexto: { es: "a", en: "b" },
-		periodo: null,
-		resumen: { es: "a", en: "b" },
+		name: "X",
+		type: "product",
+		status: "in-progress",
+		context: { es: "a", en: "b" },
+		period: null,
+		summary: { es: "a", en: "b" },
 		stack: ["Next.js"],
-		enlaces: [],
-		peso: 1,
-		tiempos: {
-			problema: { parrafos: { es: [], en: [] } },
-			decision: { parrafos: { es: [], en: [] } },
-			mecanismo: { parrafos: { es: [], en: [] } },
-			tradeoff: { parrafos: { es: [], en: [] } },
-			resultado: { parrafos: { es: [], en: [] }, medidas: [] },
-			despues: { parrafos: { es: [], en: [] } },
+		links: [],
+		weight: 1,
+		stages: {
+			problem: { paragraphs: { es: [], en: [] } },
+			decision: { paragraphs: { es: [], en: [] } },
+			mechanism: { paragraphs: { es: [], en: [] } },
+			tradeoff: { paragraphs: { es: [], en: [] } },
+			result: { paragraphs: { es: [], en: [] }, measurements: [] },
+			after: { paragraphs: { es: [], en: [] } },
 		},
 	});
 	assert.equal(valid.success, true);
 
-	const invalidEstado = ProjectSchema.safeParse({
+	const invalidStatus = ProjectSchema.safeParse({
 		slug: "x",
-		nombre: "X",
-		tipo: "producto",
-		estado: "no-es-un-estado-valido",
-		contexto: { es: "a", en: "b" },
-		periodo: null,
-		resumen: { es: "a", en: "b" },
+		name: "X",
+		type: "product",
+		status: "not-a-valid-status",
+		context: { es: "a", en: "b" },
+		period: null,
+		summary: { es: "a", en: "b" },
 		stack: [],
-		enlaces: [],
-		peso: 1,
-		tiempos: {
-			problema: { parrafos: { es: [], en: [] } },
-			decision: { parrafos: { es: [], en: [] } },
-			mecanismo: { parrafos: { es: [], en: [] } },
-			tradeoff: { parrafos: { es: [], en: [] } },
-			resultado: { parrafos: { es: [], en: [] }, medidas: [] },
-			despues: { parrafos: { es: [], en: [] } },
+		links: [],
+		weight: 1,
+		stages: {
+			problem: { paragraphs: { es: [], en: [] } },
+			decision: { paragraphs: { es: [], en: [] } },
+			mechanism: { paragraphs: { es: [], en: [] } },
+			tradeoff: { paragraphs: { es: [], en: [] } },
+			result: { paragraphs: { es: [], en: [] }, measurements: [] },
+			after: { paragraphs: { es: [], en: [] } },
 		},
 	});
-	assert.equal(invalidEstado.success, false);
+	assert.equal(invalidStatus.success, false);
 });
 
-test("cada archivo de api/ cumple su schema", async () => {
-	// Los datos y los schemas se editan por separado: un cambio de forma en
-	// un JSON (texto plano que pasa a ser {es, en}, por ejemplo) solo lo
-	// detectaba el build de la home, tarde y con un stack trace de Next. Acá
-	// falla con el nombre del archivo.
+test("every file under api/ satisfies its schema", async () => {
+	// The data and the schemas are edited separately: a shape change in a
+	// JSON file (plain text becoming {es, en}, say) used to only be caught
+	// by the home's build, late and with a confusing Next.js stack trace.
+	// Here it fails with the file's name.
 	const fs = await import("node:fs");
 	const schemas = await import("./schemas.ts");
-	const archivos = {
+	const files = {
 		"api/certifications.json": schemas.CertificationsSchema,
 		"api/languages.json": schemas.LanguageItemsSchema,
 		"api/experienceItems.json": schemas.CompaniesSchema,
@@ -116,14 +116,14 @@ test("cada archivo de api/ cumple su schema", async () => {
 		"api/descartes.json": schemas.DescartesSchema,
 		"api/projects.json": schemas.ProjectsSchema,
 	};
-	for (const [ruta, schema] of Object.entries(archivos)) {
-		const datos = JSON.parse(fs.readFileSync(ruta, "utf8"));
-		const r = schema.safeParse(datos);
-		assert.ok(r.success, `${ruta} no cumple su schema: ${r.success ? "" : r.error.message}`);
+	for (const [path, schema] of Object.entries(files)) {
+		const data = JSON.parse(fs.readFileSync(path, "utf8"));
+		const r = schema.safeParse(data);
+		assert.ok(r.success, `${path} doesn't satisfy its schema: ${r.success ? "" : r.error.message}`);
 	}
 });
 
-test("los proyectos de trabajo están traducidos, no en un solo idioma", () => {
+test("work projects are translated, not in a single language", () => {
 	const r = WorkProjectsSchema.safeParse([
 		{ id: 1, name: "Solo español", company: "X", period: "2024", description: "texto", skills: [] },
 	]);

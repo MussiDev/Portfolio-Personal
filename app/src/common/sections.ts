@@ -3,10 +3,10 @@ import type { Section } from "./Brain3D";
 import type Project from "../../../entities/project";
 import { stagesWritten } from "./projects";
 
-// Conexiones reales, no decorativas: NorteAR usa el mismo stack que
-// aparece en Trayectoria, y las recomendaciones son de gente de esos
-// mismos trabajos. Blog no conecta con nada — ningún post menciona el
-// proyecto ni la trayectoria, así que no se inventa una relación ahí.
+// Real connections, not decorative ones: NorteAR uses the same stack that
+// shows up in Career, and the recommendations come from people at those
+// same jobs. Blog doesn't connect to anything — no post mentions the
+// project or the career, so no relationship is invented there.
 export const buildSections = (
 	d: Dict,
 	mainProject: Project,
@@ -22,54 +22,54 @@ export const buildSections = (
 	 * ones a visitor can check against the sections further down the page.
 	 */
 	evidence: {
-		trayectoria: number;
-		proyecto: number;
-		recomendaciones: number;
+		career: number;
+		project: number;
+		recommendations: number;
 		blog: number;
 		cv: number;
 	},
 ): Section[] => [
 	{
-		label: d.sobreMi.trayectoria,
+		label: d.about.career,
 		fact: `${counts.companiesCount} · ${counts.projectsCount}`,
-		summary: d.hero.secciones.experiencia,
-		href: "#paso-1",
+		summary: d.hero.sections.experience,
+		href: "#step-1",
 		step: 1,
 		related: [1, 2],
-		evidence: evidence.trayectoria,
+		evidence: evidence.career,
 	},
 	{
-		label: mainProject.nombre,
-		fact: `${stagesWritten(mainProject)} / 6 ${d.ui.tiempos}`,
-		summary: d.hero.secciones.proyectos,
-		href: "#paso-2",
+		label: mainProject.name,
+		fact: `${stagesWritten(mainProject)} / 6 ${d.ui.beats}`,
+		summary: d.hero.sections.projects,
+		href: "#step-2",
 		step: 2,
 		related: [0],
-		evidence: evidence.proyecto,
-		route: `/proyectos/${mainProject.slug}`,
+		evidence: evidence.project,
+		route: `/projects/${mainProject.slug}`,
 	},
 	{
-		label: d.campos.recomendaciones,
+		label: d.fields.recommendations,
 		fact: counts.recommendationsCount,
-		summary: d.hero.secciones.recomendaciones,
-		href: "#paso-3",
+		summary: d.hero.sections.recommendations,
+		href: "#step-3",
 		step: 3,
 		related: [0],
-		evidence: evidence.recomendaciones,
+		evidence: evidence.recommendations,
 	},
 	{
 		label: d.nav.blog,
 		fact: counts.postsCount,
-		summary: d.hero.secciones.blog,
-		href: "#paso-4",
+		summary: d.hero.sections.blog,
+		href: "#step-4",
 		step: 4,
 		evidence: evidence.blog,
 	},
 	{
-		label: d.nav.contacto,
-		fact: d.ui.respuesta24h,
-		summary: d.hero.secciones.contacto,
-		href: "#paso-5",
+		label: d.nav.contact,
+		fact: d.ui.reply24h,
+		summary: d.hero.sections.contact,
+		href: "#step-5",
 		step: 5,
 		// Contact is the only region with nothing to count: there is no list
 		// of items behind it, and inventing one would be the decoration this
@@ -80,7 +80,7 @@ export const buildSections = (
 	{
 		label: d.nav.cv,
 		fact: "PDF",
-		summary: d.hero.secciones.cv,
+		summary: d.hero.sections.cv,
 		href: "/pdf.pdf",
 		external: true,
 		evidence: evidence.cv,

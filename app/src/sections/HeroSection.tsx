@@ -13,48 +13,49 @@ const HeroSection = ({
 	sections: Section[];
 }) => (
 	<section
-		id='paso-0'
+		id='step-0'
 		data-step={0}
 		tabIndex={-1}
 		className='pointer-events-none relative h-[100svh] min-h-[34rem]'
 	>
-		{/* data-tejido-desde / data-tejido-hasta: en mobile, el tejido se
-		 * acomoda en el espacio libre entre este bloque y la lista de abajo.
-		 * Con una proporción fija de la pantalla se pisaba con la frase y el
-		 * CTA apenas el texto crecía. */}
+		{/* data-tissue-from / data-tissue-to: on mobile, the tissue fits itself
+		 * into the free space between this block and the list below. With a
+		 * fixed fraction of the screen it collided with the pitch and the CTA
+		 * as soon as the text grew. */}
 		<div
-			data-tejido-desde
+			data-tissue-from
 			className='pointer-events-none absolute left-0 right-0 top-0 flex items-start justify-between gap-4 px-5 pt-6 md:px-10 md:pt-9'
 		>
 			<div className='min-w-0'>
-				<h1 className='entra entra-1 m-0 text-2xl leading-none text-senal sm:text-3xl'>
+				<h1 className='enter enter-1 m-0 text-2xl leading-none text-signal sm:text-3xl'>
 					Joaquín Mussi
 				</h1>
-				<p className='entra entra-2 m-0 mt-2.5 max-w-[46ch] font-pieza text-[10.5px] uppercase leading-relaxed tracking-[.16em] text-sinapsis'>
-					{d.hero.rol}
+				<p className='enter enter-2 m-0 mt-2.5 max-w-[46ch] font-mono text-[10.5px] uppercase leading-relaxed tracking-[.16em] text-synapse'>
+					{d.hero.role}
 				</p>
 
 				{/*
-				 * La promesa del sitio, en la voz de glosa que ya se usa para las
-				 * afirmaciones. Antes el hero solo decía el puesto: una tarjeta de
-				 * presentación, no una razón para seguir scrolleando. Esto es una
-				 * afirmación que el resto del sitio prueba — los descartes muestran
-				 * qué no se construyó y por qué, y los seis tiempos de NorteAR
-				 * empiezan por el problema del usuario, no por el stack.
+				 * The site's pitch, in the same gloss voice already used for the
+				 * statements. The hero used to only say the role: a business
+				 * card, not a reason to keep scrolling. This is a claim the rest
+				 * of the site proves — the discarded section shows what wasn't
+				 * built and why, and NorteAR's six beats start with the user's
+				 * problem, not the stack.
 				 */}
-				<p className='entra entra-2 m-0 mt-5 max-w-[22ch] font-glosa text-[clamp(1.35rem,2.4vw,2rem)] italic leading-[1.15] text-senal sm:max-w-[26ch]'>
-					{d.hero.propuesta}
+				<p className='enter enter-2 m-0 mt-5 max-w-[22ch] font-gloss text-[clamp(1.35rem,2.4vw,2rem)] italic leading-[1.15] text-signal sm:max-w-[26ch]'>
+					{d.hero.pitch}
 				</p>
 
-				{/* El único CTA del hero. El objetivo de negocio del sitio es que
-				 * te escriban, y hasta ahora eso estaba a seis pantallas de scroll
-				 * sin una sola invitación en el camino. */}
-				{/* El área táctil va en el <a> y el subrayado en el <span>, por lo
-				 * mismo que en LanguageSwitch: con el min-h-11 en el link, el
-				 * borde inferior se despega del texto 44px más abajo. */}
+				{/* The hero's only CTA. The site's business goal is that people
+				 * write in, and until now that was six screens of scrolling
+				 * away with not one invitation along the way. */}
+				{/* The tap target sits on the <a> and the underline on the
+				 * <span>, for the same reason as in LanguageSwitch: with
+				 * min-h-11 on the link, the bottom border would sit 44px below
+				 * the text. */}
 				<a
-					href='#paso-5'
-					className='entra entra-3 pointer-events-auto mt-4 inline-flex min-h-11 items-center font-rotulo text-xs font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
+					href='#step-5'
+					className='enter enter-3 pointer-events-auto mt-4 inline-flex min-h-11 items-center font-label text-xs font-bold uppercase tracking-[.14em] text-impulse transition-colors duration-200 ease-impulse hover:text-signal'
 				>
 					<span className='inline-flex items-center gap-2 border-b border-current pb-0.5'>
 						{d.hero.cta}
@@ -62,37 +63,38 @@ const HeroSection = ({
 					</span>
 				</a>
 			</div>
-			<div className='entra entra-1 pointer-events-auto shrink-0 font-pieza text-xs text-mielina'>
+			<div className='enter enter-1 pointer-events-auto shrink-0 font-mono text-xs text-myelin'>
 				<LanguageSwitch current={lang} />
 			</div>
 		</div>
 
-		<nav data-tejido-hasta className='entra entra-3 pointer-events-auto absolute bottom-0 left-0 right-0 flex flex-col gap-px border-t border-sinapsis/25 bg-tejido/85 backdrop-blur-sm desk:hidden'>
+		<nav data-tissue-to className='enter enter-3 pointer-events-auto absolute bottom-0 left-0 right-0 flex flex-col gap-px border-t border-synapse/25 bg-tissue/85 backdrop-blur-sm desk:hidden'>
 			{sections.map((s, i) => (
 				<a
 					key={s.href + s.label}
-					href={s.external ? s.href : `#paso-${s.step}`}
+					href={s.external ? s.href : `#step-${s.step}`}
 					target={s.external ? "_blank" : undefined}
 					rel={s.external ? "noreferrer" : undefined}
-					// py-3.5 en vez de py-2.5: con el line-height del label deja la
-					// fila en ~48px, el mínimo cómodo para el dedo. Es la única
-					// navegación que existe bajo 768px, así que no puede quedar
-					// en 36px. Se mantiene items-baseline: los tres textos tienen
-					// tamaños distintos y se alinean por línea base, no por caja.
-					// data-region: la fila es la misma región que el nodo con su
-					// número en el tejido. NervousSystem le escribe data-estado
-					// (activo / vinculado / reposo) y la fila responde como las
-					// etiquetas del cerebro en desktop.
+					// py-3.5 instead of py-2.5: with the label's line-height this
+					// leaves the row at ~48px, the comfortable minimum for a
+					// finger. This is the only navigation that exists below
+					// 768px, so it can't stay at 36px. items-baseline is kept:
+					// the three texts have different sizes and align on the
+					// baseline, not the box.
+					// data-region: the row is the same region as the node with
+					// its number on the tissue. NervousSystem writes data-state
+					// (active / linked / idle) to it, and the row responds the
+					// same way desktop's labels do.
 					data-region={i}
-					className='group flex flex-wrap items-baseline gap-x-3 border-b border-sinapsis/12 px-5 py-3.5 transition-colors duration-500 ease-impulso last:border-b-0 data-[estado=activo]:bg-impulso/[.07]'
+					className='group flex flex-wrap items-baseline gap-x-3 border-b border-synapse/12 px-5 py-3.5 transition-colors duration-500 ease-impulse last:border-b-0 data-[state=active]:bg-impulse/[.07]'
 				>
-					<span className='font-pieza text-[10px] tabular-nums text-impulso'>
+					<span className='font-mono text-[10px] tabular-nums text-impulse'>
 						{String(i + 1).padStart(2, "0")}
 					</span>
-					<span className='font-rotulo text-[13px] font-bold uppercase tracking-[.08em] text-senal transition-colors duration-500 ease-impulso group-data-[estado=activo]:text-impulso group-data-[estado=vinculado]:text-impulso/65'>
+					<span className='font-label text-[13px] font-bold uppercase tracking-[.08em] text-signal transition-colors duration-500 ease-impulse group-data-[state=active]:text-impulse group-data-[state=linked]:text-impulse/65'>
 						{s.label}
 					</span>
-					<span className='ml-auto font-pieza text-[9.5px] uppercase tracking-[.08em] text-mielina'>
+					<span className='ml-auto font-mono text-[9.5px] uppercase tracking-[.08em] text-myelin'>
 						{s.fact}
 					</span>
 				</a>

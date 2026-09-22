@@ -17,39 +17,40 @@ declare global {
 }
 
 /**
- * El copy llega por props desde ContactoSection (server component), que ya
- * tiene el diccionario. Por props y no importando getDict: esto es un client
- * component, y ese import mandaría los dos idiomas completos al bundle del
- * navegador para usar un puñado de strings.
+ * The copy arrives via props from ContactSection (a server component),
+ * which already has the dictionary. Via props and not by importing
+ * getDict: this is a client component, and that import would send both
+ * complete languages to the browser bundle to use a handful of strings.
  */
 export type FormCopy = {
-	nombre: string;
+	name: string;
 	email: string;
-	mensaje: string;
-	enviar: string;
-	enviando: string;
+	message: string;
+	send: string;
+	sending: string;
 	ok: string;
 	error: string;
 	captcha: string;
-	proteccion: string;
-	privacidad: string;
-	y: string;
-	terminos: string;
-	deGoogle: string;
+	protectedBy: string;
+	privacyPolicy: string;
+	and: string;
+	termsOfService: string;
+	byGoogle: string;
 };
 
 const fieldClass =
-	"w-full border border-sinapsis bg-membrana px-4 py-2.5 font-rotulo text-base text-senal placeholder:text-mielina/70 focus:border-impulso focus:outline-none focus:ring-2 focus:ring-impulso/40 transition-colors duration-200 ease-impulso";
+	"w-full border border-synapse bg-membrane px-4 py-2.5 font-label text-base text-signal placeholder:text-myelin/70 focus:border-impulse focus:outline-none focus:ring-2 focus:ring-impulse/40 transition-colors duration-200 ease-impulse";
 
-const labelClass = "font-rotulo text-[11px] uppercase tracking-[.14em] text-mielina";
+const labelClass = "font-label text-[11px] uppercase tracking-[.14em] text-myelin";
 
-const linkClass = "underline decoration-sinapsis/50 hover:text-impulso";
+const linkClass = "underline decoration-synapse/50 hover:text-impulse";
 
 /**
- * reCAPTCHA v3: no hay widget. La clave registrada en Google es v3, y un
- * widget v2 (el checkbox de antes) Google se niega a montarlo con una clave
- * v3 — por eso el captcha nunca apareció en producción. Acá se pide un token
- * al enviar; /api/contact lo verifica y recién entonces manda el mail.
+ * reCAPTCHA v3: there's no widget. The key registered with Google is v3,
+ * and Google refuses to mount a v2 widget (the old checkbox) with a v3
+ * key — that's why the captcha never showed up in production. Here a token
+ * is requested on submit; /api/contact verifies it and only then sends the
+ * mail.
  */
 const getCaptchaToken = async (siteKey: string): Promise<string | null> => {
 	if (!window.grecaptcha) return null;
@@ -69,8 +70,8 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const sitekey = process.env.NEXT_PUBLIC_FIRSTCAPTCHA;
 
-	// El script de Google se pide recién cuando el formulario está por verse:
-	// nadie que no llegue al paso de contacto lo descarga.
+	// Google's script is only requested once the form is about to be seen:
+	// no one who never reaches the contact step downloads it.
 	useEffect(() => {
 		if (wantsCaptcha) return;
 		const form = formRef.current;
@@ -124,7 +125,7 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 			ref={formRef}
 			action={send}
 			onFocus={() => setWantsCaptcha(true)}
-			className='flex max-w-[54ch] flex-col gap-6 border border-sinapsis bg-membrana/40 px-7 py-7'
+			className='flex max-w-[54ch] flex-col gap-6 border border-synapse bg-membrane/40 px-7 py-7'
 		>
 			{sitekey && wantsCaptcha && (
 				<Script
@@ -135,7 +136,7 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='name'>
-					{copy.nombre}
+					{copy.name}
 				</label>
 				<input
 					className={fieldClass}
@@ -163,7 +164,7 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 
 			<div className='flex flex-col gap-1.5'>
 				<label className={labelClass} htmlFor='message'>
-					{copy.mensaje}
+					{copy.message}
 				</label>
 				<textarea
 					className={`${fieldClass} resize-none`}
@@ -186,46 +187,46 @@ const ContactForm = ({ copy }: { copy: FormCopy }) => {
 			<button
 				type='submit'
 				disabled={sending}
-				className='flex h-12 items-center justify-center gap-2 border-[1.5px] border-impulso bg-impulso/[.07] font-rotulo text-sm font-semibold uppercase tracking-[.1em] text-impulso transition-colors duration-200 ease-impulso hover:bg-impulso/[.16] disabled:cursor-not-allowed disabled:border-sinapsis disabled:bg-transparent disabled:text-mielina'
+				className='flex h-12 items-center justify-center gap-2 border-[1.5px] border-impulse bg-impulse/[.07] font-label text-sm font-semibold uppercase tracking-[.1em] text-impulse transition-colors duration-200 ease-impulse hover:bg-impulse/[.16] disabled:cursor-not-allowed disabled:border-synapse disabled:bg-transparent disabled:text-myelin'
 			>
-				{sending ? copy.enviando : copy.enviar}
+				{sending ? copy.sending : copy.send}
 			</button>
 
-			{/* El badge de reCAPTCHA va oculto (globals.css), y Google exige este
-			 * aviso cuando no se muestra. */}
+			{/* The reCAPTCHA badge is hidden (globals.css), and Google requires
+			 * this notice when it isn't shown. */}
 			{sitekey && (
-				<p className='m-0 font-pieza text-[10px] leading-relaxed text-mielina'>
-					{copy.proteccion}{" "}
+				<p className='m-0 font-mono text-[10px] leading-relaxed text-myelin'>
+					{copy.protectedBy}{" "}
 					<a
 						href='https://policies.google.com/privacy'
 						target='_blank'
 						rel='noreferrer'
 						className={linkClass}
 					>
-						{copy.privacidad}
+						{copy.privacyPolicy}
 					</a>{" "}
-					{copy.y}{" "}
+					{copy.and}{" "}
 					<a
 						href='https://policies.google.com/terms'
 						target='_blank'
 						rel='noreferrer'
 						className={linkClass}
 					>
-						{copy.terminos}
+						{copy.termsOfService}
 					</a>{" "}
-					{copy.deGoogle}
+					{copy.byGoogle}
 				</p>
 			)}
 
-			{/* La región live existe SIEMPRE en el DOM, aunque esté vacía: un
-			 * lector de pantalla solo anuncia cambios dentro de una live region
-			 * que ya estaba montada. Montada junto con su contenido, el usuario
-			 * envía y no se entera de nada — ni del éxito ni del error. */}
+			{/* The live region ALWAYS exists in the DOM, even when empty: a
+			 * screen reader only announces changes inside a live region that
+			 * was already mounted. Mounted together with its content, the
+			 * user submits and finds out nothing — neither success nor error. */}
 			<p
 				role='status'
 				aria-live='polite'
-				className={`m-0 font-rotulo text-[15px] leading-relaxed ${
-					state.ok === null ? "sr-only" : state.ok ? "text-mielina" : "text-impulso"
+				className={`m-0 font-label text-[15px] leading-relaxed ${
+					state.ok === null ? "sr-only" : state.ok ? "text-myelin" : "text-impulse"
 				}`}
 			>
 				{state.message}

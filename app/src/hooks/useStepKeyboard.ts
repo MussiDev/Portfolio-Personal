@@ -5,9 +5,9 @@ import { useEffect, type RefObject } from "react";
 import type { Section } from "../common/Brain3D";
 
 /**
- * Atajos globales dentro del scope del cerebro: Enter abre la sección
- * activa (si el foco no está ya sobre un link/botón propio), Backspace
- * vuelve al hero. Se ignora si el foco está en un campo de texto.
+ * Global shortcuts within the brain's scope: Enter opens the active
+ * section (if focus isn't already on its own link/button), Backspace
+ * returns to the hero. Ignored if focus is on a text field.
  */
 export const useStepKeyboard = (
 	containerRef: RefObject<HTMLDivElement | null>,
@@ -17,10 +17,10 @@ export const useStepKeyboard = (
 	setHover: (v: number | null) => void,
 	/** The shortcuts belong to the walkthrough: on a case page Backspace is
 	 * the browser's, not ours. */
-	activo: boolean,
+	active: boolean,
 ) => {
 	useEffect(() => {
-		if (!activo) return;
+		if (!active) return;
 		const onKeyDown = (e: KeyboardEvent) => {
 			const target = e.target as HTMLElement | null;
 			if (
@@ -39,16 +39,17 @@ export const useStepKeyboard = (
 				if (target?.closest("a, button")) return;
 				e.preventDefault();
 				const s = sections[i];
-				// Mismo camino que el click (onGo → goToStep): scroll suave y
-				// hash escrito. Antes esto hacía window.open(href, "_self") con
-				// un href="#paso-N", o sea un salto por hash nativo — otra
-				// navegación, otro resultado visual, para la misma acción.
+				// Same path as the click (onGo → goToStep): smooth scroll and
+				// the hash written. This used to do window.open(href, "_self")
+				// with an href="#step-N", i.e. a native hash jump — another
+				// navigation, another visual result, for the same action.
 				if (s.step === undefined) window.open(s.href, s.external ? "_blank" : "_self");
 				else goToStep(s.step);
 			}
-			// Escape además de Backspace: es la tecla que la gente ya asocia
-			// con "salir de esto", y no compite con ningún hábito previo.
-			// Backspace se mantiene porque el HUD lo muestra como afordancia.
+			// Escape alongside Backspace: it's the key people already
+			// associate with "get out of this", and it doesn't compete with
+			// any prior habit. Backspace stays because the HUD shows it as
+			// the affordance.
 			if (e.key === "Backspace" || e.key === "Escape") {
 				e.preventDefault();
 				setHover(null);
@@ -58,5 +59,5 @@ export const useStepKeyboard = (
 		window.addEventListener("keydown", onKeyDown);
 		return () => window.removeEventListener("keydown", onKeyDown);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sections, goToStep, activo]);
+	}, [sections, goToStep, active]);
 };

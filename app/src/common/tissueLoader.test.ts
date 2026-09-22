@@ -2,22 +2,22 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { BIN_HEADER_SIZE } from "./binFormat.ts";
-import { bytesTotales, leerTejido } from "./tissueLoader.ts";
+import { totalBytes, loadTissue } from "./tissueLoader.ts";
 
-/** Un .bin mínimo pero válido: header + los bytes de vértices que declara. */
-const archivoFalso = (puntos: number, aristas: number): Uint8Array => {
-	const total = BIN_HEADER_SIZE + (puntos + aristas) * 3 * 2;
+/** A minimal but valid .bin: header + the vertex bytes it declares. */
+const fakeFile = (points: number, edges: number): Uint8Array => {
+	const total = BIN_HEADER_SIZE + (points + edges) * 3 * 2;
 	const buf = new Uint8Array(total);
 	const view = new DataView(buf.buffer);
-	view.setUint32(4, puntos, true);
-	view.setUint32(8, aristas, true);
-	// Relleno reconocible para verificar que no se pierde ni reordena nada.
+	view.setUint32(4, points, true);
+	view.setUint32(8, edges, true);
+	// Recognizable filler to verify nothing gets lost or reordered.
 	for (let i = BIN_HEADER_SIZE; i < total; i += 1) buf[i] = i % 251;
 	return buf;
 };
 
-/** Respuesta con streaming que entrega el archivo en trozos de `corte` bytes. */
-const respuestaEnTrozos = (datos: Uint8Array, corte: number): Response => {
+/** A streaming response that delivers the file in `chunkSize`-byte pieces. */
+const chunkedResponse = (data: Uint8Array, chunkSize: number): Response => {
 	let i = 0;
 	return {
 		ok: true,
@@ -25,10 +25,10 @@ const respuestaEnTrozos = (datos: Uint8Array, corte: number): Response => {
 		body: {
 			getReader: () => ({
 				read: async () => {
-					if (i >= datos.length) return { done: true, value: undefined };
-					const trozo = datos.subarray(i, i + corte);
-					i += corte;
-					return { done: false, value: trozo };
+					if (i >= data.length) return { done: true, value: undefined };
+					const chunk = data.subarray(i, i + chunkSize);
+					i += chunkSize;
+					return { done: false, value: chunk };
 				},
 				cancel: async () => {},
 			}),
@@ -36,62 +36,62 @@ const respuestaEnTrozos = (datos: Uint8Array, corte: number): Response => {
 	} as unknown as Response;
 };
 
-test("bytesTotales deriva el tamaño del header", () => {
+test("totalBytes derives the size from the header", () => {
 	const v = new DataView(new ArrayBuffer(BIN_HEADER_SIZE));
 	v.setUint32(4, 10, true);
 	v.setUint32(8, 4, true);
-	assert.equal(bytesTotales(v), BIN_HEADER_SIZE + (10 + 4) * 3 * 2);
+	assert.equal(totalBytes(v), BIN_HEADER_SIZE + (10 + 4) * 3 * 2);
 });
 
-test("devuelve el archivo completo y sin alterar", async () => {
-	const datos = archivoFalso(20, 8);
-	const buffer = await leerTejido("/x.bin", {
-		sigueVivo: () => true,
+test("returns the complete file unaltered", async () => {
+	const data = fakeFile(20, 8);
+	const buffer = await loadTissue("/x.bin", {
+		stillAlive: () => true,
 		onProgress: () => {},
-		fetchImpl: async () => respuestaEnTrozos(datos, 64),
+		fetchImpl: async () => chunkedResponse(data, 64),
 	});
 	assert.ok(buffer);
-	assert.deepEqual(new Uint8Array(buffer), datos);
+	assert.deepEqual(new Uint8Array(buffer), data);
 });
 
-test("reconstruye el header aunque llegue partido entre varios chunks", async () => {
-	// Chunks de 5 bytes: el header de 12 llega en tres entregas. Es el caso
-	// que el código original nunca verificó y el que un servidor real puede
-	// producir en cualquier momento.
-	const datos = archivoFalso(15, 6);
-	const progreso: number[] = [];
-	const buffer = await leerTejido("/x.bin", {
-		sigueVivo: () => true,
-		onProgress: (f) => progreso.push(f),
-		fetchImpl: async () => respuestaEnTrozos(datos, 5),
+test("rebuilds the header even if it arrives split across several chunks", async () => {
+	// 5-byte chunks: the 12-byte header arrives in three deliveries. This is
+	// the case the original code never verified and that a real server can
+	// produce at any moment.
+	const data = fakeFile(15, 6);
+	const progress: number[] = [];
+	const buffer = await loadTissue("/x.bin", {
+		stillAlive: () => true,
+		onProgress: (f) => progress.push(f),
+		fetchImpl: async () => chunkedResponse(data, 5),
 	});
 
 	assert.ok(buffer);
-	assert.deepEqual(new Uint8Array(buffer), datos);
-	assert.ok(progreso.length > 1, "debería reportar progreso más de una vez");
-	assert.equal(progreso.at(-1), 1);
+	assert.deepEqual(new Uint8Array(buffer), data);
+	assert.ok(progress.length > 1, "should report progress more than once");
+	assert.equal(progress.at(-1), 1);
 });
 
-test("el progreso es monótono y nunca se pasa de 1", async () => {
-	const progreso: number[] = [];
-	await leerTejido("/x.bin", {
-		sigueVivo: () => true,
-		onProgress: (f) => progreso.push(f),
-		fetchImpl: async () => respuestaEnTrozos(archivoFalso(40, 20), 17),
+test("progress is monotonic and never exceeds 1", async () => {
+	const progress: number[] = [];
+	await loadTissue("/x.bin", {
+		stillAlive: () => true,
+		onProgress: (f) => progress.push(f),
+		fetchImpl: async () => chunkedResponse(fakeFile(40, 20), 17),
 	});
 
-	for (const f of progreso) assert.ok(f >= 0 && f <= 1, `fracción fuera de rango: ${f}`);
-	for (let i = 1; i < progreso.length; i += 1) {
-		assert.ok(progreso[i] >= progreso[i - 1], "el progreso retrocedió");
+	for (const f of progress) assert.ok(f >= 0 && f <= 1, `fraction out of range: ${f}`);
+	for (let i = 1; i < progress.length; i += 1) {
+		assert.ok(progress[i] >= progress[i - 1], "progress went backwards");
 	}
 });
 
-test("aborta y devuelve null si el componente se desmontó", async () => {
-	let cancelado = false;
-	const datos = archivoFalso(100, 50);
+test("aborts and returns null if the component unmounted", async () => {
+	let canceled = false;
+	const data = fakeFile(100, 50);
 	let i = 0;
-	const buffer = await leerTejido("/x.bin", {
-		sigueVivo: () => i <= 1,
+	const buffer = await loadTissue("/x.bin", {
+		stillAlive: () => i <= 1,
 		onProgress: () => {},
 		fetchImpl: async () =>
 			({
@@ -100,25 +100,25 @@ test("aborta y devuelve null si el componente se desmontó", async () => {
 					getReader: () => ({
 						read: async () => {
 							i += 1;
-							return { done: false, value: datos.subarray(0, 8) };
+							return { done: false, value: data.subarray(0, 8) };
 						},
 						cancel: async () => {
-							cancelado = true;
+							canceled = true;
 						},
 					}),
 				},
 			}) as unknown as Response,
 	});
 
-	assert.equal(buffer, null, "no debe devolver datos si ya no hay quién los use");
-	assert.ok(cancelado, "debe cancelar el reader para no seguir bajando 466 KB");
+	assert.equal(buffer, null, "should not return data once no one will use it");
+	assert.ok(canceled, "should cancel the reader to stop downloading 466 KB");
 });
 
-test("lanza si la respuesta no es OK", async () => {
+test("throws if the response isn't OK", async () => {
 	await assert.rejects(
 		() =>
-			leerTejido("/x.bin", {
-				sigueVivo: () => true,
+			loadTissue("/x.bin", {
+				stillAlive: () => true,
 				onProgress: () => {},
 				fetchImpl: async () => ({ ok: false, status: 404 }) as Response,
 			}),
@@ -126,17 +126,17 @@ test("lanza si la respuesta no es OK", async () => {
 	);
 });
 
-test("sin streaming cae a arrayBuffer y no rompe", async () => {
-	const datos = archivoFalso(10, 4);
-	const buffer = await leerTejido("/x.bin", {
-		sigueVivo: () => true,
+test("without streaming it falls back to arrayBuffer without breaking", async () => {
+	const data = fakeFile(10, 4);
+	const buffer = await loadTissue("/x.bin", {
+		stillAlive: () => true,
 		onProgress: () => {},
 		fetchImpl: async () =>
 			({
 				ok: true,
 				body: null,
-				arrayBuffer: async () => datos.buffer,
+				arrayBuffer: async () => data.buffer,
 			}) as unknown as Response,
 	});
-	assert.deepEqual(new Uint8Array(buffer!), datos);
+	assert.deepEqual(new Uint8Array(buffer!), data);
 });
