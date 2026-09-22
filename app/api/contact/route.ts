@@ -74,8 +74,12 @@ export async function POST(request: Request) {
 				template_params: { user_name: name, user_email: email, message },
 			}),
 		});
-		if (!res.ok) return NextResponse.json({ ok: false }, { status: 502 });
-	} catch {
+		if (!res.ok) {
+			console.error("EmailJS send failed:", res.status, await res.text().catch(() => ""));
+			return NextResponse.json({ ok: false }, { status: 502 });
+		}
+	} catch (e) {
+		console.error("EmailJS send threw:", e);
 		return NextResponse.json({ ok: false }, { status: 502 });
 	}
 
