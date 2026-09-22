@@ -1,52 +1,52 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * El reporte de Core Web Vitals estuvo instalado y sin mandar nada: el
- * destino dependía de una variable de entorno que nunca se definió. Estos
- * tests fijan las dos mitades — que el navegador realmente envíe métricas, y
- * que el endpoint que las recibe no acepte cualquier cosa (es público y
- * escribe en logs).
+ * Core Web Vitals reporting was installed and sending nothing: the
+ * destination depended on an environment variable that was never set.
+ * These tests pin down both halves — that the browser actually sends
+ * metrics, and that the endpoint receiving them doesn't accept just
+ * anything (it's public and writes to logs).
  */
 
-const valida = { name: "LCP", value: 1234.5, rating: "good", id: "v4-1", path: "/" };
+const valid = { name: "LCP", value: 1234.5, rating: "good", id: "v4-1", path: "/" };
 
-test("el navegador manda las métricas reales al cargar la página", async ({ page }) => {
-	const enviada = page.waitForRequest(
+test("the browser sends real metrics on page load", async ({ page }) => {
+	const sent = page.waitForRequest(
 		(r) => r.url().endsWith("/api/vitals") && r.method() === "POST",
 		{ timeout: 15_000 },
 	);
 	await page.goto("/");
-	const pedido = await enviada;
-	const cuerpo = JSON.parse(pedido.postData() ?? "{}");
-	expect(["LCP", "INP", "CLS", "FCP", "TTFB", "FID"]).toContain(cuerpo.name);
-	expect(typeof cuerpo.value).toBe("number");
-	expect(cuerpo.path).toBe("/");
+	const req = await sent;
+	const body = JSON.parse(req.postData() ?? "{}");
+	expect(["LCP", "INP", "CLS", "FCP", "TTFB", "FID"]).toContain(body.name);
+	expect(typeof body.value).toBe("number");
+	expect(body.path).toBe("/");
 });
 
-test.describe("el endpoint", () => {
-	test.skip(({ isMobile }) => isMobile, "es la misma API en los dos proyectos");
+test.describe("the endpoint", () => {
+	test.skip(({ isMobile }) => isMobile, "it's the same API on both projects");
 
-	test("acepta una métrica válida", async ({ request }) => {
-		const r = await request.post("/api/vitals", { data: JSON.stringify(valida) });
+	test("accepts a valid metric", async ({ request }) => {
+		const r = await request.post("/api/vitals", { data: JSON.stringify(valid) });
 		expect(r.status()).toBe(204);
 	});
 
-	test("rechaza lo que no es una Core Web Vital", async ({ request }) => {
-		for (const cuerpo of [
-			"no es json",
-			JSON.stringify({ ...valida, name: "Next.js-hydration" }),
-			JSON.stringify({ ...valida, value: -1 }),
-			JSON.stringify({ ...valida, rating: "excelente" }),
-			JSON.stringify({ ...valida, path: "https://otro-sitio.com" }),
+	test("rejects anything that isn't a Core Web Vital", async ({ request }) => {
+		for (const body of [
+			"not json",
+			JSON.stringify({ ...valid, name: "Next.js-hydration" }),
+			JSON.stringify({ ...valid, value: -1 }),
+			JSON.stringify({ ...valid, rating: "excellent" }),
+			JSON.stringify({ ...valid, path: "https://another-site.com" }),
 		]) {
-			const r = await request.post("/api/vitals", { data: cuerpo });
-			expect(r.status(), `aceptó: ${cuerpo}`).toBe(400);
+			const r = await request.post("/api/vitals", { data: body });
+			expect(r.status(), `accepted: ${body}`).toBe(400);
 		}
 	});
 
-	test("corta los cuerpos grandes antes de parsearlos", async ({ request }) => {
+	test("cuts off large bodies before parsing them", async ({ request }) => {
 		const r = await request.post("/api/vitals", {
-			data: JSON.stringify({ ...valida, id: "x".repeat(5000) }),
+			data: JSON.stringify({ ...valid, id: "x".repeat(5000) }),
 		});
 		expect(r.status()).toBe(413);
 	});

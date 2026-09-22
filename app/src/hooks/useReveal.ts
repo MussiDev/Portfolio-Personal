@@ -3,16 +3,16 @@
 import { useEffect } from "react";
 
 /**
- * Anima la entrada de los bloques [data-revelar] cuando entran en
- * viewport (con fallback si no hay IntersectionObserver), y saca las
- * clases .entra de la animación de bienvenida del hero pasados 2.5s —
- * ambas son limpieza de la coreografía de entrada, con el mismo timeout
- * de seguridad por si algo no dispara.
+ * Animates the [data-reveal] blocks in as they enter the viewport (with a
+ * fallback if there's no IntersectionObserver), and strips the hero's
+ * welcome animation's .enter classes after 2.5s — both are cleanup for the
+ * entrance choreography, with the same safety timeout in case something
+ * doesn't fire.
  */
-export const useReveal = () => {
+export const useReveal = (pathname: string) => {
 	useEffect(() => {
 		const blocks = Array.from(
-			document.querySelectorAll<HTMLElement>("[data-revelar]"),
+			document.querySelectorAll<HTMLElement>("[data-reveal]"),
 		);
 		if (!blocks.length) return;
 
@@ -40,14 +40,17 @@ export const useReveal = () => {
 			window.clearTimeout(safetyTimer);
 			observer.disconnect();
 		};
-	}, []);
+		// The blocks belong to the page, and this hook lives in the layout:
+		// without re-running per route, a page reached by client navigation
+		// would keep every [data-reveal] block at opacity 0 forever.
+	}, [pathname]);
 
 	useEffect(() => {
 		const safetyTimer = window.setTimeout(() => {
 			document
-				.querySelectorAll<HTMLElement>(".entra")
-				.forEach((el) => el.classList.remove("entra"));
+				.querySelectorAll<HTMLElement>(".enter")
+				.forEach((el) => el.classList.remove("enter"));
 		}, 2500);
 		return () => window.clearTimeout(safetyTimer);
-	}, []);
+	}, [pathname]);
 };

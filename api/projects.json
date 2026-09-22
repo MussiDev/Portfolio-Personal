@@ -1,15 +1,15 @@
 [
 	{
 		"slug": "nortear",
-		"nombre": "NorteAR",
-		"tipo": "producto",
-		"estado": "en-construccion",
-		"contexto": {
+		"name": "NorteAR",
+		"type": "product",
+		"status": "in-progress",
+		"context": {
 			"es": "Producto propio",
 			"en": "Own product"
 		},
-		"periodo": null,
-		"resumen": {
+		"period": null,
+		"summary": {
 			"es": "Sistema de gestión para pymes de servicio que mide el margen real, no la facturación.",
 			"en": "Management system for service SMEs that measures real margin, not revenue."
 		},
@@ -17,20 +17,20 @@
 			"Next.js",
 			"TypeScript"
 		],
-		"enlaces": [
+		"links": [
 			{
-				"etiqueta": {
+				"label": {
 					"es": "Ver el producto",
 					"en": "See the product"
 				},
 				"href": "https://nortear.app/",
-				"externo": true
+				"external": true
 			}
 		],
-		"peso": 1,
-		"tiempos": {
-			"problema": {
-				"parrafos": {
+		"weight": 1,
+		"stages": {
+			"problem": {
+				"paragraphs": {
 					"es": [
 						"Un negocio de servicios factura bien y a fin de mes no le queda nada. El sistema le muestra ventas; lo que no le muestra es cuánto insumo se consumió para producir cada una de esas ventas — el pomo de color que rinde unas pocas aplicaciones, el producto que se descartó, el turno que salió más caro de lo que se cobró.",
 						"Casi todos los sistemas de gestión miden lo que entra. Muy pocos miden lo que se gastó para que entrara. Y sin eso, «vendimos más» y «ganamos más» son la misma frase — hasta que dejan de serlo."
@@ -42,7 +42,7 @@
 				}
 			},
 			"decision": {
-				"parrafos": {
+				"paragraphs": {
 					"es": [
 						"El margen es la métrica central, no un reporte más en un menú: es la cifra que el sistema devuelve por defecto. Si la métrica principal es la facturación, el usuario sigue mirando lo que ya miraba.",
 						"Servicios, no retail. Un comercio que revende conoce su costo unitario. Un negocio de servicios no: el insumo se consume de a fracciones y nadie las anota. Ese es el hueco.",
@@ -55,8 +55,8 @@
 					]
 				}
 			},
-			"mecanismo": {
-				"parrafos": {
+			"mechanism": {
+				"paragraphs": {
 					"es": [
 						"El problema difícil no es contable, es de modelado: cómo saber cuánto insumo consumió un servicio si nadie lo pesa. La respuesta fue atar cada servicio a sus insumos y descontar contra el stock real."
 					],
@@ -64,7 +64,7 @@
 						"The hard problem is not accounting, it is modelling: how to know how much stock a service consumed if nobody weighs it. The answer was to tie each service to its supplies and draw down against real stock."
 					]
 				},
-				"flujo": {
+				"flow": {
 					"es": [
 						"Turno",
 						"Insumos",
@@ -78,11 +78,11 @@
 						"Margin"
 					]
 				},
-				"codigo": "// Every service carries its supplies (serviceSupplies): what it consumes and\n// how much of each. Selling it draws down real stock, not an estimate.\nconst consumptions = serviceItems.flatMap((item) => {\n  const service = services.find((s) => s.id === item.serviceId)!;\n\n  // quantityNeeded counts service uses; convert to base-unit stock consumption.\n  return service.serviceSupplies.map((ss) => ({\n    supplyId: ss.supplyId,\n    consumed:\n      unitsPerUse(ss.packageContent, ss.servingsPerPackage) *\n      Number(ss.quantityNeeded) *\n      item.quantity,\n  }));\n});\n\nconst stockDelta = new Map<string, number>();\nfor (const { supplyId, consumed } of consumptions) {\n  stockDelta.set(supplyId, (stockDelta.get(supplyId) ?? 0) + consumed);\n}",
-				"diagrama": "flowchart LR\n    subgraph EMP[Empresa - scope en cada tabla]\n        direction LR\n        TUR[Turno] -->|serviceItems| SER[Servicio]\n        SER -->|serviceSupplies| INS[Insumo]\n        INS -->|descuenta| STK[Stock real]\n        TUR --> MAR[Margen]\n        STK --> MAR\n    end"
+				"code": "// Every service carries its supplies (serviceSupplies): what it consumes and\n// how much of each. Selling it draws down real stock, not an estimate.\nconst consumptions = serviceItems.flatMap((item) => {\n  const service = services.find((s) => s.id === item.serviceId)!;\n\n  // quantityNeeded counts service uses; convert to base-unit stock consumption.\n  return service.serviceSupplies.map((ss) => ({\n    supplyId: ss.supplyId,\n    consumed:\n      unitsPerUse(ss.packageContent, ss.servingsPerPackage) *\n      Number(ss.quantityNeeded) *\n      item.quantity,\n  }));\n});\n\nconst stockDelta = new Map<string, number>();\nfor (const { supplyId, consumed } of consumptions) {\n  stockDelta.set(supplyId, (stockDelta.get(supplyId) ?? 0) + consumed);\n}",
+				"diagram": "flowchart LR\n    subgraph EMP[Empresa - scope en cada tabla]\n        direction LR\n        TUR[Turno] -->|serviceItems| SER[Servicio]\n        SER -->|serviceSupplies| INS[Insumo]\n        INS -->|descuenta| STK[Stock real]\n        TUR --> MAR[Margen]\n        STK --> MAR\n    end"
 			},
 			"tradeoff": {
-				"parrafos": {
+				"paragraphs": {
 					"es": [
 						"Cargar los insumos es trabajo del usuario, y ese trabajo es la barrera de entrada del producto: sin insumos cargados no hay margen, y con el sistema vacío no se ve el valor. Todo lo demás se subordina a bajar ese costo inicial.",
 						"Lo que quedó afuera a propósito: facturación electrónica (AFIP/ARCA no existe en el schema), multi-sucursal y app nativa. Alcance corto por decisión, no por límite técnico — el producto está pensado para un tipo de negocio, no para todos."
@@ -93,44 +93,44 @@
 					]
 				}
 			},
-			"resultado": {
-				"parrafos": {
+			"result": {
+				"paragraphs": {
 					"es": [],
 					"en": []
 				},
-				"medidas": [
+				"measurements": [
 					{
-						"etiqueta": {
+						"label": {
 							"es": "Negocios activos",
 							"en": "Active businesses"
 						},
-						"valor": "2"
+						"value": "2"
 					},
 					{
-						"etiqueta": {
+						"label": {
 							"es": "Trial → pago",
 							"en": "Trial → paid"
 						},
-						"valor": "2"
+						"value": "2"
 					},
 					{
-						"etiqueta": {
+						"label": {
 							"es": "Retención 3 meses",
 							"en": "3-month retention"
 						},
-						"valor": "2/2"
+						"value": "2/2"
 					},
 					{
-						"etiqueta": {
+						"label": {
 							"es": "En producción desde",
 							"en": "In production since"
 						},
-						"valor": "Junio 2026"
+						"value": "Junio 2026"
 					}
 				]
 			},
-			"despues": {
-				"parrafos": {
+			"after": {
+				"paragraphs": {
 					"es": [
 						"Si arrancara de nuevo, no alargaría el alcance desde el principio. Fui sumando complejización — multi-sucursal, roles, reportes por profesional — para un uso que, en esta primera instancia, es un puñado de clientes conocidos. Esa complejidad se paga en tiempo de desarrollo que no vuelve, y el producto todavía no la necesitaba para probar si funcionaba."
 					],

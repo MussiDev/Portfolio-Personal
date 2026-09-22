@@ -1,16 +1,16 @@
 "use client";
 
+import { DESKTOP_QUERY } from "../common/desktopQuery";
 import { useMediaQuery } from "./useMediaQuery";
 
 /**
- * `null` mientras no se sabe todavía (server y render de hidratación) — a
- * propósito, para no tener que adivinar mobile o desktop y después
- * corregirse: el cerebro 3D nunca se monta hasta que esto resuelve a
- * `true`, así que un visitante mobile jamás dispara el import de
- * three.js ni por un instante.
+ * `null` while it isn't known yet (server and hydration render) — on
+ * purpose, to avoid guessing mobile or desktop and then correcting itself:
+ * the 3D brain never mounts until this resolves to `true`, so a mobile
+ * visitor never triggers the three.js import, not even for an instant.
  *
- * Antes era useState + useEffect(setIsDesktop(...)), que produce un render
- * en cascada en cada montaje. La suscripción vive ahora en useMediaQuery.
+ * This used to be useState + useEffect(setIsDesktop(...)), which produces
+ * a cascading render on every mount. The subscription now lives in
+ * useMediaQuery.
  */
-export const useIsDesktop = (breakpointPx = 768): boolean | null =>
-	useMediaQuery(`(min-width: ${breakpointPx}px)`);
+export const useIsDesktop = (): boolean | null => useMediaQuery(DESKTOP_QUERY);

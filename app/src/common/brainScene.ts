@@ -4,55 +4,55 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 /**
- * Dueño de la escena WebGL del cerebro.
+ * Owns the brain's WebGL scene.
  *
- * Todo esto vivía suelto dentro del useEffect de Brain3D, mezclado con el
- * scroll-spy, los callouts en SVG y el loop de animación: ~90 líneas de
- * infraestructura de render que no tienen nada que ver con la navegación
- * del sitio, pero que había que leer para llegar a la parte que sí.
+ * All of this used to live loose inside Brain3D's useEffect, mixed in with
+ * the scroll-spy, the SVG callouts and the animation loop: ~90 lines of
+ * render infrastructure that has nothing to do with the site's navigation,
+ * but that had to be read to get to the part that does.
  *
- * Es un objeto y no un hook a propósito. Un hook obligaría a devolver una
- * docena de refs para que el loop de animación los lea, que es peor que lo
- * que había. Acá el ciclo de vida es explícito: se crea, se mide, se
- * renderiza, se destruye.
+ * It's an object, not a hook, on purpose. A hook would force returning a
+ * dozen refs for the animation loop to read, which is worse than what was
+ * there before. Here the lifecycle is explicit: create, measure, render,
+ * destroy.
  */
 
 const FOV = 38;
 const MODEL_WIDTH = 2.6;
 const Z_HERO = 3.6;
 
-export type EscenaDelCerebro = {
+export type BrainScene = {
 	readonly scene: THREE.Scene;
 	readonly camera: THREE.PerspectiveCamera;
-	/** Contenedor del tejido. Se mueve y rota; la escena no. */
+	/** The tissue's container. It moves and rotates; the scene doesn't. */
 	readonly group: THREE.Group;
-	readonly ancho: number;
-	readonly alto: number;
-	/** Z mínima para que el modelo entre a lo ancho del viewport. */
-	readonly zMinima: number;
-	medir: () => void;
-	/** Agrega el bloom. Ver Brain3D: se difiere hasta después del reveal
-	 * porque compilar sus shaders cuesta segundos en un dispositivo lento. */
-	encenderBloom: () => void;
+	readonly width: number;
+	readonly height: number;
+	/** Minimum Z for the model to fit the viewport's width. */
+	readonly minZ: number;
+	measure: () => void;
+	/** Adds the bloom. See Brain3D: it's deferred until after the reveal
+	 * because compiling its shaders costs seconds on a slow device. */
+	turnOnBloom: () => void;
 	render: () => void;
-	destruir: () => void;
+	destroy: () => void;
 };
 
-export const crearEscenaDelCerebro = (
+export const createBrainScene = (
 	mount: HTMLElement,
-	/** Se llama en cada medición con el tamaño nuevo, para que quien monte la
-	 * escena sincronice lo que tenga encima (el viewBox del SVG de callouts). */
-	alMedir?: (ancho: number, alto: number) => void,
-): EscenaDelCerebro => {
+	/** Called on every measurement with the new size, so whoever mounts the
+	 * scene can sync whatever sits on top of it (the callouts SVG's viewBox). */
+	onMeasure?: (width: number, height: number) => void,
+): BrainScene => {
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
 	camera.position.set(0, 0.1, Z_HERO);
 
 	const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-	// En pantallas angostas se recorta el pixel ratio: el costo de rasterizar
-	// crece con el cuadrado del ratio y la diferencia visual no se percibe.
-	const angosta = window.matchMedia("(max-width: 767px)").matches;
-	renderer.setPixelRatio(Math.min(window.devicePixelRatio, angosta ? 1.25 : 2));
+	// On narrow screens the pixel ratio is capped: rasterizing cost grows
+	// with the square of the ratio and the visual difference isn't noticeable.
+	const narrow = window.matchMedia("(max-width: 767px)").matches;
+	renderer.setPixelRatio(Math.min(window.devicePixelRatio, narrow ? 1.25 : 2));
 	renderer.setClearColor(0x000000, 0);
 	mount.appendChild(renderer.domElement);
 	renderer.domElement.style.width = "100%";
@@ -67,46 +67,46 @@ export const crearEscenaDelCerebro = (
 	scene.add(group);
 
 	let bloom: UnrealBloomPass | null = null;
-	let ancho = 0;
-	let alto = 0;
-	let zMinima = 0;
+	let width = 0;
+	let height = 0;
+	let minZ = 0;
 
-	const medir = () => {
+	const measure = () => {
 		const rect = mount.getBoundingClientRect();
 		if (!rect.width || !rect.height) return;
-		ancho = rect.width;
-		alto = rect.height;
-		zMinima =
-			MODEL_WIDTH / (2 * Math.tan((FOV * Math.PI) / 360) * (ancho / alto));
-		camera.aspect = ancho / alto;
+		width = rect.width;
+		height = rect.height;
+		minZ =
+			MODEL_WIDTH / (2 * Math.tan((FOV * Math.PI) / 360) * (width / height));
+		camera.aspect = width / height;
 		camera.updateProjectionMatrix();
-		renderer.setSize(ancho, alto, false);
-		composer.setSize(ancho, alto);
-		bloom?.resolution.set(ancho, alto);
-		alMedir?.(ancho, alto);
+		renderer.setSize(width, height, false);
+		composer.setSize(width, height);
+		bloom?.resolution.set(width, height);
+		onMeasure?.(width, height);
 	};
 
-	medir();
-	camera.position.setZ(Math.max(Z_HERO, zMinima));
+	measure();
+	camera.position.setZ(Math.max(Z_HERO, minZ));
 
 	return {
 		scene,
 		camera,
 		group,
-		get ancho() {
-			return ancho;
+		get width() {
+			return width;
 		},
-		get alto() {
-			return alto;
+		get height() {
+			return height;
 		},
-		get zMinima() {
-			return zMinima;
+		get minZ() {
+			return minZ;
 		},
-		medir,
-		encenderBloom: () => {
+		measure,
+		turnOnBloom: () => {
 			if (bloom) return;
 			bloom = new UnrealBloomPass(
-				new THREE.Vector2(ancho || 1, alto || 1),
+				new THREE.Vector2(width || 1, height || 1),
 				0.5,
 				0.8,
 				0.3,
@@ -114,7 +114,7 @@ export const crearEscenaDelCerebro = (
 			composer.addPass(bloom);
 		},
 		render: () => composer.render(),
-		destruir: () => {
+		destroy: () => {
 			bloom?.dispose();
 			composer.dispose();
 			renderer.dispose();

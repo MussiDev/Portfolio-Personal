@@ -1,11 +1,12 @@
 [
 	{
 		"company": "La Mutual de AMR",
-		"totalTime": "JUNE 2022 - PRESENT · REMOTE",
+		"totalTime": { "from": "2022-06", "to": null },
+		"mode": { "es": "Remoto", "en": "Remote" },
 		"roles": [
 			{
 				"position": "Frontend Engineer",
-				"time": "NOV 2023 - PRESENT",
+				"time": { "from": "2023-11", "to": null },
 				"description": {
 					"en": "Leading frontend architecture for internal platforms used by thousands of people, across insurance, healthcare and investment products.",
 					"es": "Liderando la arquitectura frontend de plataformas internas que usan miles de personas, en productos de seguros, salud e inversiones."
@@ -46,7 +47,7 @@
 			},
 			{
 				"position": "FullStack Engineer",
-				"time": "AUG 2022 - NOV 2023",
+				"time": { "from": "2022-08", "to": "2023-11" },
 				"description": {
 					"en": "Built a platform for large-scale financial data processing and visualization. Architected component systems and API integrations for an investment product. Migrated e-commerce platform from CSHTML to Next.js, improving maintainability. Modernized legacy Angular applications to Next.js architecture.",
 					"es": "Construí una plataforma de procesamiento y visualización de datos financieros a escala. Diseñé el sistema de componentes y las integraciones de API de un producto de inversiones. Migré el ecommerce de CSHTML a Next.js y modernicé aplicaciones Angular heredadas."
@@ -71,7 +72,7 @@
 			},
 			{
 				"position": "Frontend Engineer",
-				"time": "JUN 2022 - AUG 2022",
+				"time": { "from": "2022-06", "to": "2022-08" },
 				"description": {
 					"en": "Built responsive UIs across three internal products. Implemented component systems with Next.js, TypeScript, Chakra UI and SASS.",
 					"es": "Interfaces responsive para tres productos internos. Sistemas de componentes con Next.js, TypeScript, Chakra UI y SASS."
@@ -96,7 +97,8 @@
 	{
 		"company": "It-techgroup",
 		"position": "Frontend Developer",
-		"time": "FEBRUARY 2022 - JULY 2022 · PART-TIME",
+		"time": { "from": "2022-02", "to": "2022-07" },
+		"mode": { "es": "Medio tiempo", "en": "Part-time" },
 		"description": {
 			"en": "Built responsive interfaces with React, Tailwind CSS and Styled Components. Implemented UI animations with Framer Motion. Delivered production-ready frontends integrated with external APIs.",
 			"es": "Interfaces responsive con React, Tailwind CSS y Styled Components. Animaciones de UI con Framer Motion y frontends listos para producción integrados con APIs externas."

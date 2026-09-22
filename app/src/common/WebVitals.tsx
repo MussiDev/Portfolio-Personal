@@ -3,39 +3,39 @@
 import { useReportWebVitals } from "next/web-vitals";
 
 /**
- * Reporte de Core Web Vitals reales (LCP, INP, CLS, FCP, TTFB) medidos en
- * el navegador de la gente que visita, no en un Lighthouse de laboratorio.
+ * Reports real Core Web Vitals (LCP, INP, CLS, FCP, TTFB) measured in
+ * actual visitors' browsers, not in a lab Lighthouse run.
  *
- * Sin esto el sitio no medía absolutamente nada: no había forma de saber si
- * el LCP real es 1.2s o 4s, ni de detectar que un cambio lo empeoró. Un
- * portfolio que se presenta como "arquitectura y performance" tiene que
- * poder responder esa pregunta con un número.
+ * Without this the site measured absolutely nothing: there was no way to
+ * know whether real LCP is 1.2s or 4s, or to detect that a change made it
+ * worse. A portfolio presenting itself as "architecture and performance"
+ * has to be able to answer that question with a number.
  *
- * A propósito NO trae un vendor: `useReportWebVitals` es de Next, cero
- * dependencias nuevas, cero scripts de terceros, cero cookies. Por defecto
- * las métricas van a /api/vitals, que las deja en los logs del servidor.
- * Antes el destino dependía de una variable de entorno que nunca se
- * definió, así que el reporte estaba instalado y no medía nada.
+ * Deliberately brings NO vendor: `useReportWebVitals` is Next's own, zero
+ * new dependencies, zero third-party scripts, zero cookies. By default the
+ * metrics go to /api/vitals, which drops them into the server logs. The
+ * destination used to depend on an environment variable that was never
+ * set, so the report was installed and measuring nothing.
  *
- *   (sin definir)                          → POST a /api/vitals
- *   NEXT_PUBLIC_VITALS_ENDPOINT=https://…  → POST a ese destino
+ *   (unset)                                 → POST to /api/vitals
+ *   NEXT_PUBLIC_VITALS_ENDPOINT=https://…    → POST to that destination
  *
- * Si el endpoint es de otro origen, next.config.js lo agrega solo a
- * connect-src de la CSP: sin eso el beacon se bloquearía en silencio y esto
- * parecería andar sin andar.
+ * If the endpoint is on another origin, next.config.js adds it to the
+ * CSP's connect-src on its own: without that the beacon would be blocked
+ * silently and this would look like it works without working.
  */
 
 const ENDPOINT = process.env.NEXT_PUBLIC_VITALS_ENDPOINT || "/api/vitals";
 
-// Next también reporta métricas propias (hidratación, render de rutas).
-// Solo viajan las Core Web Vitals, que es lo que /api/vitals acepta.
+// Next also reports its own metrics (hydration, route rendering). Only the
+// Core Web Vitals travel, which is what /api/vitals accepts.
 const WEB_VITALS = new Set(["LCP", "INP", "CLS", "FCP", "TTFB", "FID"]);
 
 const WebVitals = (): null => {
 	useReportWebVitals((metric) => {
 		if (process.env.NODE_ENV !== "production") {
-			// En dev el destino es la consola: sirve para ver el efecto de un
-			// cambio sin montar infraestructura.
+			// In dev the destination is the console: useful to see a change's
+			// effect without setting up infrastructure.
 			console.info(
 				`[vitals] ${metric.name} ${Math.round(metric.value)} (${metric.rating})`,
 			);
@@ -52,8 +52,8 @@ const WebVitals = (): null => {
 			path: window.location.pathname,
 		});
 
-		// sendBeacon sobrevive a que la pestaña se cierre, que es justo cuando
-		// se reportan las métricas finales; fetch con keepalive es el fallback.
+		// sendBeacon survives the tab closing, which is exactly when the
+		// final metrics get reported; fetch with keepalive is the fallback.
 		if (navigator.sendBeacon) {
 			navigator.sendBeacon(ENDPOINT, body);
 			return;
@@ -64,7 +64,7 @@ const WebVitals = (): null => {
 			keepalive: true,
 			headers: { "Content-Type": "application/json" },
 		}).catch(() => {
-			// Perder una métrica nunca puede romper la página.
+			// Losing a metric can never break the page.
 		});
 	});
 

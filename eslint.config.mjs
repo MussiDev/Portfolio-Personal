@@ -1,12 +1,12 @@
 import coreWebVitals from "eslint-config-next/core-web-vitals";
 import typescript from "eslint-config-next/typescript";
 
-// eslint-config-next 16 se distribuye como flat config nativo: exporta
-// directamente un array de configs. Antes esto pasaba por FlatCompat, que
-// es el puente para configs "legacy" (extends/plugins) — y adaptar algo que
-// ya es plano hacía que ESLint reventara al arrancar con "Converting
-// circular structure to JSON", antes de leer un solo archivo. O sea: el
-// proyecto no tenía linter, no tenía linter con hallazgos en cero.
+// eslint-config-next 16 ships as native flat config: it exports an array
+// of configs directly. This used to go through FlatCompat, the bridge for
+// "legacy" configs (extends/plugins) — and adapting something that's
+// already flat made ESLint crash on startup with "Converting circular
+// structure to JSON", before reading a single file. In other words: the
+// project didn't have a linter, it didn't have a linter with zero findings.
 const eslintConfig = [
 	{
 		ignores: [

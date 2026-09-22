@@ -4,16 +4,18 @@ import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { BRAIN_BIN_PATH, SNAPPED_ANCHORS } from "./brainAsset";
 import {
-	aPantalla,
-	pesosVisibles,
-	puntoSobreCallout,
-	puntosDelCallout,
+	toScreen,
+	visibleWeights,
+	pointOnCallout,
+	calloutPoints,
 } from "./brainLayout";
-import { crearMarcadores } from "./brainMarkers";
-import { crearEscenaDelCerebro } from "./brainScene";
-import { construirTejido, type Tejido } from "./brainTissue";
+import { createMarkers } from "./brainMarkers";
+import { cloudRadius, walkTrace } from "./brainTrace";
+import { createTrace, type Trace } from "./brainTraceObject";
+import { createBrainScene } from "./brainScene";
+import { buildTissue, type Tissue } from "./brainTissue";
 import { relatedTo } from "./relations";
-import { leerTejido } from "./tissueLoader";
+import { loadTissue } from "./tissueLoader";
 
 export type Section = {
 	label: string;
@@ -22,13 +24,27 @@ export type Section = {
 	href: string;
 	external?: boolean;
 	step?: number;
-	/** Índices (en el array `sections`) de otras secciones con las que esta
-	 * tiene una relación real de contenido — no decorativa. Ver page.tsx
-	 * para qué conexiones existen y por qué. */
+	/** Indexes (in the `sections` array) of other sections this one has a
+	 * real content relationship with — not decorative. See page.tsx for
+	 * which connections exist and why. */
 	related?: number[];
+	/** How many countable items back this region: companies plus work
+	 * projects, written beats of the case, recommendations, posts,
+	 * certifications. The tissue gets one mark per item (brainDensity.ts),
+	 * so the cluster around a region can be checked against the section it
+	 * points at. Zero is a real answer — see sections.ts. */
+	evidence: number;
+	/** The region's own page, language-agnostic ("/projects/nortear"). Only
+	 * regions whose content has a URL of its own have one; scene.ts uses it
+	 * to know which region a route belongs to. */
+	route?: string;
 };
 
 const BASE_ROTATION = -Math.PI / 2;
+
+/** The six beats of a case: problem, decision, mechanism, trade-off,
+ * result, afterwards (see STAGES in projects.ts). */
+const BEATS = 6;
 
 const Z_HERO = 3.6;
 const Z_STEP = 4.3;
@@ -40,6 +56,9 @@ const Brain3D = ({
 	onActive,
 	onGo,
 	inHero,
+	/** On a case: which of the six beats is on screen, or null elsewhere.
+	 * Drives the decision trace over the tissue. */
+	beat,
 	anchorRef,
 	loadingText,
 	activityText,
@@ -52,6 +71,7 @@ const Brain3D = ({
 	onActive: (i: number | null) => void;
 	onGo: (i: number) => void;
 	inHero: boolean;
+	beat: number | null;
 	anchorRef: MutableRefObject<{ x: number; y: number; ready: boolean }>;
 	loadingText: string;
 	activityText: string;
@@ -68,19 +88,21 @@ const Brain3D = ({
 	const pulseRef = useRef<SVGCircleElement>(null);
 	const readoutRef = useRef<HTMLSpanElement>(null);
 
-	// El efecto de WebGL corre una sola vez y su loop de rAF necesita leer los
-	// valores vivos, no los del primer render: de ahí los refs. La sync va en
-	// un efecto y no en el cuerpo del render — escribir un ref durante el
-	// render es un side effect en fase de render, que con renders concurrentes
-	// puede ejecutarse dos veces o descartarse. Un frame de diferencia es
-	// invisible a 60fps.
+	// The WebGL effect runs exactly once and its rAF loop needs to read the
+	// live values, not the ones from the first render: hence the refs. The
+	// sync happens in an effect, not in the render body — writing a ref
+	// during render is a side effect during the render phase, which with
+	// concurrent renders can run twice or get discarded. A one-frame
+	// difference is invisible at 60fps.
 	const callbacksRef = useRef({ onProgress, onReady });
 	const activeRef = useRef<number | null>(active);
 	const inHeroRef = useRef(inHero);
+	const beatRef = useRef<number | null>(beat);
 	useEffect(() => {
 		callbacksRef.current = { onProgress, onReady };
 		activeRef.current = active;
 		inHeroRef.current = inHero;
+		beatRef.current = beat;
 	});
 
 	const half = Math.ceil(sections.length / 2);
@@ -89,15 +111,16 @@ const Brain3D = ({
 		[sections, half],
 	);
 
-	// Pares únicos [i, j] con relación real de contenido (ver Section.related
-	// en page.tsx) — computado acá para que el JSX sepa cuántas <line> pintar,
-	// y de nuevo (idéntico, sections no cambia tras el mount) dentro del
-	// efecto de WebGL, que no puede depender de este valor de render.
+	// Unique [i, j] pairs with a real content relationship (see
+	// Section.related in page.tsx) — computed here so the JSX knows how many
+	// <line>s to paint, and again (identical, sections doesn't change after
+	// mount) inside the WebGL effect, which can't depend on this render value.
 	//
-	// Por relatedTo y no leyendo `related` directo: una relación declarada en
-	// un solo sentido (B dice conocer a A, pero A no lo dice) se perdía con
-	// el filtro `j > i`, y entonces la etiqueta se iluminaba sin que hubiera
-	// una línea que la conectara — la promesa rota otra vez, al revés.
+	// Built from relatedTo instead of reading `related` directly: a
+	// relationship declared in only one direction (B says it knows A, but A
+	// doesn't say so) got lost with the `j > i` filter, and then the label
+	// would light up with no line connecting it — the same broken promise,
+	// backwards.
 	const connectionPairs = useMemo(() => {
 		const pairs: [number, number][] = [];
 		sections.forEach((_section, i) => {
@@ -116,64 +139,110 @@ const Brain3D = ({
 			"(prefers-reduced-motion: reduce)",
 		).matches;
 
-		// Toda la infraestructura de render (renderer, composer, cámara, bloom
-		// diferido, medición y disposal) vive en brainScene.ts. Acá queda la
-		// navegación: scroll-spy, callouts y el loop que los coordina.
-		const escena = crearEscenaDelCerebro(mount, (ancho, alto) => {
-			svgRef.current?.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
+		// All the render infrastructure (renderer, composer, camera, deferred
+		// bloom, measuring and disposal) lives in brainScene.ts. What's left
+		// here is navigation: scroll-spy, callouts, and the loop that
+		// coordinates them.
+		const brainScene = createBrainScene(mount, (width, height) => {
+			svgRef.current?.setAttribute("viewBox", `0 0 ${width} ${height}`);
 		});
-		const { scene, camera, group } = escena;
+		const { scene, camera, group } = brainScene;
 
 		let bloomIdle = 0;
 
 		const resizeObserver = new ResizeObserver(() => {
-			escena.medir();
+			brainScene.measure();
 			mapSteps();
 			measureLayout();
 		});
 		resizeObserver.observe(mount);
 
 		let alive = true;
-		let tejido: Tejido | null = null;
+		let tissue: Tissue | null = null;
+
+		/**
+		 * The decision trace, built the first time a case asks for one and
+		 * rebuilt only if another region takes the focus. The walk costs one
+		 * pass over the cloud per step, so it happens once — never per frame.
+		 */
+		let trace: Trace | null = null;
+		let traceOf: number | null = null;
+		const gaze = new THREE.Vector3();
+		const inverseMatrix = new THREE.Matrix4();
+		const ensureTrace = (region: number) => {
+			if (!tissue || traceOf === region) return;
+			trace?.destroy();
+			const anchor = anchors[region] ?? anchors[0];
+			// The camera's line of sight, expressed in the model's own space:
+			// the walk uses it to stay in the plane the reader is looking at
+			// instead of heading into depth, where six steps project as two.
+			camera.getWorldDirection(gaze);
+			inverseMatrix.copy(group.matrixWorld).invert();
+			gaze.transformDirection(inverseMatrix).normalize();
+			// One tenth of the radius per beat left the six steps knotted
+			// around the anchor; at a fifth the trace crosses real tissue and
+			// reads as a path.
+			const step = cloudRadius(tissue.positions) * 0.2;
+			const route = walkTrace(
+				tissue.positions,
+				[anchor.x, anchor.y, anchor.z],
+				BEATS,
+				step,
+				[gaze.x, gaze.y, gaze.z],
+			);
+			trace = createTrace(group, route, { reducedMotion });
+			traceOf = region;
+		};
 
 		let intersecting = true;
 		let pageVisible = document.visibilityState !== "hidden";
 		const isVisible = () => intersecting && pageVisible;
 
-		// El streaming, el header partido entre chunks y el progreso viven en
-		// tissueLoader.ts, con sus propios tests. Acá queda solo lo que de
-		// verdad necesita WebGL.
-		leerTejido(BRAIN_BIN_PATH, {
-			sigueVivo: () => alive,
-			onProgress: (fraccion) => {
-				callbacksRef.current.onProgress(fraccion);
+		// The streaming, the header split across chunks, and the progress live
+		// in tissueLoader.ts, with their own tests. What's left here is only
+		// what WebGL actually needs.
+		loadTissue(BRAIN_BIN_PATH, {
+			stillAlive: () => alive,
+			onProgress: (fraction) => {
+				callbacksRef.current.onProgress(fraction);
 				if (readoutRef.current) {
-					readoutRef.current.textContent = `${loadingText} · ${Math.round(fraccion * 100)}%`;
+					readoutRef.current.textContent = `${loadingText} · ${Math.round(fraction * 100)}%`;
 				}
 			},
 		})
 			.then((buffer) => {
 				if (!alive || !buffer) return;
-				// La geometría y su reveal viven en brainTissue.ts. Lo que queda acá
-				// es la coordinación: avisar al hero que puede levantar el velo y
-				// programar el bloom para después del primer frame útil.
-				tejido = construirTejido(group, buffer, {
+				// The geometry and its reveal live in brainTissue.ts. What's left
+				// here is coordination: telling the hero it can lift the veil and
+				// scheduling the bloom for after the first useful frame.
+				tissue = buildTissue(group, buffer, {
 					reducedMotion,
-					sigueVivo: () => alive,
-					alTerminar: () => {
+					stillAlive: () => alive,
+					// One mark per countable item, clustered on the region it
+					// belongs to (brainDensity.ts). SNAPPED_ANCHORS is used here
+					// rather than the Vector3 `anchors` below because the seeding
+					// is plain arithmetic over the cloud — it needs no three.js.
+					anchors: SNAPPED_ANCHORS,
+					evidence: sections.map((section) => section.evidence),
+					onDone: () => {
 						if (readoutRef.current) {
-							readoutRef.current.textContent = `${sections.length} ${activityText}`;
+							// The readout used to say "6 active regions", which was
+							// sections.length wearing a lab coat. It now reports the
+							// marks actually placed on the tissue, so the number on
+							// screen is one a visitor can count.
+							const marks = tissue?.marksPerRegion.reduce((a, b) => a + b, 0) ?? 0;
+							readoutRef.current.textContent = `${marks} ${activityText}`;
 						}
 						if (!alive) return;
 						callbacksRef.current.onReady();
-						// En idle: compilar los shaders del bloom justo cuando el velo
-						// se levanta metería un tirón en el primer frame que el usuario
-						// llega a ver. El timeout evita que se posponga para siempre si
-						// la página nunca queda ociosa.
+						// At idle: compiling the bloom's shaders exactly when the
+						// veil lifts would cause a stutter on the first frame the
+						// user gets to see. The timeout keeps it from being
+						// postponed forever if the page never goes idle.
 						if (typeof requestIdleCallback === "function") {
-							bloomIdle = requestIdleCallback(escena.encenderBloom, { timeout: 2000 });
+							bloomIdle = requestIdleCallback(brainScene.turnOnBloom, { timeout: 2000 });
 						} else {
-							bloomIdle = window.setTimeout(escena.encenderBloom, 300);
+							bloomIdle = window.setTimeout(brainScene.turnOnBloom, 300);
 						}
 					},
 				});
@@ -183,21 +252,21 @@ const Brain3D = ({
 				callbacksRef.current.onReady();
 			});
 
-		// Axón, impulso y pin: la señal que va hacia la región activa.
-		const marcadores = crearMarcadores(scene, { reducedMotion });
+		// Axon, impulse and pin: the signal heading to the active region.
+		const markers = createMarkers(scene, { reducedMotion });
 
 		const vector = new THREE.Vector3();
 		const anchorWorld = new THREE.Vector3();
 		const blend = new THREE.Vector3();
 		const aux = new THREE.Vector3();
 
-		// Ya snapeados al tejido más cercano en build time
-		// (scripts/prepare-brain.mjs, ver entities/brainAnchors.ts) — evita
-		// recorrer ~30k puntos por anchor en cada carga del cliente.
+		// Already snapped to the nearest tissue point at build time
+		// (scripts/prepare-brain.mjs, see entities/brainAnchors.ts) — avoids
+		// scanning ~30k points per anchor on every client load.
 		if (SNAPPED_ANCHORS.length !== sections.length) {
 			console.warn(
-				`brainAsset.ts tiene ${SNAPPED_ANCHORS.length} anchors pero hay ${sections.length} sections. ` +
-					"Actualizá entities/brainAnchors.ts y corré `npm run brain`.",
+				`brainAsset.ts has ${SNAPPED_ANCHORS.length} anchors but there are ${sections.length} sections. ` +
+					"Update entities/brainAnchors.ts and run `pnpm run brain`.",
 			);
 		}
 		const anchors = sections.map(
@@ -209,17 +278,16 @@ const Brain3D = ({
 			steps = [];
 			sections.forEach((section, i) => {
 				if (section.step === undefined) return;
-				const el = document.getElementById(`paso-${section.step}`);
+				const el = document.getElementById(`step-${section.step}`);
 				if (el) steps.push({ index: i, el });
 			});
 		};
 		mapSteps();
 
-		// Layout cacheado, refrescado solo en scroll/resize en vez de leído
-		// con getBoundingClientRect() en cada frame de animate(): eso forzaba
-		// hasta ~12 reflows sincrónicos por frame (uno por step visible, uno
-		// por el mount, uno por cada botón de región) incluso con la página
-		// completamente quieta.
+		// Cached layout, refreshed only on scroll/resize instead of read with
+		// getBoundingClientRect() on every animate() frame: that forced up to
+		// ~12 synchronous reflows per frame (one per visible step, one for the
+		// mount, one per region button) even with the page completely still.
 		let mountRect: DOMRect = mount.getBoundingClientRect();
 		let stepRects: { index: number; rect: DOMRect }[] = [];
 		let buttonRects: (DOMRect | null)[] = [];
@@ -252,7 +320,7 @@ const Brain3D = ({
 					.copy(anchors[i])
 					.applyMatrix4(group.matrixWorld)
 					.project(camera);
-				const { x: ax, y: ay } = aPantalla(vector, rect);
+				const { x: ax, y: ay } = toScreen(vector, rect);
 				anchorScreen[i].x = ax;
 				anchorScreen[i].y = ay;
 
@@ -263,7 +331,7 @@ const Brain3D = ({
 
 				line.setAttribute(
 					"points",
-					puntosDelCallout(b, { x: ax, y: ay }, rect, i < half),
+					calloutPoints(b, { x: ax, y: ay }, rect, i < half),
 				);
 				target.setAttribute("cx", String(ax));
 				target.setAttribute("cy", String(ay));
@@ -302,33 +370,34 @@ const Brain3D = ({
 			const activeNow = activeRef.current;
 
 			const target =
-				escena.ancho < 768
+				brainScene.width < 768
 					? 0
 					: Math.min(1, window.scrollY / Math.max(1, window.innerHeight));
 			shift += (target - shift) * (reducedMotion ? 1 : 0.08);
-			if (escena.ancho && escena.alto) {
+			if (brainScene.width && brainScene.height) {
 				camera.setViewOffset(
-					escena.ancho,
-					escena.alto,
-					shift * escena.ancho * SHIFT,
+					brainScene.width,
+					brainScene.height,
+					shift * brainScene.width * SHIFT,
 					0,
-					escena.ancho,
-					escena.alto,
+					brainScene.width,
+					brainScene.height,
 				);
 			}
 
 			group.updateMatrixWorld(true);
 
-			tejido?.latir(frame);
+			tissue?.pulse(frame);
 
-			const zHero = Math.max(Z_HERO, escena.zMinima);
-			const zStep = Math.max(Z_STEP, escena.zMinima);
+
+			const zHero = Math.max(Z_HERO, brainScene.minZ);
+			const zStep = Math.max(Z_STEP, brainScene.minZ);
 			const z = zHero + (zStep - zHero) * shift;
 
-			// Qué tanto pesa cada paso es matemática pura y vive en
-			// brainLayout.ts, con tests; acá queda solo mezclar los anclajes
-			// en espacio de mundo, que sí necesita three.js.
-			const { pesos, total: weight, fuerza: strength } = pesosVisibles(
+			// How much each step weighs is plain math and lives in
+			// brainLayout.ts, with tests; what's left here is only blending the
+			// anchors in world space, which does need three.js.
+			const { weights, total: weight, strength } = visibleWeights(
 				stepRects.map(({ index, rect: r }) => ({
 					index,
 					top: r.top,
@@ -337,16 +406,22 @@ const Brain3D = ({
 				window.innerHeight,
 			);
 			blend.set(0, 0, 0);
-			for (const { index, peso } of pesos) {
+			for (const { index, weight: w } of weights) {
 				aux
 					.copy(anchors[index])
 					.applyMatrix4(group.matrixWorld)
-					.multiplyScalar(peso);
+					.multiplyScalar(w);
 				blend.add(aux);
 			}
 			if (weight > 0.001) blend.divideScalar(weight);
 
-			const choosing = inHeroRef.current && activeNow !== null;
+			// Two ways of holding a region: picking one in the hero, and
+			// reading the case that belongs to it. Without the second, a case
+			// left the camera in its wandering state and `settled` at 0, so
+			// the axon, the pin and the trace all stayed invisible.
+			const beatNow = beatRef.current;
+			const readingCase = beatNow !== null && activeNow !== null;
+			const choosing = (inHeroRef.current || readingCase) && activeNow !== null;
 
 			if (choosing && activeNow !== null) {
 				anchorWorld
@@ -356,7 +431,9 @@ const Brain3D = ({
 				targetCamera
 					.copy(anchorWorld)
 					.normalize()
-					.multiplyScalar(0.95)
+					// Reading a case needs room for the whole trace, not the
+					// close-up the hero uses to present one region.
+					.multiplyScalar(readingCase ? 2.3 : 0.95)
 					.add(anchorWorld)
 					.setZ(Math.max(anchorWorld.z + z * 0.45, z * 0.45));
 			} else {
@@ -366,16 +443,25 @@ const Brain3D = ({
 			}
 
 			const settled = choosing ? 1 : strength;
+
+			// The decision trace only exists while a case is being read; on
+			// the home `beat` is null and nothing gets built.
+			if (readingCase && activeNow !== null) {
+				ensureTrace(activeNow);
+				trace?.draw(beatNow, settled, frame);
+			} else {
+				trace?.draw(null, 0, frame);
+			}
 			if (!reducedMotion) {
 				group.rotation.y =
 					BASE_ROTATION + Math.sin(frame / 260) * 0.28 * (1 - settled);
 			}
 
 			if (weight <= 0.001 && !choosing) {
-				marcadores.apagar();
+				markers.turnOff();
 				anchorRef.current.ready = false;
 			} else {
-				const progress = marcadores.apuntar(
+				const progress = markers.pointAt(
 					anchorWorld,
 					group.position.y,
 					settled,
@@ -385,12 +471,13 @@ const Brain3D = ({
 				const pulseEl = pulseRef.current;
 				const line =
 					activeNow !== null ? calloutsRef.current[activeNow] : null;
-				// El pulso del SVG recorre el callout sincronizado con el impulso
-				// 3D; la interpolación sobre la polilínea está en brainLayout.
-				const enCallout = puntoSobreCallout(line?.getAttribute("points"), progress);
-				if (pulseEl && enCallout) {
-					pulseEl.setAttribute("cx", String(enCallout.x));
-					pulseEl.setAttribute("cy", String(enCallout.y));
+				// The SVG pulse travels along the callout in sync with the 3D
+				// impulse; the interpolation over the polyline lives in
+				// brainLayout.
+				const onCallout = pointOnCallout(line?.getAttribute("points"), progress);
+				if (pulseEl && onCallout) {
+					pulseEl.setAttribute("cx", String(onCallout.x));
+					pulseEl.setAttribute("cy", String(onCallout.y));
 				}
 			}
 
@@ -399,7 +486,7 @@ const Brain3D = ({
 			currentLookAt.lerp(targetLookAt, smooth);
 			camera.lookAt(currentLookAt);
 
-			escena.render();
+			brainScene.render();
 			if (inHeroRef.current) {
 				drawCallouts(mountRect);
 				drawConnections(activeNow);
@@ -431,7 +518,8 @@ const Brain3D = ({
 
 		return () => {
 			alive = false;
-			tejido?.cancelar();
+			tissue?.cancel();
+			trace?.destroy();
 			if (bloomIdle) {
 				if (typeof cancelIdleCallback === "function") cancelIdleCallback(bloomIdle);
 				else clearTimeout(bloomIdle);
@@ -441,35 +529,35 @@ const Brain3D = ({
 			visibilityObserver.disconnect();
 			document.removeEventListener("visibilitychange", onVisibilityChange);
 			resizeObserver.disconnect();
-			// Liberar GPU es responsabilidad de quien la tomó: la escena
-			// destruye su renderer, su composer, el bloom y las geometrías.
-			escena.destruir();
+			// Freeing the GPU is whoever claimed it's responsibility: the scene
+			// destroys its renderer, its composer, the bloom and the geometries.
+			brainScene.destroy();
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const vinculadas = useMemo(
+	const linked = useMemo(
 		() => new Set(relatedTo(sections, active)),
 		[active, sections],
 	);
 
 	/**
-	 * Cuatro estados, no dos. El panel afirma "conectado con X · Y" y hasta
-	 * ahora nada en pantalla lo mostraba: las vinculadas se apagaban igual
-	 * que las ajenas (0.08), así que la conexión más valiosa del sitio era
-	 * una línea naranja entre dos puntos anónimos del tejido. Con un nivel
-	 * intermedio, el ojo puede recorrer el camino completo: etiqueta activa →
-	 * su anclaje → conexión → anclaje vinculado → su etiqueta.
+	 * Four states, not two. The panel claims "connected to X · Y" and until
+	 * now nothing on screen showed it: linked regions dimmed the same as
+	 * unrelated ones (0.08), so the site's most valuable connection was an
+	 * orange line between two anonymous points on the tissue. With a middle
+	 * level, the eye can trace the whole path: active label → its anchor →
+	 * connection → linked anchor → its label.
 	 */
-	const estado = (i: number): "activo" | "vinculado" | "reposo" | "ajeno" => {
-		if (active === i) return "activo";
-		if (vinculadas.has(i)) return "vinculado";
-		return active === null ? "reposo" : "ajeno";
+	const state = (i: number): "active" | "linked" | "idle" | "unrelated" => {
+		if (active === i) return "active";
+		if (linked.has(i)) return "linked";
+		return active === null ? "idle" : "unrelated";
 	};
 
 	const renderLabel = (section: Section, i: number) => {
 		const lit = active === i;
-		const vinculado = vinculadas.has(i);
+		const isLinked = linked.has(i);
 		const isLeft = i < half;
 		return (
 			<a
@@ -491,31 +579,31 @@ const Brain3D = ({
 				onFocus={() => onActive(i)}
 				onMouseLeave={() => onActive(null)}
 				tabIndex={inHero ? 0 : -1}
-				className={`pointer-events-auto flex w-[13.5rem] flex-col gap-1 border-y py-2 transition-colors duration-300 ease-impulso ${
+				className={`pointer-events-auto flex w-[13.5rem] flex-col gap-1 border-y py-2 transition-colors duration-300 ease-impulse ${
 					isLeft ? "items-start text-left" : "items-end text-right"
 				} ${
 					lit
-						? "border-y-impulso/40"
-						: vinculado
-							? "border-y-impulso/20"
-							: "border-y-transparent hover:border-y-sinapsis/25"
+						? "border-y-impulse/40"
+						: isLinked
+							? "border-y-impulse/20"
+							: "border-y-transparent hover:border-y-synapse/25"
 				}`}
 			>
 				<span
-					className={`flex items-baseline gap-2 font-rotulo text-[13px] font-bold uppercase tracking-[.06em] transition-colors duration-300 ease-impulso ${
+					className={`flex items-baseline gap-2 font-label text-[13px] font-bold uppercase tracking-[.06em] transition-colors duration-300 ease-impulse ${
 						isLeft ? "" : "flex-row-reverse"
-					} ${lit ? "text-impulso" : vinculado ? "text-impulso/65" : "text-senal"}`}
+					} ${lit ? "text-impulse" : isLinked ? "text-impulse/65" : "text-signal"}`}
 				>
 					<span
-						className={`font-pieza text-[10px] tabular-nums ${
-							lit ? "text-impulso" : vinculado ? "text-impulso/50" : "text-sinapsis"
+						className={`font-mono text-[10px] tabular-nums ${
+							lit ? "text-impulse" : isLinked ? "text-impulse/50" : "text-synapse"
 						}`}
 					>
 						{String(i + 1).padStart(2, "0")}
 					</span>
 					{section.label}
 				</span>
-				<span className='font-pieza text-[10px] uppercase tracking-[.1em] text-mielina'>
+				<span className='font-mono text-[10px] uppercase tracking-[.1em] text-myelin'>
 					{section.fact}
 				</span>
 			</a>
@@ -528,18 +616,18 @@ const Brain3D = ({
 
 			<svg
 				ref={svgRef}
-				className={`pointer-events-none absolute inset-0 hidden h-full w-full transition-opacity duration-700 ease-impulso md:block ${
+				className={`pointer-events-none absolute inset-0 hidden h-full w-full transition-opacity duration-700 ease-impulse desk:block ${
 					inHero ? "opacity-100" : "opacity-0"
 				}`}
 				preserveAspectRatio='none'
 				aria-hidden='true'
 			>
 				{sections.map((s, i) => {
-					// El callout y el target de una sección vinculada quedan en
-					// naranja tenue: son el tramo del camino que va del anclaje a
-					// su etiqueta. Sin esto la conexión moría dentro del tejido.
-					const e = estado(i);
-					const naranja = e === "activo" || e === "vinculado";
+					// A linked section's callout and target stay in faint orange:
+					// they're the leg of the path that runs from the anchor to its
+					// label. Without this the connection died inside the tissue.
+					const st = state(i);
+					const orange = st === "active" || st === "linked";
 					return (
 						<g key={s.href + s.label}>
 							<polyline
@@ -547,46 +635,46 @@ const Brain3D = ({
 									calloutsRef.current[i] = n;
 								}}
 								fill='none'
-								stroke={naranja ? "rgb(255 106 58)" : "rgb(124 152 190)"}
+								stroke={orange ? "rgb(255 106 58)" : "rgb(124 152 190)"}
 								strokeOpacity={
-									e === "activo"
+									st === "active"
 										? 0.85
-										: e === "vinculado"
+										: st === "linked"
 											? 0.4
-											: e === "reposo"
+											: st === "idle"
 												? 0.3
 												: 0.08
 								}
-								strokeWidth={e === "activo" ? 1.4 : 1}
-								className='transition-[stroke-opacity] duration-300 ease-impulso'
+								strokeWidth={st === "active" ? 1.4 : 1}
+								className='transition-[stroke-opacity] duration-300 ease-impulse'
 							/>
 							<circle
 								ref={(n) => {
 									targetsRef.current[i] = n;
 								}}
-								r={e === "activo" ? 5 : e === "vinculado" ? 3.5 : 2.5}
+								r={st === "active" ? 5 : st === "linked" ? 3.5 : 2.5}
 								fill='none'
-								stroke={naranja ? "rgb(255 106 58)" : "rgb(124 152 190)"}
+								stroke={orange ? "rgb(255 106 58)" : "rgb(124 152 190)"}
 								strokeOpacity={
-									e === "activo"
+									st === "active"
 										? 0.9
-										: e === "vinculado"
+										: st === "linked"
 											? 0.6
-											: e === "reposo"
+											: st === "idle"
 												? 0.5
 												: 0.1
 								}
 								strokeWidth={1.2}
-								className='transition-[stroke-opacity] duration-300 ease-impulso'
+								className='transition-[stroke-opacity] duration-300 ease-impulse'
 							/>
 						</g>
 					);
 				})}
 				{connectionPairs.map(([a, b], k) => (
-					// animate-conduccion (la misma del cordón de señal) hace que
-					// el guionado corra a lo largo de la línea: la conexión deja
-					// de ser una raya punteada y pasa a leerse como algo que
-					// viaja de una región a la otra.
+					// animate-conduction (the same as the signal cord) makes the
+					// dashes run along the line: the connection stops being a
+					// dotted stroke and reads as something traveling from one
+					// region to the other.
 					<line
 						key={`${a}-${b}`}
 						ref={(n) => {
@@ -597,7 +685,7 @@ const Brain3D = ({
 						strokeDasharray='3 4'
 						strokeDashoffset={140}
 						opacity={0}
-						className='animate-conduccion transition-opacity duration-300 ease-impulso'
+						className='animate-conduction transition-opacity duration-300 ease-impulse'
 					/>
 				))}
 				{active !== null && inHero && (
@@ -607,7 +695,7 @@ const Brain3D = ({
 
 			<nav
 				aria-label={navLabel}
-				className={`absolute inset-0 z-10 hidden items-center justify-between px-8 transition-opacity duration-700 ease-impulso md:flex lg:px-14 ${
+				className={`absolute inset-0 z-10 hidden items-center justify-between px-8 transition-opacity duration-700 ease-impulse desk:flex lg:px-14 ${
 					inHero ? "opacity-100" : "pointer-events-none opacity-0"
 				}`}
 			>
@@ -620,14 +708,14 @@ const Brain3D = ({
 			</nav>
 
 			<div
-				className={`pointer-events-none absolute bottom-6 right-5 z-20 flex items-center gap-2 transition-opacity duration-500 ease-impulso md:right-10 ${
+				className={`pointer-events-none absolute bottom-6 right-5 z-20 flex items-center gap-2 transition-opacity duration-500 ease-impulse md:right-10 ${
 					inHero ? "opacity-100" : "opacity-0"
 				}`}
 			>
-				<span className='h-1.5 w-1.5 animate-respirar rounded-full bg-sinapsis' />
+				<span className='h-1.5 w-1.5 animate-breathe rounded-full bg-synapse' />
 				<span
 					ref={readoutRef}
-					className='font-pieza text-[10px] uppercase tracking-[.18em] text-mielina'
+					className='font-mono text-[10px] uppercase tracking-[.18em] text-myelin'
 				>
 					{loadingText}
 				</span>

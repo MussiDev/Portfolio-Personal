@@ -11,28 +11,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Type-check
-        run: npx tsc --noEmit
+        run: pnpm exec tsc --noEmit
 
-      # El linter estuvo roto sin que nadie lo notara porque el CI nunca lo
-      # corría: eslint.config.mjs pasaba eslint-config-next 16 (flat config
-      # nativo) por FlatCompat y reventaba al arrancar. Ahora que anda, el CI
-      # es quien tiene que avisar si vuelve a romperse.
+      # The linter was broken without anyone noticing because CI never ran
+      # it: eslint.config.mjs passed eslint-config-next 16 (native flat
+      # config) through FlatCompat and crashed on startup. Now that it
+      # works, CI is what has to flag it if it breaks again.
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Unit tests
-        run: npm test
+        run: pnpm test
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
@@ -40,26 +44,26 @@ jobs:
           NEXT_PUBLIC_FIRSTCAPTCHA: ${{ secrets.NEXT_PUBLIC_FIRSTCAPTCHA }}
 
       - name: Smoke test (canonical, sitemap, captcha gate)
-        run: npm run smoke
+        run: pnpm run smoke
         env:
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
 
-      # E2E contra el build de producción que se acaba de generar: deep
-      # links, formulario, axe y el presupuesto de red de mobile (que
-      # three.js no se cuele por debajo de 768px). Solo chromium: lo que se
-      # verifica acá es comportamiento propio, no compatibilidad entre
-      # motores, y bajar tres navegadores cuesta minutos por corrida.
+      # E2E against the production build that was just generated: deep
+      # links, the form, axe and mobile's network budget (that three.js
+      # doesn't sneak in below 768px). Chromium only: what's being verified
+      # here is our own behavior, not cross-engine compatibility, and
+      # downloading three browsers costs minutes per run.
       - name: Install Playwright (chromium)
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
-      - name: E2E + accesibilidad
-        run: npm run e2e
+      - name: E2E + accessibility
+        run: pnpm run e2e
         env:
           CI: "true"
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_FIRSTCAPTCHA: ${{ secrets.NEXT_PUBLIC_FIRSTCAPTCHA }}
 
-      - name: Guardar reporte si algo falla
+      - name: Upload report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:

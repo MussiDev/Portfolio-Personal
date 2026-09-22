@@ -6,10 +6,10 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 const OUTSIDE_LOCALE_ROUTING = ["/studio", "/api", "/_next"];
 
-// El blog vive solo en Sanity en español: no hay traducción real detrás de
-// /en/blog/*. Server rutas así en vez de servir contenido español bajo
-// <html lang="en"> (rompe WCAG 3.1.1 y le miente a Google con un hreflang
-// que no existe).
+// The blog lives only in Sanity, in Spanish: there's no real translation
+// behind /en/blog/*. This serves such routes instead of serving Spanish
+// content under <html lang="en"> (breaks WCAG 3.1.1 and lies to Google
+// with an hreflang that doesn't exist).
 const UNTRANSLATED_SEGMENTS = ["/blog"];
 
 const studio = (req: NextRequest) => {
@@ -46,12 +46,12 @@ export function proxy(req: NextRequest) {
 		return NextResponse.next();
 	}
 
-	// Las tarjetas de Open Graph se sirven tal cual, con prefijo de idioma o
-	// sin él. Next arma la URL del og:image con la ruta interna (/es/...), y
-	// la regla de abajo la redirigía con un 308: cada scraper (LinkedIn,
-	// WhatsApp, Slack) pagaba un redirect antes de ver la imagen, y no todos
-	// lo siguen. Una imagen no es contenido duplicado; no hay nada que
-	// canonicalizar acá.
+	// Open Graph cards are served as-is, with or without a language prefix.
+	// Next builds the og:image URL with the internal path (/es/...), and
+	// the rule below used to redirect it with a 308: every scraper
+	// (LinkedIn, WhatsApp, Slack) paid for a redirect before seeing the
+	// image, and not all of them follow it. An image isn't duplicate
+	// content; there's nothing to canonicalize here.
 	if (/\/(opengraph|twitter)-image/.test(pathname)) {
 		return NextResponse.next();
 	}

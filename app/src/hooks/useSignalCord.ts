@@ -9,18 +9,18 @@ export const PARTICLES = 9;
 type Anchor = { x: number; y: number; ready: boolean };
 
 /**
- * Dibuja el cordón de señal (streamRef/cordRef) y sus partículas entre el
- * tejido y la sección activa. Una sola implementación para los dos
- * breakpoints: quien publique `anchorRef` decide de dónde sale el cordón —
- * Brain3D en desktop, NervousSystemMobile en mobile. El cordón es el gesto
- * que mejor cuenta el concepto del sitio, así que dejarlo fuera de mobile
- * (como estaba) era dejar el concepto fuera de mobile.
+ * Draws the signal cord (streamRef/cordRef) and its particles between the
+ * tissue and the active section. A single implementation for both
+ * breakpoints: whoever publishes `anchorRef` decides where the cord comes
+ * from — Brain3D on desktop, NervousSystemMobile on mobile. The cord is
+ * the gesture that best tells the site's concept, so leaving it out of
+ * mobile (as it was) meant leaving the concept out of mobile.
  *
- * Guarda de performance que sí se mantiene: el querySelector del
- * data-drop-target se cachea por índice de sección en vez de re-resolverse
- * cada frame — solo cambia cuando cambia la sección activa, no a 60fps.
- * Cuando no hay nada que dibujar el loop baja a un tick de 250ms en vez de
- * pedir un rAF por frame.
+ * The performance guard that's kept: the data-drop-target querySelector is
+ * cached by section index instead of being re-resolved every frame — it
+ * only changes when the active section changes, not at 60fps. When
+ * there's nothing to draw the loop drops to a 250ms tick instead of
+ * requesting a rAF per frame.
  */
 export const useSignalCord = (
 	streamRef: RefObject<SVGSVGElement | null>,
@@ -29,8 +29,12 @@ export const useSignalCord = (
 	anchorRef: RefObject<Anchor>,
 	activeRef: RefObject<number | null>,
 	sections: Section[],
+	/** The cord ends at a step's badge; with no steps on screen there is
+	 * nothing to draw and no reason to keep a loop alive. */
+	active: boolean,
 ) => {
 	useEffect(() => {
+		if (!active) return;
 		const reducedMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		).matches;
@@ -51,7 +55,7 @@ export const useSignalCord = (
 				cachedDropTarget =
 					i !== null && sections[i].step !== undefined
 						? document.querySelector<HTMLElement>(
-								`#paso-${sections[i].step} [data-drop-target]`,
+								`#step-${sections[i].step} [data-drop-target]`,
 							)
 						: null;
 			}
@@ -101,5 +105,5 @@ export const useSignalCord = (
 			window.clearTimeout(idleTimer);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sections]);
+	}, [sections, active]);
 };

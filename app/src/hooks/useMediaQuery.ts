@@ -3,18 +3,18 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 /**
- * Suscripción a una media query con `useSyncExternalStore`, que es la API
- * hecha exactamente para esto: leer un store externo (matchMedia) con
- * soporte de SSR.
+ * Subscribes to a media query with `useSyncExternalStore`, the API made
+ * exactly for this: reading an external store (matchMedia) with SSR
+ * support.
  *
- * Antes cada consumidor hacía `useState` + `useEffect(() => setX(mq.matches))`.
- * Eso funciona, pero dispara un render en cascada en cada montaje — React
- * renderiza con el valor inicial, corre el efecto, setea estado y vuelve a
- * renderizar. `useSyncExternalStore` resuelve el valor en el mismo pase.
+ * Every consumer used to do `useState` + `useEffect(() => setX(mq.matches))`.
+ * That works, but triggers a cascading render on every mount — React
+ * renders with the initial value, runs the effect, sets state, and renders
+ * again. `useSyncExternalStore` resolves the value in the same pass.
  *
- * Devuelve `null` en el server y en el render de hidratación, y el valor
- * real a partir de ahí: eso es lo que permite no adivinar un breakpoint y
- * después corregirse (ver useIsDesktop).
+ * Returns `null` on the server and on the hydration render, and the real
+ * value from then on: that's what avoids guessing a breakpoint and then
+ * correcting itself (see useIsDesktop).
  */
 export const useMediaQuery = (query: string): boolean | null => {
 	const subscribe = useCallback(
@@ -29,8 +29,8 @@ export const useMediaQuery = (query: string): boolean | null => {
 		() => window.matchMedia(query).matches,
 		[query],
 	);
-	// El snapshot del server es `null`: no hay ventana que consultar, y
-	// fingir un valor produce exactamente el parpadeo que esto evita.
+	// The server's snapshot is `null`: there's no window to query, and
+	// faking a value produces exactly the flicker this avoids.
 	const getServerSnapshot = useCallback(() => null, []);
 
 	return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -38,8 +38,8 @@ export const useMediaQuery = (query: string): boolean | null => {
 
 const subscribeToNothing = () => () => {};
 
-/** `false` en el server y en la hidratación, `true` después. Para contenido
- * que no puede renderizarse en el server (el widget de reCAPTCHA). */
+/** `false` on the server and during hydration, `true` afterward. For
+ * content that can't render on the server (the reCAPTCHA widget). */
 export const useIsMounted = (): boolean =>
 	useSyncExternalStore(
 		subscribeToNothing,

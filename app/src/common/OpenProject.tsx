@@ -10,7 +10,7 @@ const Flow = ({ steps }: { steps: string[] }) => (
 	<ol className='flex list-none flex-col items-start gap-0 p-0 sm:flex-row sm:flex-wrap sm:items-stretch'>
 		{steps.map((step, i) => (
 			<li key={step} className='flex flex-col items-start sm:flex-row sm:items-center'>
-				<span className='border-x border-y border-sinapsis px-4 py-2.5 font-rotulo text-[12px] font-semibold uppercase tracking-[.05em] sm:border-x-0 sm:border-l'>
+				<span className='border-x border-y border-synapse px-4 py-2.5 font-label text-[12px] font-semibold uppercase tracking-[.05em] sm:border-x-0 sm:border-l'>
 					{step}
 				</span>
 				<svg
@@ -18,7 +18,7 @@ const Flow = ({ steps }: { steps: string[] }) => (
 					height='11'
 					viewBox={i < steps.length - 1 ? "0 0 34 11" : "0 0 13 11"}
 					aria-hidden='true'
-					className='ml-6 shrink-0 rotate-90 text-sinapsis sm:ml-0 sm:rotate-0'
+					className='ml-6 shrink-0 rotate-90 text-synapse sm:ml-0 sm:rotate-0'
 				>
 					{i < steps.length - 1 ? (
 						<>
@@ -48,21 +48,21 @@ const Measurements = ({
 	lang: Language;
 	unmeasured: string;
 }) => (
-	<dl className='m-0 grid grid-cols-2 border-t border-sinapsis md:grid-cols-4'>
+	<dl className='m-0 grid grid-cols-2 border-t border-synapse md:grid-cols-4'>
 		{measurements.map((m) => (
 			<div
-				key={m.etiqueta.es}
-				className='flex flex-col gap-1 border-b border-r border-sinapsis/25 px-4 py-3 last:border-r-0'
+				key={m.label.es}
+				className='flex flex-col gap-1 border-b border-r border-synapse/25 px-4 py-3 last:border-r-0'
 			>
-				<dt className='font-rotulo text-[9px] uppercase tracking-[.16em] text-mielina'>
-					{t(m.etiqueta, lang)}
+				<dt className='font-label text-[9px] uppercase tracking-[.16em] text-myelin'>
+					{t(m.label, lang)}
 				</dt>
 				<dd
-					className={`m-0 font-pieza tabular-nums ${
-						m.valor ? "text-lg text-senal" : "text-xs italic text-mielina"
+					className={`m-0 font-mono tabular-nums ${
+						m.value ? "text-lg text-signal" : "text-xs italic text-myelin"
 					}`}
 				>
-					{m.valor ?? unmeasured}
+					{m.value ?? unmeasured}
 				</dd>
 			</div>
 		))}
@@ -78,7 +78,7 @@ const OpenProject = ({
 	diagramLabel,
 	scrollHint,
 	codeLabel,
-	etapas,
+	stages,
 }: {
 	project: Project;
 	lang: Language;
@@ -88,86 +88,89 @@ const OpenProject = ({
 	diagramLabel: string;
 	scrollHint: string;
 	codeLabel: string;
-	/** Qué tiempos mostrar. Por defecto, los seis. La home muestra solo el
-	 * problema como gancho; el caso completo vive en /proyectos/[slug]. */
-	etapas?: readonly (typeof STAGES)[number]["key"][];
+	/** Which stages to show. All six by default. The home shows only the
+	 * problem as a hook; the full case lives at /projects/[slug]. */
+	stages?: readonly (typeof STAGES)[number]["key"][];
 }) => (
-	<div className='membrana flex flex-col'>
-		<ol className='relative m-0 flex list-none flex-col gap-8 border-l-2 border-sinapsis/25 px-6 py-7 pl-9 sm:pl-11 md:px-8'>
-			{STAGES.filter(({ key }) => !etapas || etapas.includes(key)).map(({ key, label }, i) => {
-				const stage = project.tiempos[key];
+	<div className='membrane flex flex-col'>
+		<ol className='relative m-0 flex list-none flex-col gap-8 border-l-2 border-synapse/25 px-6 py-7 pl-9 sm:pl-11 md:px-8'>
+			{STAGES.filter(({ key }) => !stages || stages.includes(key)).map(({ key, label }, i) => {
+				const stage = project.stages[key];
 				const body = paragraphs(stage, lang);
 				const hasContent = stageHasContent(stage);
 
 				return (
-					<li key={key} className='relative'>
+					// data-stage: the brain reads which beat is on screen to
+					// advance the decision trace (useActiveBeat).
+					<li key={key} data-stage={i} className='relative'>
 						<span
 							aria-hidden='true'
-							className='absolute -left-[calc(2.25rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulso shadow-[0_0_0_3px_rgb(24_32_46)] sm:-left-[calc(2.75rem+5px)]'
+							className='absolute -left-[calc(2.25rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-impulse shadow-[0_0_0_3px_rgb(24_32_46)] sm:-left-[calc(2.75rem+5px)]'
 						/>
-						{/* Colapsado por defecto solo en mobile (md:tiempo-seis fuerza todo
-						abierto en desktop vía CSS) — en mobile los seis tiempos completos
-						son demasiado scroll para leerlos de un tirón. */}
-						<details className='tiempo tiempo-seis' open={i === 0}>
+						{/* Collapsed by default only on mobile (md:stage-six forces
+						everything open on desktop via CSS) — on mobile all six
+						complete beats are too much scrolling to read in one go. */}
+						<details className='stage stage-six' open={i === 0}>
 							<summary className='flex cursor-pointer list-none flex-wrap items-baseline gap-x-4 gap-y-1'>
-								<span className='font-pieza text-[11px] tabular-nums text-sinapsis'>
+								<span className='font-mono text-[11px] tabular-nums text-synapse'>
 									{String(i + 1).padStart(2, "0")}
 								</span>
 								<h3 className='m-0 text-sm md:text-base'>{t(label, lang)}</h3>
 								{!hasContent && (
-									<span className='font-glosa text-[15px] italic leading-none text-mielina'>
+									<span className='font-gloss text-[15px] italic leading-none text-myelin'>
 										{unwritten}
 									</span>
 								)}
-								<span className='marcador ml-auto font-pieza text-[11px] text-sinapsis md:hidden' />
+								<span className='mark ml-auto font-mono text-[11px] text-synapse md:hidden' />
 							</summary>
 
 							<div className='mt-4 flex flex-col gap-5'>
 								{body.map((p) => (
 									<p
 										key={p.slice(0, 40)}
-										className='m-0 max-w-[68ch] font-rotulo text-[14px] leading-relaxed text-mielina'
+										className='m-0 max-w-[68ch] font-label text-[14px] leading-relaxed text-myelin'
 									>
 										{p}
 									</p>
 								))}
 
-								{key === "mecanismo" && "flujo" in stage && stage.flujo && (
-									<Flow steps={stage.flujo[lang] ?? stage.flujo.es} />
+								{key === "mechanism" && "flow" in stage && stage.flow && (
+									<Flow steps={stage.flow[lang] ?? stage.flow.es} />
 								)}
 
-								{key === "mecanismo" && "diagrama" in stage && stage.diagrama && (
-									<BlueprintDiagram code={stage.diagrama} label={diagramLabel} pista={scrollHint} />
+								{key === "mechanism" && "diagram" in stage && stage.diagram && (
+									<BlueprintDiagram code={stage.diagram} label={diagramLabel} hint={scrollHint} />
 								)}
 
-								{key === "mecanismo" && "codigo" in stage && stage.codigo && (
-									// Enfocable y con nombre: en pantallas angostas las líneas no
-									// entran y el bloque scrollea, y una zona que scrollea sin
-									// poder enfocarse queda fuera de alcance sin mouse. Siempre y
-									// no solo cuando desborda porque esto se renderiza en el server,
-									// donde el ancho no se conoce — igual que los bloques de GitHub.
+								{key === "mechanism" && "code" in stage && stage.code && (
+									// Focusable and named: on narrow screens the lines don't
+									// fit and the block scrolls, and a zone that scrolls
+									// without being focusable is out of reach without a
+									// mouse. Always, not only when it overflows, because this
+									// renders on the server, where the width isn't known —
+									// same as GitHub's blocks.
 									<pre
 										tabIndex={0}
 										role='region'
 										aria-label={codeLabel}
-										className='overflow-x-auto border-l-2 border-sinapsis bg-membrana-honda px-5 py-4 font-pieza text-[12.5px] leading-relaxed'
+										className='overflow-x-auto border-l-2 border-synapse bg-membrane-deep px-5 py-4 font-mono text-[12.5px] leading-relaxed'
 									>
-										{stage.codigo}
+										{stage.code}
 									</pre>
 								)}
 
-								{key === "resultado" &&
-									"medidas" in stage &&
-									stage.medidas.length > 0 && (
+								{key === "result" &&
+									"measurements" in stage &&
+									stage.measurements.length > 0 && (
 										<Measurements
-											measurements={stage.medidas}
+											measurements={stage.measurements}
 											lang={lang}
 											unmeasured={unmeasured}
 										/>
 									)}
 
-								{stage.pendiente && (
-									<Pending label={pendingLabel}>{t(stage.pendiente, lang)}</Pending>
+								{stage.pending && (
+									<Pending label={pendingLabel}>{t(stage.pending, lang)}</Pending>
 								)}
 							</div>
 						</details>

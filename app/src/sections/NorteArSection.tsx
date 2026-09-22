@@ -9,12 +9,12 @@ import NorteArFigura from "./NorteArFigura";
 import { Step } from "./StepLayout";
 
 /**
- * El paso 2 de la home: un resumen del caso, no el caso.
+ * The home's step 2: a summary of the case, not the case.
  *
- * Una sola columna, como los demás pasos. La versión en dos columnas
- * (`wide`) se estiraba hacia la izquierda, justo encima del cerebro, y
- * obligaba a duplicar los links para reordenarlos según el ancho. Acá el
- * orden es uno solo: qué es, la evidencia, el problema, y a dónde seguir.
+ * A single column, like the other steps. The two-column version (`wide`)
+ * stretched to the left, right over the brain, and forced duplicating the
+ * links to reorder them by width. Here there's only one order: what it
+ * is, the evidence, the problem, and where to go next.
  */
 const NorteArSection = ({
 	d,
@@ -27,54 +27,54 @@ const NorteArSection = ({
 }) => (
 	<Step
 		n={2}
-		title={mainProject.nombre}
-		gloss={t(mainProject.contexto, lang)}
-		fact={`${STATUS_LABEL[mainProject.estado][lang]} · ${mainProject.stack.join(" · ")}`}
+		title={mainProject.name}
+		gloss={t(mainProject.context, lang)}
+		fact={`${STATUS_LABEL[mainProject.status][lang]} · ${mainProject.stack.join(" · ")}`}
 	>
 		<div className='flex flex-col gap-6'>
-			<p className='m-0 font-glosa text-2xl italic leading-snug text-senal'>
-				{t(mainProject.resumen, lang)}
+			<p className='m-0 font-gloss text-2xl italic leading-snug text-signal'>
+				{t(mainProject.summary, lang)}
 			</p>
 
 			<NorteArFigura d={d} />
 
 			{/*
-			 * En la home va solo el problema: es el gancho, y está escrito
-			 * desde el usuario. Los seis tiempos completos viven en
-			 * /proyectos/[slug], una URL que se puede compartir y que Google
-			 * puede indexar por sí sola — un ancla dentro de la home no.
+			 * Only the problem goes on the home: it's the hook, and it's
+			 * written from the user's side. The full six beats live at
+			 * /projects/[slug], a URL that can be shared and that Google can
+			 * index on its own — an anchor inside the home can't.
 			 */}
 			<OpenProject
 				project={mainProject}
 				lang={lang}
-				unwritten={d.proyectos.sinEscribir}
-				unmeasured={d.proyectos.sinMedir}
-				pendingLabel={d.falta}
-				diagramLabel={d.proyectos.diagrama}
-				scrollHint={d.proyectos.deslizar}
-				codeLabel={d.proyectos.codigo}
-				etapas={["problema"]}
+				unwritten={d.projects.notWritten}
+				unmeasured={d.projects.notMeasured}
+				pendingLabel={d.missing}
+				diagramLabel={d.projects.diagram}
+				scrollHint={d.projects.scrollHint}
+				codeLabel={d.projects.code}
+				stages={["problem"]}
 			/>
 
 			<div className='flex flex-wrap items-center gap-x-8 gap-y-2'>
 				<Link
-					href={localizedPath(lang, `/proyectos/${mainProject.slug}`)}
-					className='inline-flex min-h-11 w-fit items-center font-rotulo text-xs font-bold uppercase tracking-[.14em] text-impulso transition-colors duration-200 ease-impulso hover:text-senal'
+					href={localizedPath(lang, `/projects/${mainProject.slug}`)}
+					className='inline-flex min-h-11 w-fit items-center font-label text-xs font-bold uppercase tracking-[.14em] text-impulse transition-colors duration-200 ease-impulse hover:text-signal'
 				>
 					<span className='inline-flex items-center gap-2 border-b border-current pb-0.5'>
-						{d.proyectos.leerCaso}
+						{d.projects.readCase}
 						<span aria-hidden='true'>→</span>
 					</span>
 				</Link>
-				{mainProject.enlaces?.map((e) => (
+				{mainProject.links?.map((e) => (
 					<a
 						key={e.href}
 						href={e.href}
-						target={e.externo ? "_blank" : undefined}
-						rel={e.externo ? "noreferrer" : undefined}
-						className='inline-flex min-h-11 items-center font-rotulo text-[11px] font-bold uppercase tracking-[.14em] text-sinapsis transition-colors duration-200 ease-impulso hover:text-impulso'
+						target={e.external ? "_blank" : undefined}
+						rel={e.external ? "noreferrer" : undefined}
+						className='inline-flex min-h-11 items-center font-label text-[11px] font-bold uppercase tracking-[.14em] text-synapse transition-colors duration-200 ease-impulse hover:text-impulse'
 					>
-						<span className='border-b border-current pb-0.5'>{t(e.etiqueta, lang)}</span>
+						<span className='border-b border-current pb-0.5'>{t(e.label, lang)}</span>
 					</a>
 				))}
 			</div>

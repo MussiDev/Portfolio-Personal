@@ -5,18 +5,24 @@ import { useEffect, useState, type RefObject } from "react";
 import type { Section } from "../common/Brain3D";
 
 /**
- * Scroll-spy: qué [data-step] ocupa más viewport ahora mismo es la
- * sección activa. También prende el badge (.animate-disparo) de la
- * sección que se vuelve activa y lo apaga en la anterior.
+ * Scroll-spy: whichever [data-step] occupies the most viewport right now
+ * is the active section. It also lights the badge (.animate-fire) of the
+ * section that becomes active and turns off the previous one's.
  */
 export const useActiveStep = (
 	containerRef: RefObject<HTMLDivElement | null>,
 	sections: Section[],
 	setHover: (v: number | null) => void,
+	/** Current route: the steps live in the page, and the page is replaced
+	 * under this hook on every client navigation. */
+	pathname: string,
+	/** Only the home has steps to spy on. */
+	active: boolean,
 ): number | null => {
 	const [activeStep, setActiveStep] = useState<number | null>(null);
 
 	useEffect(() => {
+		if (!active) return;
 		const container = containerRef.current;
 		if (!container) return;
 
@@ -50,12 +56,12 @@ export const useActiveStep = (
 			const nextBadge =
 				i !== null && sections[i].step !== undefined
 					? document.querySelector<HTMLElement>(
-							`#paso-${sections[i].step} [data-drop-target]`,
+							`#step-${sections[i].step} [data-drop-target]`,
 						)
 					: null;
 			if (nextBadge !== litBadge) {
-				litBadge?.classList.remove("animate-disparo");
-				nextBadge?.classList.add("animate-disparo");
+				litBadge?.classList.remove("animate-fire");
+				nextBadge?.classList.add("animate-fire");
 				litBadge = nextBadge;
 			}
 		};
@@ -68,12 +74,15 @@ export const useActiveStep = (
 		window.addEventListener("resize", onScroll);
 		return () => {
 			if (requestId) cancelAnimationFrame(requestId);
-			litBadge?.classList.remove("animate-disparo");
+			litBadge?.classList.remove("animate-fire");
 			window.removeEventListener("scroll", onScroll);
 			window.removeEventListener("resize", onScroll);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [sections]);
+	}, [sections, pathname, active]);
 
-	return activeStep;
+	// Derived, not stored: a scene without steps has no active step, and
+	// writing that into state from the effect only buys a cascading render.
+	// Coming back to the home re-runs the effect, which measures at once.
+	return active ? activeStep : null;
 };

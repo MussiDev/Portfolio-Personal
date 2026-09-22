@@ -3,60 +3,60 @@ import assert from "node:assert/strict";
 
 import { easeOutCubic, revealCounts } from "./tissueReveal.ts";
 
-test("revealCounts: en t=0 no se muestra nada", () => {
+test("revealCounts: at t=0 nothing is shown", () => {
 	const r = revealCounts(0, 1000, 500);
 	assert.equal(r.points, 0);
 	assert.equal(r.edges, 0);
 });
 
-test("revealCounts: en t=1 se muestra todo", () => {
+test("revealCounts: at t=1 everything is shown", () => {
 	const r = revealCounts(1, 1000, 500);
 	assert.equal(r.points, 1000);
 	assert.equal(r.edges, 500);
 });
 
-test("revealCounts: los puntos terminan de aparecer antes que las aristas", () => {
-	// A t=0.7 los puntos ya completaron su ventana (0→0.7); las aristas
-	// (ventana 0.25→1) todavía están a mitad de camino.
+test("revealCounts: points finish appearing before edges", () => {
+	// At t=0.7 the points already completed their window (0→0.7); edges
+	// (window 0.25→1) are still halfway there.
 	const r = revealCounts(0.7, 1000, 500);
-	assert.equal(r.points, 1000, "a t=0.7 los puntos ya están completos");
-	assert.ok(r.edges > 0 && r.edges < 500, "las aristas todavía están a mitad de camino");
+	assert.equal(r.points, 1000, "at t=0.7 the points should be complete");
+	assert.ok(r.edges > 0 && r.edges < 500, "the edges should still be halfway there");
 });
 
-test("revealCounts: las aristas no arrancan antes de t=0.25", () => {
+test("revealCounts: edges don't start before t=0.25", () => {
 	const r = revealCounts(0.2, 1000, 500);
 	assert.equal(r.edges, 0);
 });
 
-test("revealCounts: el conteo de aristas siempre es par (no corta un segmento a la mitad)", () => {
+test("revealCounts: the edge count is always even (never splits a segment in half)", () => {
 	for (let t = 0; t <= 1; t += 0.037) {
 		const r = revealCounts(t, 777, 999);
-		assert.equal(r.edges % 2, 0, `edges=${r.edges} en t=${t} debería ser par`);
+		assert.equal(r.edges % 2, 0, `edges=${r.edges} at t=${t} should be even`);
 	}
 });
 
-test("revealCounts: es monótono no decreciente en ambos conteos", () => {
+test("revealCounts: is non-decreasing in both counts", () => {
 	let prevPoints = -1;
 	let prevEdges = -1;
 	for (let t = 0; t <= 1; t += 0.05) {
 		const r = revealCounts(t, 500, 500);
-		assert.ok(r.points >= prevPoints, "points nunca retrocede");
-		assert.ok(r.edges >= prevEdges, "edges nunca retrocede");
+		assert.ok(r.points >= prevPoints, "points never goes backwards");
+		assert.ok(r.edges >= prevEdges, "edges never goes backwards");
 		prevPoints = r.points;
 		prevEdges = r.edges;
 	}
 });
 
-test("revealCounts: clampea t fuera de [0,1] sin salirse de rango", () => {
+test("revealCounts: clamps t outside [0,1] without leaving range", () => {
 	assert.deepEqual(revealCounts(-1, 100, 100), { points: 0, edges: 0 });
 	assert.deepEqual(revealCounts(2, 100, 100), { points: 100, edges: 100 });
 });
 
-test("easeOutCubic: arranca en 0 y termina en 1", () => {
+test("easeOutCubic: starts at 0 and ends at 1", () => {
 	assert.equal(easeOutCubic(0), 0);
 	assert.equal(easeOutCubic(1), 1);
 });
 
-test("easeOutCubic: es más rápido al principio que una curva lineal", () => {
+test("easeOutCubic: is faster at the start than a linear curve", () => {
 	assert.ok(easeOutCubic(0.3) > 0.3);
 });

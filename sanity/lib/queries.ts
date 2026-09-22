@@ -1,8 +1,8 @@
 import { groq } from "next-sanity";
 
-// Sin coverImage: ningún listado la usa (ni la home, ni /blog, ni la
-// navegación entre notas), y una imagen de Sanity son varios campos de
-// metadata por post que viajan en cada render de la home para nada.
+// No coverImage: no listing uses it (not the home, not /blog, not
+// navigation between posts), and a Sanity image is several metadata
+// fields per post that would travel on every render of the home for nothing.
 export const postsQuery = groq`
   *[_type == "post"] | order(publishedAt desc) {
     _id,
@@ -20,16 +20,15 @@ export const postBySlugQuery = groq`
     title,
     "slug": slug.current,
     publishedAt,
-    coverImage,
     tags,
     body,
     markdownBody
   }
 `;
 
-// El parámetro se llama $tagName, no $tag: QueryParams de @sanity/client
-// reserva la clave "tag" para su propia feature de request tagging — un
-// params { tag: "..." } colisiona con eso y ni compila.
+// The parameter is called $tagName, not $tag: @sanity/client's
+// QueryParams reserves the "tag" key for its own request-tagging feature
+// — a params { tag: "..." } collides with that and won't even compile.
 export const postsByTagQuery = groq`
   *[_type == "post" && $tagName in tags] | order(publishedAt desc) {
     _id,

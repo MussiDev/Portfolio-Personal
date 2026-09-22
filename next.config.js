@@ -1,37 +1,46 @@
 /** @type {import('next').NextConfig} */
 
 const STEPS = {
-	"/oficio": "/#paso-1",
-	"/maquinas": "/#paso-2",
-	"/maquinas/:slug": "/#paso-2",
-	// /blog ya no redirige: es una página real (app/(sistema-nervioso)/[lang]/blog/page.tsx).
-	"/contacto": "/#paso-5",
+	"/oficio": "/#step-1",
+	"/maquinas": "/#step-2",
+	"/maquinas/:slug": "/#step-2",
+	// /blog no longer redirects: it's a real page (app/(nervous-system)/[lang]/blog/page.tsx).
+	"/contacto": "/#step-5",
 	"/anterior": "/",
 };
 
-// Las máquinas del sitio anterior que hoy tienen página propia. Van ANTES
-// del comodín /maquinas/:slug (Next evalúa los redirects en orden). No se
-// redirige el comodín entero a /proyectos/:slug porque el sitio anterior
-// tenía ocho slugs y hoy existe uno: los otros siete terminarían en un 404
-// en vez de en la home.
-const PROYECTOS_CON_PAGINA = ["nortear"];
-const projectRedirects = PROYECTOS_CON_PAGINA.flatMap((slug) => [
-	{ source: `/maquinas/${slug}`, destination: `/proyectos/${slug}`, permanent: true },
-	{ source: `/en/maquinas/${slug}`, destination: `/en/proyectos/${slug}`, permanent: true },
+// The previous site's machines that now have their own page. These must come
+// BEFORE the /maquinas/:slug wildcard (Next evaluates redirects in order).
+// The whole wildcard isn't redirected to /projects/:slug because the
+// previous site had eight slugs and only one exists today: the other seven
+// would land on a 404 instead of the home page.
+const PROJECTS_WITH_PAGE = ["nortear"];
+const projectRedirects = PROJECTS_WITH_PAGE.flatMap((slug) => [
+	{ source: `/maquinas/${slug}`, destination: `/projects/${slug}`, permanent: true },
+	{ source: `/en/maquinas/${slug}`, destination: `/en/projects/${slug}`, permanent: true },
 ]);
+
+// The route itself moved from /proyectos to /projects; redirect the old
+// segment (in both locales) so indexed URLs and existing links don't 404.
+const legacyProjectPathRedirects = [
+	{ source: "/proyectos/:slug*", destination: "/projects/:slug*", permanent: true },
+	{ source: "/en/proyectos/:slug*", destination: "/en/projects/:slug*", permanent: true },
+];
 
 const siteRedirects = [
 	...projectRedirects,
+	...legacyProjectPathRedirects,
 	...Object.entries(STEPS).flatMap(([from, to]) => [
 		{ source: from, destination: to, permanent: true },
 		{ source: `/en${from}`, destination: `/en${to.slice(1)}`, permanent: true },
 	]),
 ];
 
-// Si el endpoint de Web Vitals (app/src/common/WebVitals.tsx) es de otro
-// origen, hay que declararlo en connect-src o el sendBeacon se bloquea sin
-// error visible: la instrumentación parecería andar y no reportaría nada.
-// Una ruta relativa (/api/vitals) ya está cubierta por 'self'.
+// If the Web Vitals endpoint (app/src/common/WebVitals.tsx) is on a
+// different origin, it has to be declared in connect-src or the sendBeacon
+// call gets blocked with no visible error: the instrumentation would look
+// like it's working and report nothing. A relative path (/api/vitals) is
+// already covered by 'self'.
 const vitalsOrigin = (() => {
 	const endpoint = process.env.NEXT_PUBLIC_VITALS_ENDPOINT;
 	if (!endpoint || !endpoint.startsWith("http")) return null;
@@ -42,13 +51,26 @@ const vitalsOrigin = (() => {
 	}
 })();
 
+// React in development mode uses eval() to rebuild callstacks coming from
+// another environment (the server, a worker). The CSP is the same in dev
+// and production, so without this `next dev` spits out on every load:
+// "eval() is not supported in this environment… React requires eval() in
+// development mode". It's not a harmless warning: it turns off those debug
+// tools exactly where they're needed.
+//
+// This applies ONLY in development. 'unsafe-eval' in production is one of
+// the most expensive concessions a CSP can make — it turns any string
+// injection into code execution — and React never uses it in production,
+// so it buys nothing there.
+const DEV = process.env.NODE_ENV === "development";
+
 const CSP = [
 	"default-src 'self'",
-	"script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com",
+	`script-src 'self' 'unsafe-inline'${DEV ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com`,
 	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 	"font-src 'self' https://fonts.gstatic.com",
 	"img-src 'self' data: https://cdn.sanity.io",
-	`connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://api.emailjs.com https://www.google.com https://fonts.googleapis.com${vitalsOrigin ? ` ${vitalsOrigin}` : ""}`,
+	`connect-src 'self' https://api.sanity.io https://cdn.sanity.io https://www.google.com https://fonts.googleapis.com${vitalsOrigin ? ` ${vitalsOrigin}` : ""}`,
 	"frame-src https://www.google.com",
 	"frame-ancestors 'none'",
 	"object-src 'none'",
@@ -57,10 +79,10 @@ const CSP = [
 	"upgrade-insecure-requests",
 ].join("; ");
 
-// Headers sin relación con qué puede cargar la página (a diferencia de la
-// CSP, que sí depende de eso): seguras de aplicar también a /studio, que
-// antes quedaba con CERO headers de seguridad — incluido Referrer-Policy,
-// justo la ruta donde el secret viaja en la query string.
+// Headers unrelated to what the page is allowed to load (unlike the CSP,
+// which does depend on that): safe to apply to /studio too, which used to
+// have ZERO security headers — including Referrer-Policy, exactly the route
+// where the secret travels in the query string.
 const baseSecurityHeaders = [
 	{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 	{ key: "X-Content-Type-Options", value: "nosniff" },
@@ -91,25 +113,26 @@ const nextConfig = {
 	async headers() {
 		return [
 			{ source: "/((?!studio).*)", headers: securityHeaders },
-			// /studio no lleva la CSP completa (Sanity Studio necesita cargar
-			// scripts/estilos/conexiones propias que no verifiqué una por una),
-			// pero sí el resto: sin esto, /studio quedaba sin Referrer-Policy
-			// justo en la ruta que autentica por query string (?secret=).
+			// /studio doesn't get the full CSP (Sanity Studio needs to load its
+			// own scripts/styles/connections, which weren't verified one by
+			// one), but it does get the rest: without this, /studio had no
+			// Referrer-Policy, exactly on the route that authenticates via
+			// query string (?secret=).
 			{ source: "/studio", headers: baseSecurityHeaders },
 			{ source: "/studio/:path*", headers: baseSecurityHeaders },
 			{
-				// Nombre hasheado por contenido (scripts/prepare-brain.mjs): un
-				// cambio de modelo siempre produce un nombre nuevo, así que
-				// servir este archivo como inmutable por un año es seguro.
-				source: "/image/cerebro.:hash([a-f0-9]{10}).bin",
+				// Content-hashed name (scripts/prepare-brain.mjs): a model change
+				// always produces a new name, so serving this file as immutable
+				// for a year is safe.
+				source: "/image/brain.:hash([a-f0-9]{10}).bin",
 				headers: [
 					{ key: "Cache-Control", value: "public, max-age=31536000, immutable" },
 				],
 			},
 			{
-				// La proyección 2D de mobile (scripts/prepare-brain-2d.mjs): mismo
-				// esquema de nombre con hash de contenido, mismo caché.
-				source: "/image/cerebro-2d.:hash([a-f0-9]{10}).bin",
+				// Mobile's 2D projection (scripts/prepare-brain-2d.mjs): same
+				// content-hashed naming scheme, same cache policy.
+				source: "/image/brain-2d.:hash([a-f0-9]{10}).bin",
 				headers: [
 					{ key: "Cache-Control", value: "public, max-age=31536000, immutable" },
 				],

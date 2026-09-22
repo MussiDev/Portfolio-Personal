@@ -1,11 +1,14 @@
 /**
- * El dominio canónico del sitio.
+ * The site's canonical domain.
  *
- * `||` y no `??`: una variable de entorno definida pero vacía — lo que pasa
- * en GitHub Actions cuando un workflow referencia un secret que no existe —
- * llega como "", no como undefined. Con `??` eso pasaba de largo, SITE_URL
- * quedaba vacío y `new URL("")` rompía el build (en /studio, donde se arma
- * metadataBase al cargar el módulo).
+ * `||` and not `??`: an environment variable that's defined but empty —
+ * what happens in GitHub Actions when a workflow references a secret that
+ * doesn't exist — arrives as "", not as undefined. With `??` that slipped
+ * through, SITE_URL ended up empty, and `new URL("")` broke the build (in
+ * /studio, where metadataBase gets built when the module loads).
  */
 export const SITE_URL =
 	process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://joaquinmussi.com.ar";
+
+/** JSON-LD node id of the site's Person, so pages can reference it. */
+export const PERSON_ID = `${SITE_URL}/#person`;

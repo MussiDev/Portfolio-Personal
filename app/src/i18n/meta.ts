@@ -5,9 +5,9 @@ import { DEFAULT_LANGUAGE, localizedPath, type Language } from "../../../entitie
 export const alternates = (
 	lang: Language,
 	path = "/",
-	/** false para contenido que solo existe en DEFAULT_LANGUAGE (el blog):
-	 * declara un único idioma en vez de un hreflang a una traducción
-	 * inexistente. */
+	/** false for content that only exists in DEFAULT_LANGUAGE (the blog):
+	 * declares a single language instead of an hreflang to a translation
+	 * that doesn't exist. */
 	translated = true,
 ): NonNullable<Metadata["alternates"]> => ({
 	canonical: localizedPath(translated ? lang : DEFAULT_LANGUAGE, path),

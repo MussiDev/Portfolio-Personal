@@ -19,7 +19,7 @@ const Cursor = () => {
 		const dot = dotRef.current;
 		if (!ring || !dot) return;
 
-		document.documentElement.classList.add("cursor-propio");
+		document.documentElement.classList.add("custom-cursor");
 
 		let x = window.innerWidth / 2;
 		let y = window.innerHeight / 2;
@@ -28,10 +28,10 @@ const Cursor = () => {
 		let inside = false;
 		let active = false;
 
-		// El lerp converge en pocos frames; una vez que ax/ay alcanzan a x/y
-		// no hay nada que redibujar. En vez de escribir el mismo transform a
-		// 60fps para siempre, el loop se detiene al asentarse y el próximo
-		// pointermove lo despierta.
+		// The lerp converges in a few frames; once ax/ay catch up to x/y
+		// there's nothing left to redraw. Instead of writing the same
+		// transform at 60fps forever, the loop stops once settled and the
+		// next pointermove wakes it up.
 		const SETTLE_EPS = 0.05;
 		let raf = 0;
 
@@ -70,8 +70,8 @@ const Cursor = () => {
 			const scale = active ? 1.7 : 1;
 			ring.style.transform = `translate3d(${ax}px, ${ay}px, 0) translate(-50%, -50%) scale(${scale})`;
 			dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-			ring.dataset.activo = active ? "si" : "no";
-			dot.dataset.activo = active ? "si" : "no";
+			ring.dataset.active = active ? "true" : "false";
+			dot.dataset.active = active ? "true" : "false";
 
 			const settled = Math.abs(x - ax) < SETTLE_EPS && Math.abs(y - ay) < SETTLE_EPS;
 			raf = settled ? 0 : requestAnimationFrame(draw);
@@ -85,7 +85,7 @@ const Cursor = () => {
 		return () => {
 			alive = false;
 			if (raf) cancelAnimationFrame(raf);
-			document.documentElement.classList.remove("cursor-propio");
+			document.documentElement.classList.remove("custom-cursor");
 			window.removeEventListener("pointermove", onMove);
 			document.removeEventListener("pointerleave", onLeave);
 			window.removeEventListener("blur", onLeave);
@@ -97,12 +97,12 @@ const Cursor = () => {
 			<div
 				ref={ringRef}
 				aria-hidden='true'
-				className='cursor-anillo pointer-events-none fixed left-0 top-0 z-[100] h-7 w-7 rounded-full border opacity-0'
+				className='cursor-ring pointer-events-none fixed left-0 top-0 z-[100] h-7 w-7 rounded-full border opacity-0'
 			/>
 			<div
 				ref={dotRef}
 				aria-hidden='true'
-				className='cursor-punto pointer-events-none fixed left-0 top-0 z-[100] h-1 w-1 rounded-full opacity-0'
+				className='cursor-dot pointer-events-none fixed left-0 top-0 z-[100] h-1 w-1 rounded-full opacity-0'
 			/>
 		</>
 	);

@@ -1,93 +1,93 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { aPantalla, pesosVisibles, puntoSobreCallout, puntosDelCallout } from "./brainLayout.ts";
+import { toScreen, visibleWeights, pointOnCallout, calloutPoints } from "./brainLayout.ts";
 
-const origen = { left: 0, top: 0 };
+const origin = { left: 0, top: 0 };
 
-test("el callout sale del borde derecho en la columna izquierda", () => {
-	const puntos = puntosDelCallout(
+test("the callout leaves from the right edge in the left column", () => {
+	const points = calloutPoints(
 		{ left: 40, right: 240, top: 100, height: 40 },
 		{ x: 700, y: 300 },
-		origen,
+		origin,
 		true,
 	);
-	// Sale en x=240 (borde derecho), a media altura (100 + 40/2 = 120),
-	// hace codo 26px más a la derecha, y de ahí al anclaje.
-	assert.equal(puntos, "240,120 266,120 700,300");
+	// Leaves at x=240 (right edge), at half height (100 + 40/2 = 120),
+	// makes an elbow 26px further right, and from there to the anchor.
+	assert.equal(points, "240,120 266,120 700,300");
 });
 
-test("en la columna derecha el codo va para el otro lado", () => {
-	const puntos = puntosDelCallout(
+test("in the right column the elbow goes the other way", () => {
+	const points = calloutPoints(
 		{ left: 1200, right: 1400, top: 100, height: 40 },
 		{ x: 700, y: 300 },
-		origen,
+		origin,
 		false,
 	);
-	assert.equal(puntos, "1200,120 1174,120 700,300");
+	assert.equal(points, "1200,120 1174,120 700,300");
 });
 
-test("las coordenadas son relativas al origen del canvas, no a la ventana", () => {
-	// El canvas no siempre arranca en 0,0: si el origen no se resta, la
-	// línea se dibuja desplazada respecto de la etiqueta que debería tocar.
-	const puntos = puntosDelCallout(
+test("coordinates are relative to the canvas origin, not the window", () => {
+	// The canvas doesn't always start at 0,0: if the origin isn't
+	// subtracted, the line is drawn offset from the label it should touch.
+	const points = calloutPoints(
 		{ left: 40, right: 240, top: 100, height: 40 },
 		{ x: 700, y: 300 },
 		{ left: 40, top: 20 },
 		true,
 	);
-	assert.equal(puntos, "200,100 226,100 700,300");
+	assert.equal(points, "200,100 226,100 700,300");
 });
 
-test("aPantalla mapea el espacio de clip al píxel", () => {
-	const tam = { width: 1000, height: 500 };
-	assert.deepEqual(aPantalla({ x: 0, y: 0 }, tam), { x: 500, y: 250 });
-	// En clip el eje Y crece hacia arriba; en pantalla, hacia abajo.
-	assert.deepEqual(aPantalla({ x: -1, y: 1 }, tam), { x: 0, y: 0 });
-	assert.deepEqual(aPantalla({ x: 1, y: -1 }, tam), { x: 1000, y: 500 });
+test("toScreen maps clip space to the pixel", () => {
+	const size = { width: 1000, height: 500 };
+	assert.deepEqual(toScreen({ x: 0, y: 0 }, size), { x: 500, y: 250 });
+	// In clip space the Y axis grows upward; on screen, downward.
+	assert.deepEqual(toScreen({ x: -1, y: 1 }, size), { x: 0, y: 0 });
+	assert.deepEqual(toScreen({ x: 1, y: -1 }, size), { x: 1000, y: 500 });
 });
 
-test("un paso que llena el viewport pesa 1", () => {
-	const { pesos, total, fuerza } = pesosVisibles([{ index: 0, top: 0, bottom: 800 }], 800);
-	assert.deepEqual(pesos, [{ index: 0, peso: 1 }]);
+test("a step that fills the viewport weighs 1", () => {
+	const { weights, total, strength } = visibleWeights([{ index: 0, top: 0, bottom: 800 }], 800);
+	assert.deepEqual(weights, [{ index: 0, weight: 1 }]);
 	assert.equal(total, 1);
-	assert.equal(fuerza, 1);
+	assert.equal(strength, 1);
 });
 
-test("dos pasos a mitad de transición pesan la mitad cada uno", () => {
-	const { pesos, fuerza } = pesosVisibles(
+test("two steps mid-transition each weigh half", () => {
+	const { weights, strength } = visibleWeights(
 		[
 			{ index: 0, top: -400, bottom: 400 },
 			{ index: 1, top: 400, bottom: 1200 },
 		],
 		800,
 	);
-	assert.deepEqual(pesos, [
-		{ index: 0, peso: 0.5 },
-		{ index: 1, peso: 0.5 },
+	assert.deepEqual(weights, [
+		{ index: 0, weight: 0.5 },
+		{ index: 1, weight: 0.5 },
 	]);
-	assert.equal(fuerza, 1);
+	assert.equal(strength, 1);
 });
 
-test("un paso fuera de pantalla no pesa nada", () => {
-	const { pesos, total } = pesosVisibles([{ index: 0, top: 900, bottom: 1700 }], 800);
-	assert.deepEqual(pesos, []);
+test("a step off screen weighs nothing", () => {
+	const { weights, total } = visibleWeights([{ index: 0, top: 900, bottom: 1700 }], 800);
+	assert.deepEqual(weights, []);
 	assert.equal(total, 0);
 });
 
-test("descarta un paso apenas asomado", () => {
-	// Medio píxel de una sección no puede tironear la cámara hacia ella.
-	const { pesos } = pesosVisibles([{ index: 0, top: 799.5, bottom: 1600 }], 800);
-	assert.deepEqual(pesos, []);
+test("discards a barely-visible step", () => {
+	// Half a pixel of a section can't tug the camera toward it.
+	const { weights } = visibleWeights([{ index: 0, top: 799.5, bottom: 1600 }], 800);
+	assert.deepEqual(weights, []);
 });
 
-test("en el hero la fuerza es 0 y la cámara vuelve al reposo", () => {
-	const { fuerza } = pesosVisibles([], 800);
-	assert.equal(fuerza, 0);
+test("in the hero strength is 0 and the camera returns to rest", () => {
+	const { strength } = visibleWeights([], 800);
+	assert.equal(strength, 0);
 });
 
-test("la fuerza nunca supera 1 aunque haya varios pasos visibles", () => {
-	const { total, fuerza } = pesosVisibles(
+test("strength never exceeds 1 even with several steps visible", () => {
+	const { total, strength } = visibleWeights(
 		[
 			{ index: 0, top: 0, bottom: 800 },
 			{ index: 1, top: 0, bottom: 800 },
@@ -95,35 +95,35 @@ test("la fuerza nunca supera 1 aunque haya varios pasos visibles", () => {
 		800,
 	);
 	assert.equal(total, 2);
-	assert.equal(fuerza, 1);
+	assert.equal(strength, 1);
 });
 
-test("un viewport de alto 0 no produce NaN", () => {
-	// Pasa de verdad: un resize a 0 o una medición antes del layout.
-	const { pesos, total, fuerza } = pesosVisibles([{ index: 0, top: 0, bottom: 100 }], 0);
-	assert.deepEqual(pesos, []);
+test("a viewport of height 0 does not produce NaN", () => {
+	// Happens for real: a resize to 0, or a measurement before layout.
+	const { weights, total, strength } = visibleWeights([{ index: 0, top: 0, bottom: 100 }], 0);
+	assert.deepEqual(weights, []);
 	assert.equal(total, 0);
-	assert.equal(fuerza, 0);
+	assert.equal(strength, 0);
 });
 
-test("el pulso arranca en la etiqueta, pasa por el codo y llega al anclaje", () => {
-	const puntos = "0,0 100,0 100,200";
-	assert.deepEqual(puntoSobreCallout(puntos, 0), { x: 0, y: 0 });
-	assert.deepEqual(puntoSobreCallout(puntos, 0.35), { x: 100, y: 0 });
-	const casiFin = puntoSobreCallout(puntos, 0.9999)!;
-	assert.ok(Math.abs(casiFin.x - 100) < 1e-6 && casiFin.y > 199.9);
+test("the pulse starts at the label, passes through the elbow and reaches the anchor", () => {
+	const points = "0,0 100,0 100,200";
+	assert.deepEqual(pointOnCallout(points, 0), { x: 0, y: 0 });
+	assert.deepEqual(pointOnCallout(points, 0.35), { x: 100, y: 0 });
+	const almostDone = pointOnCallout(points, 0.9999)!;
+	assert.ok(Math.abs(almostDone.x - 100) < 1e-6 && almostDone.y > 199.9);
 });
 
-test("a mitad del primer tramo el pulso está a mitad del horizontal", () => {
-	assert.deepEqual(puntoSobreCallout("0,0 100,0 100,200", 0.175), { x: 50, y: 0 });
+test("halfway through the first leg the pulse is halfway across the horizontal", () => {
+	assert.deepEqual(pointOnCallout("0,0 100,0 100,200", 0.175), { x: 50, y: 0 });
 });
 
-test("sin una polilínea válida no hay pulso, en vez de NaN", () => {
-	// Antes de la primera medición el atributo points no existe; una etiqueta
-	// fuera de pantalla puede dejar menos vértices. Ninguno de los dos casos
-	// puede terminar en un cx="NaN" en el DOM.
-	assert.equal(puntoSobreCallout(null, 0.5), null);
-	assert.equal(puntoSobreCallout("", 0.5), null);
-	assert.equal(puntoSobreCallout("0,0 100,0", 0.5), null);
-	assert.equal(puntoSobreCallout("0,0 x,0 100,200", 0.5), null);
+test("without a valid polyline there is no pulse, instead of NaN", () => {
+	// Before the first measurement the points attribute doesn't exist; a
+	// label off screen can leave fewer vertices. Neither case should end up
+	// with a cx="NaN" in the DOM.
+	assert.equal(pointOnCallout(null, 0.5), null);
+	assert.equal(pointOnCallout("", 0.5), null);
+	assert.equal(pointOnCallout("0,0 100,0", 0.5), null);
+	assert.equal(pointOnCallout("0,0 x,0 100,200", 0.5), null);
 });

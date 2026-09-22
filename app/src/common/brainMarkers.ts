@@ -1,57 +1,57 @@
 import * as THREE from "three";
 
 /**
- * Los tres marcadores del impulso: el axón (línea del centro del cerebro a
- * la región activa), el impulso (el punto que viaja por esa línea) y el pin
- * (el punto que late sobre la región).
+ * The impulse's three markers: the axon (line from the brain's center to
+ * the active region), the impulse (the point that travels along that line)
+ * and the pin (the point that pulses over the region).
  *
- * Vivían sueltos en el useEffect de Brain3D — tres geometrías y tres
- * materiales creados arriba, actualizados sesenta líneas más abajo dentro
- * del loop, con el progreso del viaje como una variable más del closure.
- * Juntos son una sola cosa: "la señal que va hacia la región activa".
+ * They used to live loose in Brain3D's useEffect — three geometries and
+ * three materials created up top, updated sixty lines below inside the
+ * loop, with the trip's progress as one more closure variable. Together
+ * they're one thing: "the signal heading to the active region".
  */
 
-const IMPULSO = new THREE.Color(0xff6a3a);
+const IMPULSE = new THREE.Color(0xff6a3a);
 
-const punto = (tamaño: number) => {
+const point = (size: number) => {
 	const geo = new THREE.BufferGeometry();
 	geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(3), 3));
 	const mat = new THREE.PointsMaterial({
-		color: IMPULSO,
-		size: tamaño,
+		color: IMPULSE,
+		size,
 		sizeAttenuation: true,
 		transparent: true,
 		opacity: 0,
 		depthWrite: false,
 		blending: THREE.AdditiveBlending,
 	});
-	return { geo, mat, objeto: new THREE.Points(geo, mat) };
+	return { geo, mat, object: new THREE.Points(geo, mat) };
 };
 
-export type Marcadores = {
-	/** Sin región activa: todo se desvanece y el viaje vuelve a cero. */
-	apagar: () => void;
+export type Markers = {
+	/** No active region: everything fades out and the trip resets to zero. */
+	turnOff: () => void;
 	/**
-	 * Tiende el axón hasta `anclaje`, hace latir el pin y avanza el impulso.
-	 * Devuelve el progreso del viaje (0..1) para que el pulso del callout en
-	 * SVG vaya sincronizado con el del 3D.
+	 * Stretches the axon to `anchor`, pulses the pin and advances the
+	 * impulse. Returns the trip's progress (0..1) so the SVG callout's pulse
+	 * stays in sync with the 3D one.
 	 */
-	apuntar: (
-		anclaje: THREE.Vector3,
-		origenY: number,
-		asentado: number,
+	pointAt: (
+		anchor: THREE.Vector3,
+		originY: number,
+		settled: number,
 		frame: number,
 	) => number;
 };
 
-export const crearMarcadores = (
+export const createMarkers = (
 	scene: THREE.Scene,
 	{ reducedMotion }: { reducedMotion: boolean },
-): Marcadores => {
+): Markers => {
 	const axonGeo = new THREE.BufferGeometry();
 	axonGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
 	const axonMat = new THREE.LineBasicMaterial({
-		color: IMPULSO,
+		color: IMPULSE,
 		transparent: true,
 		opacity: 0,
 		blending: THREE.AdditiveBlending,
@@ -59,45 +59,45 @@ export const crearMarcadores = (
 	});
 	scene.add(new THREE.Line(axonGeo, axonMat));
 
-	const impulso = punto(0.09);
-	const pin = punto(0.16);
-	scene.add(impulso.objeto, pin.objeto);
+	const impulse = point(0.09);
+	const pin = point(0.16);
+	scene.add(impulse.object, pin.object);
 
-	let progreso = 0;
+	let progress = 0;
 
 	return {
-		apagar: () => {
+		turnOff: () => {
 			axonMat.opacity += (0 - axonMat.opacity) * 0.1;
-			impulso.mat.opacity += (0 - impulso.mat.opacity) * 0.1;
+			impulse.mat.opacity += (0 - impulse.mat.opacity) * 0.1;
 			pin.mat.opacity += (0 - pin.mat.opacity) * 0.1;
-			progreso = 0;
+			progress = 0;
 		},
-		apuntar: (anclaje, origenY, asentado, frame) => {
+		pointAt: (anchor, originY, settled, frame) => {
 			const pos = axonGeo.getAttribute("position") as THREE.BufferAttribute;
-			pos.setXYZ(0, 0, origenY, 0);
-			pos.setXYZ(1, anclaje.x, anclaje.y, anclaje.z);
+			pos.setXYZ(0, 0, originY, 0);
+			pos.setXYZ(1, anchor.x, anchor.y, anchor.z);
 			pos.needsUpdate = true;
-			axonMat.opacity += (0.5 * asentado - axonMat.opacity) * 0.1;
+			axonMat.opacity += (0.5 * settled - axonMat.opacity) * 0.1;
 
 			const pp = pin.geo.getAttribute("position") as THREE.BufferAttribute;
-			pp.setXYZ(0, anclaje.x, anclaje.y, anclaje.z);
+			pp.setXYZ(0, anchor.x, anchor.y, anchor.z);
 			pp.needsUpdate = true;
-			const latido = reducedMotion ? 0 : Math.sin(frame / 30) * 0.25;
-			pin.mat.opacity += ((0.75 + latido) * asentado - pin.mat.opacity) * 0.12;
+			const beat = reducedMotion ? 0 : Math.sin(frame / 30) * 0.25;
+			pin.mat.opacity += ((0.75 + beat) * settled - pin.mat.opacity) * 0.12;
 
-			progreso = reducedMotion ? 1 : (progreso + 0.016) % 1;
-			const ip = impulso.geo.getAttribute("position") as THREE.BufferAttribute;
+			progress = reducedMotion ? 1 : (progress + 0.016) % 1;
+			const ip = impulse.geo.getAttribute("position") as THREE.BufferAttribute;
 			ip.setXYZ(
 				0,
-				anclaje.x * progreso,
-				origenY + (anclaje.y - origenY) * progreso,
-				anclaje.z * progreso,
+				anchor.x * progress,
+				originY + (anchor.y - originY) * progress,
+				anchor.z * progress,
 			);
 			ip.needsUpdate = true;
-			impulso.mat.opacity =
-				(reducedMotion ? 0.9 : Math.sin(progreso * Math.PI)) * asentado;
+			impulse.mat.opacity =
+				(reducedMotion ? 0.9 : Math.sin(progress * Math.PI)) * settled;
 
-			return progreso;
+			return progress;
 		},
 	};
 };

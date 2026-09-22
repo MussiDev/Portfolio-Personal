@@ -7,43 +7,49 @@ module.exports = {
 	],
 	theme: {
 		extend: {
+			screens: {
+				// Same query as DESKTOP_QUERY (app/src/common/desktopQuery.ts):
+				// wide AND hover-capable. Only for the 3D-index UI; layout
+				// widths keep using md/lg.
+				desk: { raw: "(min-width: 768px) and (hover: hover) and (pointer: fine)" },
+			},
 			fontFamily: {
-				rotulo: ["var(--font-rotulo)", "Helvetica Neue", "Arial", "sans-serif"],
-				glosa: ["var(--font-glosa)", "Georgia", "Times New Roman", "serif"],
-				pieza: ["var(--font-pieza)", "SFMono-Regular", "Consolas", "monospace"],
+				label: ["var(--font-label)", "Helvetica Neue", "Arial", "sans-serif"],
+				gloss: ["var(--font-gloss)", "Georgia", "Times New Roman", "serif"],
+				mono: ["var(--font-mono)", "SFMono-Regular", "Consolas", "monospace"],
 			},
 			transitionTimingFunction: {
-				impulso: "cubic-bezier(.16, 1, .3, 1)",
+				impulse: "cubic-bezier(.16, 1, .3, 1)",
 			},
 			keyframes: {
-				disparo: {
+				fire: {
 					"0%, 100%": { opacity: ".25", transform: "scale(1)" },
 					"8%": { opacity: "1", transform: "scale(1.9)" },
 					"30%": { opacity: ".35", transform: "scale(1)" },
 				},
-				conduccion: {
+				conduction: {
 					to: { strokeDashoffset: "0" },
 				},
-				respirar: {
+				breathe: {
 					"0%, 100%": { opacity: ".45" },
 					"50%": { opacity: "1" },
 				},
 			},
 			animation: {
-				disparo: "disparo 4s cubic-bezier(.16,1,.3,1) infinite",
-				conduccion: "conduccion 2.4s linear infinite",
-				respirar: "respirar 3.2s ease-in-out infinite",
+				fire: "fire 4s cubic-bezier(.16,1,.3,1) infinite",
+				conduction: "conduction 2.4s linear infinite",
+				breathe: "breathe 3.2s ease-in-out infinite",
 			},
 		},
 		colors: {
-			tejido: "rgb(var(--tejido) / <alpha-value>)",
-			"tejido-hondo": "rgb(var(--tejido-hondo) / <alpha-value>)",
-			membrana: "rgb(var(--membrana) / <alpha-value>)",
-			"membrana-honda": "rgb(var(--membrana-honda) / <alpha-value>)",
-			senal: "rgb(var(--senal) / <alpha-value>)",
-			mielina: "rgb(var(--mielina) / <alpha-value>)",
-			sinapsis: "rgb(var(--sinapsis) / <alpha-value>)",
-			impulso: "rgb(var(--impulso) / <alpha-value>)",
+			tissue: "rgb(var(--tissue) / <alpha-value>)",
+			"tissue-deep": "rgb(var(--tissue-deep) / <alpha-value>)",
+			membrane: "rgb(var(--membrane) / <alpha-value>)",
+			"membrane-deep": "rgb(var(--membrane-deep) / <alpha-value>)",
+			signal: "rgb(var(--signal) / <alpha-value>)",
+			myelin: "rgb(var(--myelin) / <alpha-value>)",
+			synapse: "rgb(var(--synapse) / <alpha-value>)",
+			impulse: "rgb(var(--impulse) / <alpha-value>)",
 
 			transparent: "transparent",
 			current: "currentColor",

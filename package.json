@@ -2,6 +2,7 @@
 	"name": "joaquin-mussi-portfolio",
 	"version": "0.1.0",
 	"private": true,
+	"packageManager": "pnpm@11.9.0",
 	"engines": {
 		"node": ">=20.0.0"
 	},
@@ -11,20 +12,19 @@
 		"start": "next start",
 		"lint": "eslint .",
 		"brain": "node --experimental-strip-types scripts/prepare-brain.mjs",
-		"test": "node --experimental-strip-types --test entities/i18n.test.ts entities/jsonLd.test.ts entities/schemas.test.ts entities/site.test.ts app/src/common/binFormat.test.ts app/src/common/tissueReveal.test.ts app/src/common/brain2dFormat.test.ts app/src/common/relations.test.ts app/src/common/tissueLoader.test.ts app/src/common/brainLayout.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Blog/postDate.test.ts app/src/components/Workshop/captchaGate.test.ts",
+		"test": "node --experimental-strip-types --test app/src/common/brainTrace.test.ts app/src/common/brainDensity.test.ts app/src/common/postCover.test.ts app/src/components/Blog/title.test.ts app/src/common/scene.test.ts entities/dates.test.ts entities/i18n.test.ts entities/jsonLd.test.ts entities/schemas.test.ts entities/site.test.ts app/src/common/binFormat.test.ts app/src/common/tissueReveal.test.ts app/src/common/brain2dFormat.test.ts app/src/common/relations.test.ts app/src/common/tissueLoader.test.ts app/src/common/brainLayout.test.ts app/src/components/Blog/excerpt.test.ts app/src/components/Blog/postDate.test.ts entities/contact.test.ts",
 		"smoke": "node scripts/smoke-test.mjs",
 		"e2e": "playwright test",
 		"e2e:ui": "playwright test --ui",
 		"brain:2d": "node --experimental-strip-types scripts/prepare-brain-2d.mjs"
 	},
 	"dependencies": {
-		"@emailjs/browser": "^4.2.0",
 		"@portabletext/react": "^6.0.2",
 		"@sanity/image-url": "^2.0.3",
 		"@sanity/vision": "^5.11.0",
 		"easymde": "^2.18.0",
 		"mermaid": "^11.12.3",
-		"next": "^16.1.6",
+		"next": "^16.3.5",
 		"next-sanity": "^12.1.0",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
@@ -46,8 +46,8 @@
 		"@types/three": "^0.186.0",
 		"autoprefixer": "^10.4.18",
 		"eslint": "^9.39.5",
-		"eslint-config-next": "^16.1.6",
-		"postcss": "^8.4.35",
+		"eslint-config-next": "^16.3.5",
+		"postcss": "^8.5.28",
 		"tailwindcss": "^3.4.1"
 	}
 }
