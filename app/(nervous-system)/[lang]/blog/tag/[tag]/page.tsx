@@ -35,18 +35,33 @@ export async function generateStaticParams() {
 	return tags.map((tag) => ({ tag }));
 }
 
+// For a statically generated segment, Next hands back the raw path segment
+// as it appears in the URL — already percent-encoded for a multi-word tag
+// ("Core%20Web%20Vitals"), not the decoded string generateStaticParams was
+// given ("Core Web Vitals"). Querying Sanity with the encoded form matched
+// nothing, so every multi-word tag baked in a permanent 404 at build time.
+const decodeTag = (tag: string): string => {
+	try {
+		return decodeURIComponent(tag);
+	} catch {
+		return tag;
+	}
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-	const { tag, lang } = await params;
+	const { tag: rawTag, lang } = await params;
+	const tag = decodeTag(rawTag);
 	const d = getDict(lang);
 
 	return {
 		title: `${d.blog.byTag(tag)} — Joaquín Mussi`,
-		alternates: alternates(lang, `/blog/tag/${tag}`, false),
+		alternates: alternates(lang, `/blog/tag/${rawTag}`, false),
 	};
 }
 
 const TagPage = async ({ params }: PageProps) => {
-	const { tag, lang } = await params;
+	const { tag: rawTag, lang } = await params;
+	const tag = decodeTag(rawTag);
 	const d = getDict(lang);
 
 	let posts: Post[] = [];
