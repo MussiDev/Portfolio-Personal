@@ -88,30 +88,30 @@ RECAPTCHA_SECRET_KEY=tu_secret_key
 
 ```bash
 # Instalar dependencias
-npm install
+pnpm install
 
 # Servidor de desarrollo
-npm run dev
+pnpm run dev
 
 # Regenerar el binario del cerebro 3D (si se reemplaza assets/brain_areas.glb)
-npm run brain
+pnpm run brain
 
 # Type-check
-npx tsc --noEmit
+pnpm exec tsc --noEmit
 
 # Tests
-npm test
+pnpm test
 
 # Build de producción
-npm run build
+pnpm run build
 
 # Servidor de producción
-npm start
+pnpm start
 ```
 
 Abrir [http://localhost:3000](http://localhost:3000).
 
-> **Nota:** correr `npm run build && npm start` antes de medir con Lighthouse — `npm run dev` no minifica ni hace tree-shaking, y eso distorsiona las métricas de performance.
+> **Nota:** correr `pnpm run build && pnpm start` antes de medir con Lighthouse — `pnpm run dev` no minifica ni hace tree-shaking, y eso distorsiona las métricas de performance.
 
 ## Agregar contenido
 

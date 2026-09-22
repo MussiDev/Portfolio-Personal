@@ -264,7 +264,7 @@ const Brain3D = ({
 		if (SNAPPED_ANCHORS.length !== sections.length) {
 			console.warn(
 				`brainAsset.ts tiene ${SNAPPED_ANCHORS.length} anchors pero hay ${sections.length} sections. ` +
-					"Actualizá entities/brainAnchors.ts y corré `npm run brain`.",
+					"Actualizá entities/brainAnchors.ts y corré `pnpm run brain`.",
 			);
 		}
 		const anchors = sections.map(

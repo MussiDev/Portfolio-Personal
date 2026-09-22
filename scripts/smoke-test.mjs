@@ -1,5 +1,5 @@
-// Smoke test contra un build de producción ya levantado (npm run build +
-// npm start). No reemplaza los tests unitarios: existe para atrapar
+// Smoke test contra un build de producción ya levantado (pnpm run build +
+// pnpm start). No reemplaza los tests unitarios: existe para atrapar
 // regresiones que un tsc/test verde no ve, porque son correctas en tipos
 // pero rotas en runtime — el canonical apuntando a un dominio que devuelve
 // 404, o el sitemap ofreciendo /en/blog/* cuando esa ruta ya no existe.

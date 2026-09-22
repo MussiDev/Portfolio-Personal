@@ -84,7 +84,7 @@ const NervousSystemMobile = ({
 		if (ANCHORS_2D.length !== sectionCount) {
 			console.warn(
 				`brain2dAsset.ts tiene ${ANCHORS_2D.length} anclas y hay ${sectionCount} secciones. ` +
-					"Corré `npm run brain:2d`.",
+					"Corré `pnpm run brain:2d`.",
 			);
 		}
 

@@ -11,7 +11,7 @@
  * Las seis anclas de las secciones se proyectan igual, así que en mobile
  * cada sección queda en la misma región del cerebro que en desktop.
  *
- * Uso: npm run brain:2d  (correr después de `npm run brain` si cambia el modelo)
+ * Uso: pnpm run brain:2d  (correr después de `pnpm run brain` si cambia el modelo)
  */
 import crypto from "node:crypto";
 import fs from "node:fs";

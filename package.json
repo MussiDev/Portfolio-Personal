@@ -2,6 +2,7 @@
 	"name": "joaquin-mussi-portfolio",
 	"version": "0.1.0",
 	"private": true,
+	"packageManager": "pnpm@11.9.0",
 	"engines": {
 		"node": ">=20.0.0"
 	},
