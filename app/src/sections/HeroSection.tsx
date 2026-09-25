@@ -68,33 +68,40 @@ const HeroSection = ({
 			</div>
 		</div>
 
-		<nav data-tissue-to className='enter enter-3 pointer-events-auto absolute bottom-0 left-0 right-0 flex flex-col gap-px border-t border-synapse/25 bg-tissue/85 backdrop-blur-sm desk:hidden'>
+		{/* A 2×3 grid, not six full-width rows: the rows took a third of the
+		 * screen and left the tissue a ~130px strip, so the brain read as a
+		 * thumbnail. The gap-px over a synapse background draws the hairlines,
+		 * and the gradient above lets the tissue run down into the grid. */}
+		<nav data-tissue-to className='enter enter-3 pointer-events-auto absolute bottom-0 left-0 right-0 grid grid-cols-2 gap-px border-t border-synapse/25 bg-synapse/15 before:pointer-events-none before:absolute before:inset-x-0 before:-top-16 before:h-16 before:bg-gradient-to-b before:from-tissue/0 before:to-tissue/70 desk:hidden'>
 			{sections.map((s, i) => (
 				<a
 					key={s.href + s.label}
 					href={s.external ? s.href : `#step-${s.step}`}
 					target={s.external ? "_blank" : undefined}
 					rel={s.external ? "noreferrer" : undefined}
-					// py-3.5 instead of py-2.5: with the label's line-height this
-					// leaves the row at ~48px, the comfortable minimum for a
-					// finger. This is the only navigation that exists below
-					// 768px, so it can't stay at 36px. items-baseline is kept:
-					// the three texts have different sizes and align on the
-					// baseline, not the box.
-					// data-region: the row is the same region as the node with
+					// min-h-14: every cell stays well over the 44px a finger
+					// needs. This is the only navigation that exists below
+					// 768px.
+					// data-region: the cell is the same region as the node with
 					// its number on the tissue. NervousSystem writes data-state
-					// (active / linked / idle) to it, and the row responds the
-					// same way desktop's labels do.
+					// (active / linked / idle) to it, and the cell responds the
+					// same way desktop's labels do — the active one gets the
+					// impulse bar on its inner edge, like the lit node's leader.
 					data-region={i}
-					className='group flex flex-wrap items-baseline gap-x-3 border-b border-synapse/12 px-5 py-3.5 transition-colors duration-500 ease-impulse last:border-b-0 data-[state=active]:bg-impulse/[.07]'
+					className='group flex min-h-14 flex-col justify-center gap-1 bg-tissue/90 px-4 py-2.5 transition-[background-color,box-shadow] duration-500 ease-impulse data-[state=active]:bg-membrane/90 data-[state=active]:shadow-[inset_2px_0_0_rgb(var(--impulse))]'
 				>
-					<span className='font-mono text-[10px] tabular-nums text-impulse'>
-						{String(i + 1).padStart(2, "0")}
-					</span>
-					<span className='font-label text-[13px] font-bold uppercase tracking-[.08em] text-signal transition-colors duration-500 ease-impulse group-data-[state=active]:text-impulse group-data-[state=linked]:text-impulse/65'>
+					{/* The name gets the cell's whole width: on a 320px screen
+					 * "RECOMENDACIONES" didn't fit beside the number. The number
+					 * moves down next to the fact, still in impulse orange so it
+					 * keeps reading as the tissue's legend. `length:` is needed:
+					 * a bare clamp() is ambiguous and Tailwind drops it. */}
+					<span className='font-label text-[length:clamp(10.5px,3.3vw,12.5px)] font-bold uppercase tracking-[.04em] text-signal transition-colors duration-500 ease-impulse group-data-[state=active]:text-impulse group-data-[state=linked]:text-impulse/65'>
 						{s.label}
 					</span>
-					<span className='ml-auto font-mono text-[9.5px] uppercase tracking-[.08em] text-myelin'>
+					<span className='flex items-baseline gap-2 font-mono text-[9px] uppercase leading-snug tracking-[.06em] text-myelin'>
+						<span className='text-[10px] tabular-nums text-impulse'>
+							{String(i + 1).padStart(2, "0")}
+						</span>
 						{s.fact}
 					</span>
 				</a>

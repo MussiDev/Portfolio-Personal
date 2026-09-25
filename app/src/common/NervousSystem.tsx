@@ -271,6 +271,7 @@ const NervousSystem = ({
 				{isDesktop === false && (
 					<NervousSystemMobile
 						sectionCount={sections.length}
+						labels={sections.map((s) => s.label)}
 						active={inHero ? heroRegion : active}
 						relations={relations}
 						anchorRef={anchorRef}
